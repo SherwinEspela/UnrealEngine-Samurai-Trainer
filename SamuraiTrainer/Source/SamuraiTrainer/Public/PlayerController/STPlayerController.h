@@ -1,0 +1,41 @@
+// // Copyright 2024 Sherwin Espela. All rights reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/PlayerController.h"
+#include "STPlayerController.generated.h"
+
+class ASTPlayerCharacter;
+class UInputMappingContext;
+class UInputAction;
+class UEnhancedInputComponent;
+struct FInputActionValue;
+
+/**
+ * 
+ */
+UCLASS()
+class SAMURAITRAINER_API ASTPlayerController : public APlayerController
+{
+	GENERATED_BODY()
+	
+protected:
+	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
+
+protected:
+	// Player Inputs
+	UPROPERTY(EditDefaultsOnly, Category = "Player Input")
+	UInputMappingContext* InputMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* LookAction;
+
+private:
+	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;
+	UEnhancedInputComponent* EnhancedInputComponent;
+};
