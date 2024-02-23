@@ -72,3 +72,47 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Others
+ReferenceImages/
+SamuraiTrainer/Content/Animations/
+SamuraiTrainer/Content/Textures/
+SamuraiTrainer/Content/Sounds/
+SamuraiTrainer/Content/MarketplaceAssets/
+SamuraiTrainer/Intermediate/
+SamuraiTrainer/UpgradeLog.htm
+SamuraiTrainer/.vsconfig
+SamuraiTrainer/Platforms/HoloLens/Config/HoloLensEngine.ini
+SamuraiTrainer/Binaries/Win64/UnrealEditor-SamuraiTrainer.pdb
+SamuraiTrainer/Saved/Crashes/
+SamuraiTrainer/Saved/Logs/
+SamuraiTrainer/Saved/Config/WindowsEditor/
+SamuraiTrainer/Saved/Config/CrashReportClient/
+SamuraiTrainer/Binaries/Win64/
+SamuraiTrainer/Saved/Config/WindowsEditor/
+SamuraiTrainer/Binaries/
+SamuraiTrainer/Saved/Config/CrashReportClient/
+SamuraiTrainer/Saved/Crashes/
+SamuraiTrainer/Saved/Logs/
+SamuraiTrainer/Saved/AutoScreenshot.png
+SamuraiTrainer/Content/Megascans/
+SamuraiTrainer/Build/
+SamuraiTrainer/Content/MSPresets/
+SamuraiTrainer/Saved/Cooked/
+SamuraiTrainer/Saved/MaterialStats/
+SamuraiTrainer/Saved/Shaders/
+SamuraiTrainer/Saved/StagedBuilds/
+SamuraiTrainer/Saved/Temp/
+SamuraiTrainer/Content/MSPresets/
+SamuraiTrainer/Saved/webcache_4430/
+SamuraiTrainer/Saved/Temp/
+SamuraiTrainer/Saved/Cooked/
+SamuraiTrainer/Saved/Shaders/
+SamuraiTrainer/Saved/StagedBuilds/
+SamuraiTrainer/Build/
+SamuraiTrainer/Saved/MaterialStats/
+SamuraiTrainer/Saved/MaterialStatsDebug/
+SamuraiTrainer/Config/
+SamuraiTrainer/Saved/
+SamuraiTrainer/Content/LevelPrototyping/
+SamuraiTrainer/Content/StarterPack/
