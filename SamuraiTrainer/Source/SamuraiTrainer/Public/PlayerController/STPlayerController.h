@@ -25,14 +25,18 @@ protected:
 	virtual void SetupInputComponent() override;
 
 protected:
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+
+protected:
 	// Player Inputs
 	UPROPERTY(EditDefaultsOnly, Category = "Player Input")
 	UInputMappingContext* InputMappingContext;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* MoveAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* LookAction;
 
 private:

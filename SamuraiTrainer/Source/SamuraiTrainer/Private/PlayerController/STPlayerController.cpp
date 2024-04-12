@@ -22,4 +22,27 @@ void ASTPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASTPlayerController::Move);
+	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASTPlayerController::Look);
+}
+
+void ASTPlayerController::Move(const FInputActionValue& Value)
+{
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	const FRotator Rotation = GetControlRotation();
+	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	PlayerCharacter->AddMovementInput(ForwardDirection, MovementVector.Y);
+	PlayerCharacter->AddMovementInput(RightDirection, MovementVector.X);
+}
+
+void ASTPlayerController::Look(const FInputActionValue& Value)
+{
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+	PlayerCharacter->AddControllerYawInput(LookAxisVector.X);
+	PlayerCharacter->AddControllerPitchInput(LookAxisVector.Y);
 }
