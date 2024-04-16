@@ -5,6 +5,7 @@
 #include "Character/STPlayerCharacter.h"
 #include "Gameframework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CustomEnums.h"
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
 {

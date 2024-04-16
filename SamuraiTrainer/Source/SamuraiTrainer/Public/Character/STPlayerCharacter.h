@@ -49,4 +49,5 @@ protected:
 	UAnimMontage* MontageSwordInteract;
 
 	bool bIsSwordArmed = false;
+	bool bIsInteractingWithWeapon = false;
 };

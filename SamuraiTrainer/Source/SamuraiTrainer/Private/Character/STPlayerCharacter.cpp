@@ -7,6 +7,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Animation/AnimMontage.h"
 
+#define STRING_SHEATHE FName("Sheathe")
+#define STRING_UNSHEATHE FName("Unsheathe")
+
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
 	bUseControllerRotationPitch = false;
@@ -38,20 +41,14 @@ void ASTPlayerCharacter::BeginPlay()
 
 void ASTPlayerCharacter::SwordInteract()
 {
+	if (bIsInteractingWithWeapon) return;
+
 	if (MontageSwordInteract)
 	{
+		bIsInteractingWithWeapon = true;
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		AnimInstance->Montage_Play(MontageSwordInteract);
-
-		/*if (bIsSwordArmed)
-		{
-			AnimInstance->Montage_JumpToSection(FName("Sheathe"), MontageSwordInteract);
-		}
-		else {
-			AnimInstance->Montage_JumpToSection(FName("Unsheathe"), MontageSwordInteract);
-		}*/
-
-		FName SectionName = bIsSwordArmed ? FName("Unsheathe") : FName("Sheathe");
+		FName SectionName = bIsSwordArmed ? STRING_SHEATHE : STRING_UNSHEATHE;
 		AnimInstance->Montage_JumpToSection(SectionName, MontageSwordInteract);
 		bIsSwordArmed = !bIsSwordArmed;
 	}
