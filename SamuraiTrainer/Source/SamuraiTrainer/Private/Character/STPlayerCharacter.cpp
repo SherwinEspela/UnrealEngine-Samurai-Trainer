@@ -2,8 +2,10 @@
 
 
 #include "Character/STPlayerCharacter.h"
+#include "Items/Katana.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Animation/AnimMontage.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -27,4 +29,39 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 void ASTPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Katana = GetWorld()->SpawnActor<AKatana>(KatanaClass);
+	AttachSwordToSocket(FName("WEAPON_R"));
+
+	bIsSwordArmed = false;
+}
+
+void ASTPlayerCharacter::SwordInteract()
+{
+	if (MontageSwordInteract)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		AnimInstance->Montage_Play(MontageSwordInteract);
+
+		/*if (bIsSwordArmed)
+		{
+			AnimInstance->Montage_JumpToSection(FName("Sheathe"), MontageSwordInteract);
+		}
+		else {
+			AnimInstance->Montage_JumpToSection(FName("Unsheathe"), MontageSwordInteract);
+		}*/
+
+		FName SectionName = bIsSwordArmed ? FName("Unsheathe") : FName("Sheathe");
+		AnimInstance->Montage_JumpToSection(SectionName, MontageSwordInteract);
+		bIsSwordArmed = !bIsSwordArmed;
+	}
+}
+
+void ASTPlayerCharacter::AttachSwordToSocket(FName SocketName)
+{
+	if (Katana)
+	{
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Katana->AttachToComponent(GetMesh(), TransformRules, SocketName);
+	}
 }

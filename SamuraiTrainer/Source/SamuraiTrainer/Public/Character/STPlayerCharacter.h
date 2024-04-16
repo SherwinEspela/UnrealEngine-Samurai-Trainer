@@ -6,8 +6,11 @@
 #include "Character/STBaseCharacter.h"
 #include "STPlayerCharacter.generated.h"
 
+class AKatana;
 class USpringArmComponent;
 class UCameraComponent;
+class UAnimMontage;
+class USkeletalMeshComponent;
 
 /**
  * 
@@ -19,8 +22,13 @@ class SAMURAITRAINER_API ASTPlayerCharacter : public ASTBaseCharacter
 public:
 	ASTPlayerCharacter();
 
+public:
+	void SwordInteract();
+
 protected:
 	virtual void BeginPlay() override;
+
+	void AttachSwordToSocket(FName SocketName);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
@@ -28,4 +36,17 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
 	TObjectPtr<UCameraComponent> FollowCamera;
+
+private:
+	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AKatana> KatanaClass;
+
+	AKatana* Katana;
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageSwordInteract;
+
+	bool bIsSwordArmed = false;
 };

@@ -27,6 +27,7 @@ protected:
 protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void SwordInteract();
 
 protected:
 	// Player Inputs
@@ -39,7 +40,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* InputActionSwordInteract;
+
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;
 	UEnhancedInputComponent* EnhancedInputComponent;
+	
 };

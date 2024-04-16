@@ -24,6 +24,7 @@ void ASTPlayerController::SetupInputComponent()
 	EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASTPlayerController::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASTPlayerController::Look);
+	EnhancedInputComponent->BindAction(InputActionSwordInteract, ETriggerEvent::Triggered, this, &ASTPlayerController::SwordInteract);
 }
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
@@ -45,4 +46,9 @@ void ASTPlayerController::Look(const FInputActionValue& Value)
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 	PlayerCharacter->AddControllerYawInput(LookAxisVector.X);
 	PlayerCharacter->AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void ASTPlayerController::SwordInteract()
+{
+	PlayerCharacter->SwordInteract();
 }
