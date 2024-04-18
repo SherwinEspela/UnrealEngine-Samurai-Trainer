@@ -39,6 +39,12 @@ void ASTPlayerCharacter::BeginPlay()
 	bIsSwordArmed = false;
 }
 
+void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
+{
+	if (bIsInteractingWithWeapon) return;
+	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+}
+
 void ASTPlayerCharacter::SwordInteract()
 {
 	if (bIsInteractingWithWeapon) return;
@@ -51,6 +57,7 @@ void ASTPlayerCharacter::SwordInteract()
 		FName SectionName = bIsSwordArmed ? STRING_SHEATHE : STRING_UNSHEATHE;
 		AnimInstance->Montage_JumpToSection(SectionName, MontageSwordInteract);
 		bIsSwordArmed = !bIsSwordArmed;
+		WeaponState = bIsSwordArmed ? EPlayerStates::EPS_IdleWithWeapon : EPlayerStates::EPS_IdleNoWeapon;
 	}
 }
 

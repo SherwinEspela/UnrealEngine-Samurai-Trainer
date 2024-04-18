@@ -10,7 +10,8 @@
 void UPlayerAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
-	ASTPlayerCharacter* PlayerCharacter = Cast<ASTPlayerCharacter>(TryGetPawnOwner());
+	
+	PlayerCharacter = Cast<ASTPlayerCharacter>(TryGetPawnOwner());
 	if (PlayerCharacter)
 	{
 		MovementComponent = PlayerCharacter->GetCharacterMovement();
@@ -24,5 +25,14 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	if (MovementComponent)
 	{
 		MovementSpeed = UKismetMathLibrary::VSizeXY(MovementComponent->Velocity);
+	}
+}
+
+void UPlayerAnimInstance::OnSwordInteractionCompleted()
+{
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->SetIsInteractingWithWeapon(false);
+		WeaponState = PlayerCharacter->GetWeaponState();
 	}
 }

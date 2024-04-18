@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "CustomEnums.h"
 #include "PlayerAnimInstance.generated.h"
 
+class ASTPlayerCharacter;
 class UCharacterMovementComponent;
 
 /**
@@ -21,9 +23,18 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
 protected:
+	UFUNCTION(BlueprintCallable)
+	void OnSwordInteractionCompleted();
+
+protected:
 	UPROPERTY(BlueprintReadOnly)
 	float MovementSpeed;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Player State")
+	EPlayerStates WeaponState;
+
 private:
+	ASTPlayerCharacter* PlayerCharacter;
 	TObjectPtr<UCharacterMovementComponent> MovementComponent;
+	
 };
