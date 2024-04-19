@@ -30,8 +30,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	float MovementSpeed;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Player State")
-	EPlayerStates WeaponState;
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon State")
+	EWeaponStates WeaponState;
 
 private:
 	ASTPlayerCharacter* PlayerCharacter;

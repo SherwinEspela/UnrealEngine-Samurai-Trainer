@@ -57,7 +57,7 @@ void ASTPlayerCharacter::SwordInteract()
 		FName SectionName = bIsSwordArmed ? STRING_SHEATHE : STRING_UNSHEATHE;
 		AnimInstance->Montage_JumpToSection(SectionName, MontageSwordInteract);
 		bIsSwordArmed = !bIsSwordArmed;
-		WeaponState = bIsSwordArmed ? EPlayerStates::EPS_IdleWithWeapon : EPlayerStates::EPS_IdleNoWeapon;
+		WeaponState = bIsSwordArmed ? EWeaponStates::EWS_Holding : EWeaponStates::EWS_Stored;
 	}
 }
 

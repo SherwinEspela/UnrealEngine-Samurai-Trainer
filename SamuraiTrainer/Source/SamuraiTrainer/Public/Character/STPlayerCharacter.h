@@ -30,7 +30,7 @@ public:
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
-	FORCEINLINE EPlayerStates GetWeaponState() const { return WeaponState; }
+	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -44,8 +44,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
 	TObjectPtr<UCameraComponent> FollowCamera;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Player State")
-	EPlayerStates WeaponState;
+	UPROPERTY(BlueprintReadOnly, Category = "Movement States")
+	EMovementStates MovementState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon States")
+	EWeaponStates WeaponState;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
