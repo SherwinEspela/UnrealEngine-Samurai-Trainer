@@ -7,6 +7,9 @@
 #include "CustomEnums.h"
 #include "STPlayerCharacter.generated.h"
 
+#define ATTACK_DOWNSLASH FName("AttackDownslash")
+#define ATTACK_UPSLASH FName("AttackUpslash")
+
 class AKatana;
 class USpringArmComponent;
 class UCameraComponent;
@@ -28,6 +31,15 @@ public:
 
 	void SwordInteract();
 	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void OnComboFrameBegan();
+
+	UFUNCTION(BlueprintCallable)
+	void OnComboFrameEnded(bool IsLastAttack);
+
+	UFUNCTION(BlueprintCallable)
+	void SetNextAttackSectionName(FName Value);
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
@@ -60,8 +72,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageAttack;
 
+	FName NextAttackSectionName = ATTACK_DOWNSLASH;
+
 	bool bIsSwordArmed = false;
 	bool bIsInteractingWithWeapon = false;
+	bool bCanPerformNextAttack = false;
 
 private:
 	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))

@@ -39,6 +39,7 @@ void ASTPlayerCharacter::BeginPlay()
 	bIsSwordArmed = false;
 	MovementState = EMovementStates::EPMS_Default;
 	WeaponState = EWeaponStates::EWS_Stored;
+	bCanPerformNextAttack = true;
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -63,17 +64,35 @@ void ASTPlayerCharacter::SwordInteract()
 	}
 }
 
+void ASTPlayerCharacter::SetNextAttackSectionName(FName Value)
+{
+	NextAttackSectionName = Value;
+}
+
 void ASTPlayerCharacter::Attack()
 {
 	if (bIsInteractingWithWeapon) return;
-	if (MovementState == EMovementStates::EPMS_Attacking) return;
+	if (!bCanPerformNextAttack) return;
 	if (WeaponState == EWeaponStates::EWS_Stored) return;
 	if (MontageAttack == nullptr) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->Montage_Play(MontageAttack);
-	AnimInstance->Montage_JumpToSection(FName("AttackUpslash"), MontageAttack);
+	AnimInstance->Montage_JumpToSection(NextAttackSectionName, MontageAttack);
+	
 	MovementState = EMovementStates::EPMS_Attacking;
+	bCanPerformNextAttack = false;
+}
+
+void ASTPlayerCharacter::OnComboFrameBegan()
+{
+	bCanPerformNextAttack = true;
+}
+
+void ASTPlayerCharacter::OnComboFrameEnded(bool IsLastAttack)
+{
+	bCanPerformNextAttack = IsLastAttack;
+	NextAttackSectionName = ATTACK_DOWNSLASH;
 }
 
 void ASTPlayerCharacter::AttachSwordToSocket(FName SocketName)
