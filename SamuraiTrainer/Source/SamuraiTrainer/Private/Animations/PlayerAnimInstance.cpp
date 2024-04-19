@@ -36,3 +36,11 @@ void UPlayerAnimInstance::OnSwordInteractionCompleted()
 		WeaponState = PlayerCharacter->GetWeaponState();
 	}
 }
+
+void UPlayerAnimInstance::OnAttackCompleted()
+{
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->SetMovementState(EMovementStates::EPMS_Idle);
+	}
+}

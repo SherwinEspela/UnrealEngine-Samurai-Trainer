@@ -26,6 +26,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void OnSwordInteractionCompleted();
 
+	UFUNCTION(BlueprintCallable)
+	void OnAttackCompleted();
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	float MovementSpeed;

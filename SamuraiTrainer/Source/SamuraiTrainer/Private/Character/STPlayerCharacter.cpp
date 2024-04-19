@@ -37,6 +37,8 @@ void ASTPlayerCharacter::BeginPlay()
 	AttachSwordToSocket(FName("WEAPON_R"));
 
 	bIsSwordArmed = false;
+	MovementState = EMovementStates::EPMS_Default;
+	WeaponState = EWeaponStates::EWS_Stored;
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -59,6 +61,19 @@ void ASTPlayerCharacter::SwordInteract()
 		bIsSwordArmed = !bIsSwordArmed;
 		WeaponState = bIsSwordArmed ? EWeaponStates::EWS_Holding : EWeaponStates::EWS_Stored;
 	}
+}
+
+void ASTPlayerCharacter::Attack()
+{
+	if (bIsInteractingWithWeapon) return;
+	if (MovementState == EMovementStates::EPMS_Attacking) return;
+	if (WeaponState == EWeaponStates::EWS_Stored) return;
+	if (MontageAttack == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(MontageAttack);
+	AnimInstance->Montage_JumpToSection(FName("AttackUpslash"), MontageAttack);
+	MovementState = EMovementStates::EPMS_Attacking;
 }
 
 void ASTPlayerCharacter::AttachSwordToSocket(FName SocketName)

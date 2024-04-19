@@ -13,6 +13,7 @@ enum class EMovementStates : uint8
 {
 	EPMS_Attacking		UMETA(DisplayName = "Attacking"),
 	EPMS_Interacting	UMETA(DisplayName = "Interacting"),
+	EPMS_Idle			UMETA(DisplayName = "Idle"),
 	EPMS_Default		UMETA(DisplayName = "Default")
 };
 
