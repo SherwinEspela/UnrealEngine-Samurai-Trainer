@@ -33,13 +33,21 @@ public:
 	void Attack();
 
 	UFUNCTION(BlueprintCallable)
-	void OnComboFrameBegan();
+	void OnComboFrameBegan(bool IsLastBasicAttack);
 
 	UFUNCTION(BlueprintCallable)
-	void OnComboFrameEnded(bool IsLastAttack);
+	void OnComboFrameEnded();
+
+	UFUNCTION(BlueprintCallable)
+	void OnComboEnderStarted();
+
+	UFUNCTION(BlueprintCallable)
+	void OnComboEnderCompleted();
 
 	UFUNCTION(BlueprintCallable)
 	void SetNextAttackSectionName(FName Value);
+
+	void HandleBasicAttackCompleted();
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
@@ -73,15 +81,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageAttack;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageComboEnder;
+
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
 
 	bool bIsSwordArmed = false;
 	bool bIsInteractingWithWeapon = false;
 	bool bCanPerformNextAttack = false;
+	bool bIsLastBasicAttack = false;
 
 private:
 	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AKatana> KatanaClass;
 
 	AKatana* Katana;
+	UAnimInstance* PlayerAnimInstance;
 };
