@@ -91,7 +91,7 @@ void ASTPlayerCharacter::OnComboFrameBegan()
 
 void ASTPlayerCharacter::OnComboFrameEnded(bool IsLastAttack)
 {
-	bCanPerformNextAttack = IsLastAttack;
+	bCanPerformNextAttack = !IsLastAttack;
 	NextAttackSectionName = ATTACK_DOWNSLASH;
 }
 

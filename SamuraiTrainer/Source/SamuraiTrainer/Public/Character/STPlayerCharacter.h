@@ -45,6 +45,7 @@ public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
 	FORCEINLINE void SetMovementState(EMovementStates Value) { MovementState = Value; }
+	FORCEINLINE void SetCanPerformNextAttack(bool Value) { bCanPerformNextAttack = Value; }
 
 protected:
 	virtual void BeginPlay() override;
