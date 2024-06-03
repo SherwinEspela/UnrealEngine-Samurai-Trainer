@@ -74,7 +74,7 @@ void ASTPlayerCharacter::Attack()
 {
 	if (bIsInteractingWithWeapon) return;
 	if (!bCanPerformNextAttack) return;
-	if (WeaponState == EWeaponStates::EWS_Stored) return;
+	//if (WeaponState == EWeaponStates::EWS_Stored) return;
 	if (PlayerAnimInstance == nullptr) return;
 
 	if (bIsLastBasicAttack)
@@ -88,6 +88,12 @@ void ASTPlayerCharacter::Attack()
 
 	MovementState = EMovementStates::EPMS_Attacking;
 	bCanPerformNextAttack = false;
+}
+
+void ASTPlayerCharacter::Block()
+{
+	PlayerAnimInstance->Montage_Play(MontageBlock);
+	PlayerAnimInstance->Montage_JumpToSection(FName("1"), MontageBlock);
 }
 
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)

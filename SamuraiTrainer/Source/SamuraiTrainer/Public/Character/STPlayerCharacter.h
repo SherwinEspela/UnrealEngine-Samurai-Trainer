@@ -31,6 +31,7 @@ public:
 
 	void SwordInteract();
 	void Attack();
+	void Block();
 
 	UFUNCTION(BlueprintCallable)
 	void OnComboFrameBegan(bool IsLastBasicAttack);
@@ -83,6 +84,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageComboEnder;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageBlock;
 
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
 
