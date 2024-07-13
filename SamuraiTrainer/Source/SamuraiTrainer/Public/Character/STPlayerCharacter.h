@@ -7,14 +7,15 @@
 #include "CustomEnums.h"
 #include "STPlayerCharacter.generated.h"
 
-#define ATTACK_DOWNSLASH FName("AttackDownslash")
-#define ATTACK_UPSLASH FName("AttackUpslash")
+#define ATTACK_DOWNSLASH FName("Attack1")
+#define ATTACK_UPSLASH FName("Attack2")
 
 class AKatana;
 class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
 class USkeletalMeshComponent;
+class ASTEnemyCharacter;
 
 /**
  * 
@@ -73,6 +74,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon States")
 	EWeaponStates WeaponState = EWeaponStates::EWS_Stored;
+
+	UPROPERTY(EditAnywhere, Category = "Current Enemy")
+	ASTEnemyCharacter* CurrentEnemy;
 
 protected:
 	// Animations

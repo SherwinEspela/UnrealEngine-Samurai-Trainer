@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Animation/AnimMontage.h"
+#include "Character/STEnemyCharacter.h"
 
 #define STRING_SHEATHE FName("Sheathe")
 #define STRING_UNSHEATHE FName("Unsheathe")
@@ -77,6 +78,8 @@ void ASTPlayerCharacter::Attack()
 	//if (WeaponState == EWeaponStates::EWS_Stored) return;
 	if (PlayerAnimInstance == nullptr) return;
 
+	UE_LOG(LogTemp, Warning, TEXT("NextAttackSectionName: %s"), *NextAttackSectionName.ToString());
+
 	if (bIsLastBasicAttack)
 	{
 		PlayerAnimInstance->Montage_Play(MontageComboEnder);
@@ -84,6 +87,11 @@ void ASTPlayerCharacter::Attack()
 	} else {
 		PlayerAnimInstance->Montage_Play(MontageAttack);
 		PlayerAnimInstance->Montage_JumpToSection(NextAttackSectionName, MontageAttack);
+	}
+
+	if (CurrentEnemy)
+	{
+		CurrentEnemy->PlayHitReaction(FName("HitReaction1"));
 	}
 
 	MovementState = EMovementStates::EPMS_Attacking;
