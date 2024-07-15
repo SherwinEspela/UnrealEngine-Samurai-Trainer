@@ -9,6 +9,8 @@
 
 #define ATTACK_DOWNSLASH FName("Attack1")
 #define ATTACK_UPSLASH FName("Attack2")
+#define HIT_REACTION_DOWNSLASH FName("HitReaction1")
+#define HIT_REACTION_UPSLASH FName("HitReaction2")
 
 class AKatana;
 class USpringArmComponent;
@@ -16,6 +18,7 @@ class UCameraComponent;
 class UAnimMontage;
 class USkeletalMeshComponent;
 class ASTEnemyCharacter;
+class UCapsuleComponent;
 
 /**
  * 
@@ -49,6 +52,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetNextAttackSectionName(FName Value);
 
+	UFUNCTION(BlueprintCallable)
+	void SetNextHitReactionSectionName(FName Value);
+
 	void HandleBasicAttackCompleted();
 
 public:
@@ -78,6 +84,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Current Enemy")
 	ASTEnemyCharacter* CurrentEnemy;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy Detector")
+	UCapsuleComponent* CapsuleEnemyDetector;
+
 protected:
 	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
@@ -93,6 +102,7 @@ protected:
 	UAnimMontage* MontageBlock;
 
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
+	FName NextHitReactionSectionName = HIT_REACTION_DOWNSLASH;
 
 	bool bIsSwordArmed = false;
 	bool bIsInteractingWithWeapon = false;
@@ -105,4 +115,12 @@ private:
 
 	AKatana* Katana;
 	UAnimInstance* PlayerAnimInstance;
+
+protected:
+	UFUNCTION()
+	void OnEnemyDetectorBeginOverlap(
+		UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+		const FHitResult& SweepResult
+	);
 };

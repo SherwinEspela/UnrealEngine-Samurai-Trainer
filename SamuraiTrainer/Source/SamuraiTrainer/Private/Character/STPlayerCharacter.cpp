@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Animation/AnimMontage.h"
+#include "Components/CapsuleComponent.h"
 #include "Character/STEnemyCharacter.h"
 
 #define STRING_SHEATHE FName("Sheathe")
@@ -28,6 +29,9 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = true;
+
+	CapsuleEnemyDetector = CreateDefaultSubobject<UCapsuleComponent>(TEXT("FrontEnemyDetector"));
+	CapsuleEnemyDetector->SetupAttachment(CameraBoom);
 }
 
 void ASTPlayerCharacter::BeginPlay()
@@ -42,6 +46,11 @@ void ASTPlayerCharacter::BeginPlay()
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
 	PlayerAnimInstance = GetMesh()->GetAnimInstance();
+
+	if (CapsuleEnemyDetector)
+	{
+		CapsuleEnemyDetector->OnComponentBeginOverlap.AddDynamic(this, &ASTPlayerCharacter::OnEnemyDetectorBeginOverlap);
+	}
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -71,14 +80,15 @@ void ASTPlayerCharacter::SetNextAttackSectionName(FName Value)
 	NextAttackSectionName = Value;
 }
 
+void ASTPlayerCharacter::SetNextHitReactionSectionName(FName Value)
+{
+	NextHitReactionSectionName = Value;
+}
+
 void ASTPlayerCharacter::Attack()
 {
-	if (bIsInteractingWithWeapon) return;
 	if (!bCanPerformNextAttack) return;
-	//if (WeaponState == EWeaponStates::EWS_Stored) return;
 	if (PlayerAnimInstance == nullptr) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("NextAttackSectionName: %s"), *NextAttackSectionName.ToString());
 
 	if (bIsLastBasicAttack)
 	{
@@ -91,7 +101,7 @@ void ASTPlayerCharacter::Attack()
 
 	if (CurrentEnemy)
 	{
-		CurrentEnemy->PlayHitReaction(FName("HitReaction1"));
+		CurrentEnemy->PlayHitReaction(NextHitReactionSectionName);
 	}
 
 	MovementState = EMovementStates::EPMS_Attacking;
@@ -129,6 +139,7 @@ void ASTPlayerCharacter::HandleBasicAttackCompleted()
 	bCanPerformNextAttack = true;
 	bIsLastBasicAttack = false;
 	NextAttackSectionName = ATTACK_DOWNSLASH;
+	NextHitReactionSectionName = HIT_REACTION_DOWNSLASH;
 	SetMovementState(EMovementStates::EPMS_Idle);
 }
 
@@ -138,5 +149,13 @@ void ASTPlayerCharacter::AttachSwordToSocket(FName SocketName)
 	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Katana->AttachToComponent(GetMesh(), TransformRules, SocketName);
+	}
+}
+
+void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor)
+	{
+		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
 	}
 }
