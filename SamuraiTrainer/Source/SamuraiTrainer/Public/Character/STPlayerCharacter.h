@@ -57,14 +57,14 @@ public:
 
 	void HandleBasicAttackCompleted();
 
+	UFUNCTION(BlueprintCallable)
+	ASTEnemyCharacter* GetTargetLockedEnemy() const;
+
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
 	FORCEINLINE void SetMovementState(EMovementStates Value) { MovementState = Value; }
 	FORCEINLINE void SetCanPerformNextAttack(bool Value) { bCanPerformNextAttack = Value; }
-
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE ASTEnemyCharacter* GetTargetLockedEnemy() const { return CurrentEnemy; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -126,7 +126,4 @@ protected:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult
 	);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnTargetEnemyAdded();
 };

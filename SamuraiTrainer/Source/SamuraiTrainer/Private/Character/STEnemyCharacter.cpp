@@ -4,11 +4,6 @@
 #include "Character/STEnemyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
-//ASTEnemyCharacter::ASTEnemyCharacter()
-//{
-//	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn Sensing"));
-//}
-
 void ASTEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -32,6 +27,12 @@ APawn* ASTEnemyCharacter::GetPlayerPawn()
 
 void ASTEnemyCharacter::UpdateWarpTarget(APawn* Target)
 {
+	this->GetTransform();
 	PlayerPawn = Target;
 	OnWarpTargetUpdated();
+}
+
+FTransform ASTEnemyCharacter::GetAttackTransform() const
+{
+	return this->GetMesh()->GetSocketTransform(FName("AttackWarpSocket"), ERelativeTransformSpace::RTS_World);
 }

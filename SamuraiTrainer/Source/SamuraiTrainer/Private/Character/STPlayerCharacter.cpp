@@ -146,6 +146,11 @@ void ASTPlayerCharacter::HandleBasicAttackCompleted()
 	SetMovementState(EMovementStates::EPMS_Idle);
 }
 
+ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
+{
+	return CurrentEnemy;
+}
+
 void ASTPlayerCharacter::AttachSwordToSocket(FName SocketName)
 {
 	if (Katana)

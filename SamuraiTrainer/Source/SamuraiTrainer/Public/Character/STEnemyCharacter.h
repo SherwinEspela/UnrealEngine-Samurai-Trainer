@@ -8,7 +8,6 @@
 
 class UAnimMontage;
 class UAnimInstance;
-//class UPawnSensingComponent;
 
 /**
  * 
@@ -26,6 +25,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateWarpTarget(APawn* Target);
+
+	UFUNCTION(BlueprintCallable)
+	FTransform GetAttackTransform() const;
 
 protected:
 	virtual void BeginPlay() override;
