@@ -22,6 +22,10 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
+public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE ASTPlayerCharacter* GetPlayer() const { return PlayerCharacter; }
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	void OnSwordInteractionCompleted();

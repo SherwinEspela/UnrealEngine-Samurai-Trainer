@@ -2,6 +2,12 @@
 
 
 #include "Character/STEnemyCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
+//ASTEnemyCharacter::ASTEnemyCharacter()
+//{
+//	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn Sensing"));
+//}
 
 void ASTEnemyCharacter::BeginPlay()
 {
@@ -17,4 +23,15 @@ void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 		EnemyAnimInstance->Montage_Play(MontageHitReaction);
 		EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageHitReaction);
 	}
+}
+
+APawn* ASTEnemyCharacter::GetPlayerPawn()
+{
+	return PlayerPawn;
+}
+
+void ASTEnemyCharacter::UpdateWarpTarget(APawn* Target)
+{
+	PlayerPawn = Target;
+	OnWarpTargetUpdated();
 }
