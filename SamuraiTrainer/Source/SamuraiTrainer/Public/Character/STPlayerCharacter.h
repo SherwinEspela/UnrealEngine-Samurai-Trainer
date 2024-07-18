@@ -9,8 +9,11 @@
 
 #define ATTACK_DOWNSLASH FName("Attack1")
 #define ATTACK_UPSLASH FName("Attack2")
+
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")
+
+#define ATTACK_COMBO_END1 FName("ComboEnd1")
 
 class AKatana;
 class USpringArmComponent;
@@ -19,6 +22,19 @@ class UAnimMontage;
 class USkeletalMeshComponent;
 class ASTEnemyCharacter;
 class UCapsuleComponent;
+
+USTRUCT(BlueprintType)
+struct FAttackData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName Attack; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName HitReaction;
+};
 
 /**
  * 
@@ -90,6 +106,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy Detector")
 	UCapsuleComponent* CapsuleEnemyDetector;
 
+	TQueue<FAttackData> AttackQueues;
+
 protected:
 	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
@@ -111,6 +129,9 @@ protected:
 	bool bIsInteractingWithWeapon = false;
 	bool bCanPerformNextAttack = false;
 	bool bIsLastBasicAttack = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sword Damage Amount")
+	float DamageAmount = 30.f;
 
 private:
 	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))

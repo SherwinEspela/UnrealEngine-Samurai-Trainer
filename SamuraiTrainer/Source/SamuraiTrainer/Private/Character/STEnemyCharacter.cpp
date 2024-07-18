@@ -11,6 +11,24 @@ void ASTEnemyCharacter::BeginPlay()
 	EnemyAnimInstance = GetMesh()->GetAnimInstance();
 }
 
+float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (EnemyAnimInstance && MontageHitReaction)
+	{
+		EnemyAnimInstance->Montage_Play(MontageHitReaction);
+		if (bIsHealthCritical)
+		{
+			EnemyAnimInstance->Montage_JumpToSection(HR_COMBO_END1, MontageHitReaction);
+		}
+		else {
+			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageHitReaction);
+		}
+	}
+
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	return 0.0f;
+}
+
 void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 {
 	if (EnemyAnimInstance && MontageHitReaction)

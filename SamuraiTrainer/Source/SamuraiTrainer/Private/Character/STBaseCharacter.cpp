@@ -12,6 +12,7 @@ void ASTBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Health = HealthMax;
 }
 
 void ASTBaseCharacter::Tick(float DeltaTime)
@@ -20,8 +21,17 @@ void ASTBaseCharacter::Tick(float DeltaTime)
 
 }
 
-//void ASTBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-//{
-//	Super::SetupPlayerInputComponent(PlayerInputComponent);
-//
-//}
+float ASTBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DamageApplied = FMath::Min(Health, DamageApplied);
+	Health -= DamageApplied;
+	bIsHealthCritical = Health <= CriticalHealthAmount;
+
+	return DamageApplied;
+}
+
+void ASTBaseCharacter::ReduceHealth(int Value)
+{
+	Health -= Value;
+}

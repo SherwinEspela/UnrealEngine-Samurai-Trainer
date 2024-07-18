@@ -8,6 +8,7 @@
 #include "Animation/AnimMontage.h"
 #include "Components/CapsuleComponent.h"
 #include "Character/STEnemyCharacter.h"
+#include "Engine/DamageEvents.h"
 
 #define STRING_SHEATHE FName("Sheathe")
 #define STRING_UNSHEATHE FName("Unsheathe")
@@ -51,6 +52,9 @@ void ASTPlayerCharacter::BeginPlay()
 	{
 		CapsuleEnemyDetector->OnComponentBeginOverlap.AddDynamic(this, &ASTPlayerCharacter::OnEnemyDetectorBeginOverlap);
 	}
+
+	AttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HIT_REACTION_DOWNSLASH));
+	AttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HIT_REACTION_UPSLASH));
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -90,22 +94,34 @@ void ASTPlayerCharacter::Attack()
 	if (!bCanPerformNextAttack) return;
 	if (PlayerAnimInstance == nullptr) return;
 
-	if (CurrentEnemy) OnWarpTargetUpdated();
-
-	if (bIsLastBasicAttack)
-	{
-		PlayerAnimInstance->Montage_Play(MontageComboEnder);
-		PlayerAnimInstance->Montage_JumpToSection(NextAttackSectionName, MontageComboEnder);
-	} else {
-		PlayerAnimInstance->Montage_Play(MontageAttack);
-		PlayerAnimInstance->Montage_JumpToSection(NextAttackSectionName, MontageAttack);
-	}
+	FAttackData AttackData;
+	AttackQueues.Dequeue(AttackData);
 
 	if (CurrentEnemy)
 	{
+		OnWarpTargetUpdated();
+
+		if (CurrentEnemy->IsHealthCritical())
+		{
+			PlayerAnimInstance->Montage_Play(MontageComboEnder);
+			PlayerAnimInstance->Montage_JumpToSection(ATTACK_COMBO_END1, MontageComboEnder);
+		}
+		else {
+			PlayerAnimInstance->Montage_Play(MontageAttack);
+			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageAttack);
+		}
+
 		CurrentEnemy->UpdateWarpTarget(this);
-		CurrentEnemy->PlayHitReaction(NextHitReactionSectionName);
+		CurrentEnemy->SetNextHitReactionSectionName(AttackData.HitReaction);
+		FDamageEvent DamageEvent;
+		CurrentEnemy->TakeDamage(DamageAmount, DamageEvent, GetController(), this);
 	}
+	else {
+		PlayerAnimInstance->Montage_Play(MontageAttack);
+		PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageAttack);
+	}
+
+	AttackQueues.Enqueue(AttackData);
 
 	MovementState = EMovementStates::EPMS_Attacking;
 	bCanPerformNextAttack = false;
