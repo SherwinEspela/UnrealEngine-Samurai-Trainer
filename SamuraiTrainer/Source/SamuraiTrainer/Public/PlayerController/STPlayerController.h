@@ -30,6 +30,7 @@ protected:
 	void SwordInteract();
 	void Attack();
 	void Block();
+	void Kick();
 
 protected:
 	// Player Inputs
@@ -50,6 +51,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionBlock;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* InputActionKick;
 
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;

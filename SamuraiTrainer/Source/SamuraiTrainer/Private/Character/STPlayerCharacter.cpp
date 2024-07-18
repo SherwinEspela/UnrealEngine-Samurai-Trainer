@@ -53,8 +53,16 @@ void ASTPlayerCharacter::BeginPlay()
 		CapsuleEnemyDetector->OnComponentBeginOverlap.AddDynamic(this, &ASTPlayerCharacter::OnEnemyDetectorBeginOverlap);
 	}
 
+	InitQueues();
+}
+
+void ASTPlayerCharacter::InitQueues()
+{
 	AttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HIT_REACTION_DOWNSLASH));
 	AttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HIT_REACTION_UPSLASH));
+
+	KickQueues.Enqueue(FAttackData(KICK1, HIT_REACTION_KICK1));
+	KickQueues.Enqueue(FAttackData(KICK2, HIT_REACTION_KICK2));
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -133,6 +141,44 @@ void ASTPlayerCharacter::Block()
 	PlayerAnimInstance->Montage_JumpToSection(FName("1"), MontageBlock);
 }
 
+void ASTPlayerCharacter::Kick()
+{
+	if (!bCanPerformNextAttack) return;
+	if (PlayerAnimInstance == nullptr) return;
+
+	FAttackData KickData;
+	KickQueues.Dequeue(KickData);
+
+	if (CurrentEnemy)
+	{
+		OnWarpTargetUpdated();
+
+		if (CurrentEnemy->IsHealthCritical())
+		{
+			PlayerAnimInstance->Montage_Play(MontageComboEnder);
+			PlayerAnimInstance->Montage_JumpToSection(ATTACK_COMBO_END1, MontageComboEnder);
+		}
+		else {
+			PlayerAnimInstance->Montage_Play(MontageKick);
+			PlayerAnimInstance->Montage_JumpToSection(KickData.Attack, MontageKick);
+		}
+
+		CurrentEnemy->UpdateWarpTarget(this);
+		CurrentEnemy->SetNextHitReactionSectionName(KickData.HitReaction);
+		FDamageEvent DamageEvent;
+		CurrentEnemy->TakeDamage(10.f, DamageEvent, GetController(), this);
+	}
+	else {
+		PlayerAnimInstance->Montage_Play(MontageKick);
+		PlayerAnimInstance->Montage_JumpToSection(KickData.Attack, MontageKick);
+	}
+
+	KickQueues.Enqueue(KickData);
+
+	MovementState = EMovementStates::EPMS_Attacking;
+	bCanPerformNextAttack = false;
+}
+
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)
 {
 	bIsLastBasicAttack = IsLastBasicAttack;
@@ -179,9 +225,5 @@ void ASTPlayerCharacter::AttachSwordToSocket(FName SocketName)
 void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (CurrentEnemy && OtherActor->GetName() == CurrentEnemy->GetName()) return;
-
-	if (OtherActor)
-	{
-		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
-	}
+	if (OtherActor) CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
 }

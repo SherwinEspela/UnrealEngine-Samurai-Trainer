@@ -9,9 +9,13 @@
 
 #define ATTACK_DOWNSLASH FName("Attack1")
 #define ATTACK_UPSLASH FName("Attack2")
+#define KICK1 FName("Kick1")
+#define KICK2 FName("Kick2")
 
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")
+#define HIT_REACTION_KICK1 FName("HRKick1")
+#define HIT_REACTION_KICK2 FName("HRKick2")
 
 #define ATTACK_COMBO_END1 FName("ComboEnd1")
 
@@ -52,6 +56,7 @@ public:
 	void SwordInteract();
 	void Attack();
 	void Block();
+	void Kick();
 
 	UFUNCTION(BlueprintCallable)
 	void OnComboFrameBegan(bool IsLastBasicAttack);
@@ -86,6 +91,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	void AttachSwordToSocket(FName SocketName);
+	void InitQueues();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
@@ -107,6 +113,7 @@ protected:
 	UCapsuleComponent* CapsuleEnemyDetector;
 
 	TQueue<FAttackData> AttackQueues;
+	TQueue<FAttackData> KickQueues;
 
 protected:
 	// Animations
@@ -122,6 +129,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageBlock;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageKick;
+
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
 	FName NextHitReactionSectionName = HIT_REACTION_DOWNSLASH;
 
@@ -133,13 +143,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sword Damage Amount")
 	float DamageAmount = 30.f;
 
-private:
-	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AKatana> KatanaClass;
-
-	AKatana* Katana;
-	UAnimInstance* PlayerAnimInstance;
-
 protected:
 	UFUNCTION()
 	void OnEnemyDetectorBeginOverlap(
@@ -147,4 +150,11 @@ protected:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult
 	);
+
+private:
+	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AKatana> KatanaClass;
+	AKatana* Katana;
+	UAnimInstance* PlayerAnimInstance;
+
 };

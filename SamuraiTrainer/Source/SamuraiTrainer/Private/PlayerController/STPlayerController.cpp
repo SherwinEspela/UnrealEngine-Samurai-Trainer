@@ -27,6 +27,7 @@ void ASTPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(InputActionSwordInteract, ETriggerEvent::Triggered, this, &ASTPlayerController::SwordInteract);
 	EnhancedInputComponent->BindAction(InputActionAttack, ETriggerEvent::Triggered, this, &ASTPlayerController::Attack);
 	EnhancedInputComponent->BindAction(InputActionBlock, ETriggerEvent::Triggered, this, &ASTPlayerController::Block);
+	EnhancedInputComponent->BindAction(InputActionKick, ETriggerEvent::Triggered, this, &ASTPlayerController::Kick);
 }
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
@@ -63,4 +64,9 @@ void ASTPlayerController::Attack()
 void ASTPlayerController::Block()
 {
 	PlayerCharacter->Block();
+}
+
+void ASTPlayerController::Kick()
+{
+	PlayerCharacter->Kick();
 }
