@@ -18,10 +18,12 @@
 #define HIT_REACTION_KICK2 FName("HRKick2")
 #define HIT_REACTION_CE1 FName("HRComboEnd1")
 #define HIT_REACTION_CE2 FName("HRComboEnd2")
-#define HIT_REACTION_CE3 FName("HRComboEnd3")
+#define HR_KICK_CE3 FName("HRKickComboEnd1") 
 
 #define SWORD_ATTACK_COMBO_END1 FName("ComboEnd1")
 #define SWORD_ATTACK_COMBO_END2 FName("ComboEnd2")
+
+#define KICK_COMBO_END1 FName("KickComboEnd1")
 
 class AKatana;
 class USpringArmComponent;
@@ -132,6 +134,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageComboEnder;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageKickComboEnder;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageBlock;
