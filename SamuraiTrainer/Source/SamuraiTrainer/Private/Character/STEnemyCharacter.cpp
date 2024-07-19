@@ -15,12 +15,13 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 {
 	if (EnemyAnimInstance && MontageHitReaction)
 	{
-		EnemyAnimInstance->Montage_Play(MontageHitReaction);
 		if (bIsHealthCritical)
 		{
-			EnemyAnimInstance->Montage_JumpToSection(HR_COMBO_END1, MontageHitReaction);
+			EnemyAnimInstance->Montage_Play(MontageCEHitReaction);
+			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageCEHitReaction);
 		}
 		else {
+			EnemyAnimInstance->Montage_Play(MontageHitReaction);
 			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageHitReaction);
 		}
 	}

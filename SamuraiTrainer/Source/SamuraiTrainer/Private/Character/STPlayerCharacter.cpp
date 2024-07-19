@@ -63,6 +63,9 @@ void ASTPlayerCharacter::InitQueues()
 
 	KickQueues.Enqueue(FAttackData(KICK1, HIT_REACTION_KICK1));
 	KickQueues.Enqueue(FAttackData(KICK2, HIT_REACTION_KICK2));
+
+	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1));
+	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2));
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -111,8 +114,10 @@ void ASTPlayerCharacter::Attack()
 
 		if (CurrentEnemy->IsHealthCritical())
 		{
+			//AttackData = SwordAttackComboEnders[FMath::RandRange(0, SwordAttackComboEnders.Num() - 1)];
+			AttackData = SwordAttackComboEnders[1];
 			PlayerAnimInstance->Montage_Play(MontageComboEnder);
-			PlayerAnimInstance->Montage_JumpToSection(ATTACK_COMBO_END1, MontageComboEnder);
+			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageComboEnder);
 		}
 		else {
 			PlayerAnimInstance->Montage_Play(MontageAttack);
@@ -120,6 +125,7 @@ void ASTPlayerCharacter::Attack()
 		}
 
 		CurrentEnemy->UpdateWarpTarget(this);
+
 		CurrentEnemy->SetNextHitReactionSectionName(AttackData.HitReaction);
 		FDamageEvent DamageEvent;
 		CurrentEnemy->TakeDamage(DamageAmount, DamageEvent, GetController(), this);
@@ -156,7 +162,7 @@ void ASTPlayerCharacter::Kick()
 		if (CurrentEnemy->IsHealthCritical())
 		{
 			PlayerAnimInstance->Montage_Play(MontageComboEnder);
-			PlayerAnimInstance->Montage_JumpToSection(ATTACK_COMBO_END1, MontageComboEnder);
+			PlayerAnimInstance->Montage_JumpToSection(SWORD_ATTACK_COMBO_END2, MontageComboEnder);
 		}
 		else {
 			PlayerAnimInstance->Montage_Play(MontageKick);

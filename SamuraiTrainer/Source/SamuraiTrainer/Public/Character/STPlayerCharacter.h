@@ -16,8 +16,12 @@
 #define HIT_REACTION_UPSLASH FName("HitReaction2")
 #define HIT_REACTION_KICK1 FName("HRKick1")
 #define HIT_REACTION_KICK2 FName("HRKick2")
+#define HIT_REACTION_CE1 FName("HRComboEnd1")
+#define HIT_REACTION_CE2 FName("HRComboEnd2")
+#define HIT_REACTION_CE3 FName("HRComboEnd3")
 
-#define ATTACK_COMBO_END1 FName("ComboEnd1")
+#define SWORD_ATTACK_COMBO_END1 FName("ComboEnd1")
+#define SWORD_ATTACK_COMBO_END2 FName("ComboEnd2")
 
 class AKatana;
 class USpringArmComponent;
@@ -114,6 +118,9 @@ protected:
 
 	TQueue<FAttackData> AttackQueues;
 	TQueue<FAttackData> KickQueues;
+
+	TArray<FAttackData> SwordAttackComboEnders;
+	TArray<FAttackData> KickComboEnders;
 
 protected:
 	// Animations

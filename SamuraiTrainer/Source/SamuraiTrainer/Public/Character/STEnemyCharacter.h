@@ -50,6 +50,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageHitReaction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageCEHitReaction;
+
 	APawn* PlayerPawn;
 
 private:
