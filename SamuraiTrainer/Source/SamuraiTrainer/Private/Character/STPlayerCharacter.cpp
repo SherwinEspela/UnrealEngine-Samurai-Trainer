@@ -67,11 +67,16 @@ void ASTPlayerCharacter::InitQueues()
 	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1));
 	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2));
 
-	KickComboEnders.Add(FAttackData(KICK_COMBO_END1, HR_KICK_CE3));
+	KickComboEnders.Add(FAttackData(KICK_COMBO_END1, HR_KICK_CE1));
 
 	//AttackCounterList.Add(FAttackData(ATTACK_COUNTER1, HR_COUNTER1));
 	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER1, HR_COUNTER1));
 	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER2, HR_COUNTER2));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER3, HR_COUNTER_BLANK));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER4, HR_COUNTER_BLANK));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER5, HR_COUNTER_BLANK));
+
+	CounterComboEnders.Add(FAttackData(COUNTER_COMBO_END1, HR_COUNTER_CE1));
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -148,23 +153,27 @@ void ASTPlayerCharacter::EnemyInteract(TQueue<FAttackData> &MoveQueue, UAnimMont
 
 void ASTPlayerCharacter::Attack()
 {
+	if (MontageAttack == nullptr && MontageComboEnder == nullptr) return;
 	EnemyInteract(AttackQueues, MontageAttack, SwordAttackComboEnders, MontageComboEnder, 30.f);
 }
 
 void ASTPlayerCharacter::Block()
 {
+	if (MontageBlock == nullptr) return;
 	PlayerAnimInstance->Montage_Play(MontageBlock);
 	PlayerAnimInstance->Montage_JumpToSection(FName("1"), MontageBlock);
 }
 
 void ASTPlayerCharacter::Kick()
 {
+	if (MontageKick == nullptr && MontageKickComboEnder == nullptr) return;
 	EnemyInteract(KickQueues, MontageKick, KickComboEnders, MontageKickComboEnder, 10.f);
 }
 
 void ASTPlayerCharacter::Counter()
 {
-	EnemyInteract(CounterQueues, MontageCounter, KickComboEnders, MontageKickComboEnder, 10.f);
+	if (MontageCounter == nullptr && MontageCounterComboEnder == nullptr) return;
+	EnemyInteract(CounterQueues, MontageCounter, CounterComboEnders, MontageCounterComboEnder, 10.f);
 }
 
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)

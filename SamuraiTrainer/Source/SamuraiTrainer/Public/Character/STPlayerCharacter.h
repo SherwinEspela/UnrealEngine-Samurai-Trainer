@@ -18,17 +18,24 @@
 #define HIT_REACTION_KICK2 FName("HRKick2")
 #define HIT_REACTION_CE1 FName("HRComboEnd1")
 #define HIT_REACTION_CE2 FName("HRComboEnd2")
-#define HR_KICK_CE3 FName("HRKickComboEnd1")
+#define HR_KICK_CE1 FName("HRKickComboEnd1")
+#define HR_COUNTER_CE1 FName("HRCounterComboEnd1")
 #define HR_COUNTER1 FName("HRCounter1")
 #define HR_COUNTER2 FName("HRCounter2")
+#define HR_COUNTER_BLANK FName("CounterBlank")
 
 #define SWORD_ATTACK_COMBO_END1 FName("ComboEnd1")
 #define SWORD_ATTACK_COMBO_END2 FName("ComboEnd2")
 
 #define KICK_COMBO_END1 FName("KickComboEnd1")
 
+#define COUNTER_COMBO_END1 FName("CounterComboEnd1")
+
 #define ATTACK_COUNTER1 FName("Counter1")
 #define ATTACK_COUNTER2 FName("Counter2")
+#define ATTACK_COUNTER3 FName("Counter3")
+#define ATTACK_COUNTER4 FName("Counter4")
+#define ATTACK_COUNTER5 FName("Counter5")
 
 class AKatana;
 class USpringArmComponent;
@@ -131,6 +138,7 @@ protected:
 
 	TArray<FAttackData> SwordAttackComboEnders;
 	TArray<FAttackData> KickComboEnders;
+	TArray<FAttackData> CounterComboEnders;
 	TArray<FAttackData> AttackCounterList;
 
 protected:
@@ -146,6 +154,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageKickComboEnder;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageCounterComboEnder;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageBlock;
