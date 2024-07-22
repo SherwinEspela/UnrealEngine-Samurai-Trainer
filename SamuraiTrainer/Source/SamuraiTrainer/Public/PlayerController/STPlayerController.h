@@ -31,6 +31,7 @@ protected:
 	void Attack();
 	void Block();
 	void Kick();
+	void Counter();
 
 protected:
 	// Player Inputs
@@ -54,6 +55,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionKick;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* InputActionCounter;
 
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;

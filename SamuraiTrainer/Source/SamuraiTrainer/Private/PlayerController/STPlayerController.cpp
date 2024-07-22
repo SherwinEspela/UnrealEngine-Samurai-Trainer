@@ -28,6 +28,7 @@ void ASTPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(InputActionAttack, ETriggerEvent::Triggered, this, &ASTPlayerController::Attack);
 	EnhancedInputComponent->BindAction(InputActionBlock, ETriggerEvent::Triggered, this, &ASTPlayerController::Block);
 	EnhancedInputComponent->BindAction(InputActionKick, ETriggerEvent::Triggered, this, &ASTPlayerController::Kick);
+	EnhancedInputComponent->BindAction(InputActionCounter, ETriggerEvent::Triggered, this, &ASTPlayerController::Counter);
 }
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
@@ -69,4 +70,9 @@ void ASTPlayerController::Block()
 void ASTPlayerController::Kick()
 {
 	PlayerCharacter->Kick();
+}
+
+void ASTPlayerController::Counter()
+{
+	PlayerCharacter->Counter();
 }

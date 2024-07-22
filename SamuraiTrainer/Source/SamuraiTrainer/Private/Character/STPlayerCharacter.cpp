@@ -68,6 +68,10 @@ void ASTPlayerCharacter::InitQueues()
 	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2));
 
 	KickComboEnders.Add(FAttackData(KICK_COMBO_END1, HR_KICK_CE3));
+
+	//AttackCounterList.Add(FAttackData(ATTACK_COUNTER1, HR_COUNTER1));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER1, HR_COUNTER1));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER2, HR_COUNTER2));
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -102,13 +106,13 @@ void ASTPlayerCharacter::SetNextHitReactionSectionName(FName Value)
 	NextHitReactionSectionName = Value;
 }
 
-void ASTPlayerCharacter::Attack()
+void ASTPlayerCharacter::EnemyInteract(TQueue<FAttackData> &MoveQueue, UAnimMontage* MontageToPlay, TArray<FAttackData> ComboEnders, UAnimMontage* MontageEnder, float Damage)
 {
 	if (!bCanPerformNextAttack) return;
 	if (PlayerAnimInstance == nullptr) return;
 
 	FAttackData AttackData;
-	AttackQueues.Dequeue(AttackData);
+	MoveQueue.Dequeue(AttackData);
 
 	if (CurrentEnemy)
 	{
@@ -116,31 +120,35 @@ void ASTPlayerCharacter::Attack()
 
 		if (CurrentEnemy->IsHealthCritical())
 		{
-			AttackData = SwordAttackComboEnders[FMath::RandRange(0, SwordAttackComboEnders.Num() - 1)];
-			//AttackData = SwordAttackComboEnders[1];
-			PlayerAnimInstance->Montage_Play(MontageComboEnder);
-			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageComboEnder);
+			AttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
+			PlayerAnimInstance->Montage_Play(MontageEnder);
+			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageEnder);
 		}
 		else {
-			PlayerAnimInstance->Montage_Play(MontageAttack);
-			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageAttack);
+			PlayerAnimInstance->Montage_Play(MontageToPlay);
+			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageToPlay);
 		}
 
 		CurrentEnemy->UpdateWarpTarget(this);
 
 		CurrentEnemy->SetNextHitReactionSectionName(AttackData.HitReaction);
 		FDamageEvent DamageEvent;
-		CurrentEnemy->TakeDamage(DamageAmount, DamageEvent, GetController(), this);
+		CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
 	}
 	else {
-		PlayerAnimInstance->Montage_Play(MontageAttack);
-		PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageAttack);
+		PlayerAnimInstance->Montage_Play(MontageToPlay);
+		PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageToPlay);
 	}
 
-	AttackQueues.Enqueue(AttackData);
+	MoveQueue.Enqueue(AttackData);
 
 	MovementState = EMovementStates::EPMS_Attacking;
 	bCanPerformNextAttack = false;
+}
+
+void ASTPlayerCharacter::Attack()
+{
+	EnemyInteract(AttackQueues, MontageAttack, SwordAttackComboEnders, MontageComboEnder, 30.f);
 }
 
 void ASTPlayerCharacter::Block()
@@ -151,41 +159,12 @@ void ASTPlayerCharacter::Block()
 
 void ASTPlayerCharacter::Kick()
 {
-	if (!bCanPerformNextAttack) return;
-	if (PlayerAnimInstance == nullptr) return;
+	EnemyInteract(KickQueues, MontageKick, KickComboEnders, MontageKickComboEnder, 10.f);
+}
 
-	FAttackData KickData;
-	KickQueues.Dequeue(KickData);
-
-	if (CurrentEnemy)
-	{
-		OnWarpTargetUpdated();
-
-		if (CurrentEnemy->IsHealthCritical())
-		{
-			KickData = KickComboEnders[0];
-			PlayerAnimInstance->Montage_Play(MontageKickComboEnder);
-			PlayerAnimInstance->Montage_JumpToSection(KickData.Attack, MontageKickComboEnder);
-		}
-		else {
-			PlayerAnimInstance->Montage_Play(MontageKick);
-			PlayerAnimInstance->Montage_JumpToSection(KickData.Attack, MontageKick);
-		}
-
-		CurrentEnemy->UpdateWarpTarget(this);
-		CurrentEnemy->SetNextHitReactionSectionName(KickData.HitReaction);
-		FDamageEvent DamageEvent;
-		CurrentEnemy->TakeDamage(10.f, DamageEvent, GetController(), this);
-	}
-	else {
-		PlayerAnimInstance->Montage_Play(MontageKick);
-		PlayerAnimInstance->Montage_JumpToSection(KickData.Attack, MontageKick);
-	}
-
-	KickQueues.Enqueue(KickData);
-
-	MovementState = EMovementStates::EPMS_Attacking;
-	bCanPerformNextAttack = false;
+void ASTPlayerCharacter::Counter()
+{
+	EnemyInteract(CounterQueues, MontageCounter, KickComboEnders, MontageKickComboEnder, 10.f);
 }
 
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)

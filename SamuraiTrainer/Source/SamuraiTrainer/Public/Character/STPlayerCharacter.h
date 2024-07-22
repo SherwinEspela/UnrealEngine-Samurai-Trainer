@@ -18,12 +18,17 @@
 #define HIT_REACTION_KICK2 FName("HRKick2")
 #define HIT_REACTION_CE1 FName("HRComboEnd1")
 #define HIT_REACTION_CE2 FName("HRComboEnd2")
-#define HR_KICK_CE3 FName("HRKickComboEnd1") 
+#define HR_KICK_CE3 FName("HRKickComboEnd1")
+#define HR_COUNTER1 FName("HRCounter1")
+#define HR_COUNTER2 FName("HRCounter2")
 
 #define SWORD_ATTACK_COMBO_END1 FName("ComboEnd1")
 #define SWORD_ATTACK_COMBO_END2 FName("ComboEnd2")
 
 #define KICK_COMBO_END1 FName("KickComboEnd1")
+
+#define ATTACK_COUNTER1 FName("Counter1")
+#define ATTACK_COUNTER2 FName("Counter2")
 
 class AKatana;
 class USpringArmComponent;
@@ -63,6 +68,7 @@ public:
 	void Attack();
 	void Block();
 	void Kick();
+	void Counter();
 
 	UFUNCTION(BlueprintCallable)
 	void OnComboFrameBegan(bool IsLastBasicAttack);
@@ -98,6 +104,7 @@ protected:
 
 	void AttachSwordToSocket(FName SocketName);
 	void InitQueues();
+	void EnemyInteract(TQueue<FAttackData> &MoveQueue, UAnimMontage* MontageToPlay, TArray<FAttackData> ComboEnders, UAnimMontage* MontageEnder, float Damage);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
@@ -120,9 +127,11 @@ protected:
 
 	TQueue<FAttackData> AttackQueues;
 	TQueue<FAttackData> KickQueues;
+	TQueue<FAttackData> CounterQueues;
 
 	TArray<FAttackData> SwordAttackComboEnders;
 	TArray<FAttackData> KickComboEnders;
+	TArray<FAttackData> AttackCounterList;
 
 protected:
 	// Animations
@@ -143,6 +152,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageKick;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageCounter;
 
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
 	FName NextHitReactionSectionName = HIT_REACTION_DOWNSLASH;
