@@ -7,6 +7,9 @@
 #include "CustomEnums.h"
 #include "STPlayerCharacter.generated.h"
 
+#define ATTACK_SOCKET_FRONT FName("AttackSocketFront")
+#define ATTACK_SOCKET_BACK FName("AttackSocketBack")
+
 #define ATTACK_DOWNSLASH FName("Attack1")
 #define ATTACK_UPSLASH FName("Attack2")
 #define KICK1 FName("Kick1")
@@ -14,6 +17,8 @@
 
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")
+#define HR_BEHIND1 FName("HRBehind1")
+#define HR_BEHIND2 FName("HRBehind2")
 #define HIT_REACTION_KICK1 FName("HRKick1")
 #define HIT_REACTION_KICK2 FName("HRKick2")
 #define HIT_REACTION_CE1 FName("HRComboEnd1")
@@ -56,6 +61,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName HitReaction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName AttackSocketName = ATTACK_SOCKET_FRONT;
 };
 
 /**
@@ -100,6 +108,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ASTEnemyCharacter* GetTargetLockedEnemy() const;
 
+	UFUNCTION(BlueprintCallable)
+	FName GetAttackSocketName() const;
+
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
@@ -111,7 +122,15 @@ protected:
 
 	void AttachSwordToSocket(FName SocketName);
 	void InitQueues();
-	void EnemyInteract(TQueue<FAttackData> &MoveQueue, UAnimMontage* MontageToPlay, TArray<FAttackData> ComboEnders, UAnimMontage* MontageEnder, float Damage);
+	void EnemyInteract(
+		TQueue<FAttackData> &MoveQueue, 
+		UAnimMontage* MontageToPlay, 
+		TArray<FAttackData> ComboEnders, 
+		UAnimMontage* MontageEnder, 
+		float Damage,
+		bool IsEnemyFacingFront = true
+	);
+	bool DetermineEnemyFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
@@ -132,7 +151,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy Detector")
 	UCapsuleComponent* CapsuleEnemyDetector;
 
-	TQueue<FAttackData> AttackQueues;
+	TQueue<FAttackData> FrontAttackQueues;
+	TQueue<FAttackData> BackAttackQueues;
 	TQueue<FAttackData> KickQueues;
 	TQueue<FAttackData> CounterQueues;
 
@@ -191,5 +211,6 @@ private:
 	TSubclassOf<AKatana> KatanaClass;
 	AKatana* Katana;
 	UAnimInstance* PlayerAnimInstance;
+	FName CurrentAttackSocketName;
 
 };

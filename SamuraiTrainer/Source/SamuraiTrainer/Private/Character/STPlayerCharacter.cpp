@@ -58,25 +58,27 @@ void ASTPlayerCharacter::BeginPlay()
 
 void ASTPlayerCharacter::InitQueues()
 {
-	AttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HIT_REACTION_DOWNSLASH));
-	AttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HIT_REACTION_UPSLASH));
+	FrontAttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HIT_REACTION_DOWNSLASH, ATTACK_SOCKET_FRONT));
+	FrontAttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HIT_REACTION_UPSLASH, ATTACK_SOCKET_FRONT));
+	BackAttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HR_BEHIND1, ATTACK_SOCKET_BACK));
+	BackAttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HR_BEHIND2, ATTACK_SOCKET_BACK));
 
-	KickQueues.Enqueue(FAttackData(KICK1, HIT_REACTION_KICK1));
-	KickQueues.Enqueue(FAttackData(KICK2, HIT_REACTION_KICK2));
+	KickQueues.Enqueue(FAttackData(KICK1, HIT_REACTION_KICK1, ATTACK_SOCKET_FRONT));
+	KickQueues.Enqueue(FAttackData(KICK2, HIT_REACTION_KICK2, ATTACK_SOCKET_FRONT));
 
-	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1));
-	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2));
+	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1, ATTACK_SOCKET_FRONT));
+	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2, ATTACK_SOCKET_FRONT));
 
 	KickComboEnders.Add(FAttackData(KICK_COMBO_END1, HR_KICK_CE1));
 
 	//AttackCounterList.Add(FAttackData(ATTACK_COUNTER1, HR_COUNTER1));
-	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER1, HR_COUNTER1));
-	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER2, HR_COUNTER2));
-	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER3, HR_COUNTER_BLANK));
-	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER4, HR_COUNTER_BLANK));
-	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER5, HR_COUNTER_BLANK));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER1, HR_COUNTER1, ATTACK_SOCKET_FRONT));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER2, HR_COUNTER2, ATTACK_SOCKET_FRONT));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER3, HR_COUNTER_BLANK, ATTACK_SOCKET_FRONT));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER4, HR_COUNTER_BLANK, ATTACK_SOCKET_FRONT));
+	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER5, HR_COUNTER_BLANK, ATTACK_SOCKET_FRONT));
 
-	CounterComboEnders.Add(FAttackData(COUNTER_COMBO_END1, HR_COUNTER_CE1));
+	CounterComboEnders.Add(FAttackData(COUNTER_COMBO_END1, HR_COUNTER_CE1, ATTACK_SOCKET_FRONT));
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -111,7 +113,10 @@ void ASTPlayerCharacter::SetNextHitReactionSectionName(FName Value)
 	NextHitReactionSectionName = Value;
 }
 
-void ASTPlayerCharacter::EnemyInteract(TQueue<FAttackData> &MoveQueue, UAnimMontage* MontageToPlay, TArray<FAttackData> ComboEnders, UAnimMontage* MontageEnder, float Damage)
+void ASTPlayerCharacter::EnemyInteract(
+	TQueue<FAttackData> &MoveQueue, UAnimMontage* MontageToPlay, TArray<FAttackData> ComboEnders, 
+	UAnimMontage* MontageEnder, float Damage, bool IsEnemyFacingFront
+)
 {
 	if (!bCanPerformNextAttack) return;
 	if (PlayerAnimInstance == nullptr) return;
@@ -121,8 +126,6 @@ void ASTPlayerCharacter::EnemyInteract(TQueue<FAttackData> &MoveQueue, UAnimMont
 
 	if (CurrentEnemy)
 	{
-		OnWarpTargetUpdated();
-
 		if (CurrentEnemy->IsHealthCritical())
 		{
 			AttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
@@ -134,8 +137,9 @@ void ASTPlayerCharacter::EnemyInteract(TQueue<FAttackData> &MoveQueue, UAnimMont
 			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageToPlay);
 		}
 
+		CurrentAttackSocketName = AttackData.AttackSocketName;
 		CurrentEnemy->UpdateWarpTarget(this);
-
+		OnWarpTargetUpdated();
 		CurrentEnemy->SetNextHitReactionSectionName(AttackData.HitReaction);
 		FDamageEvent DamageEvent;
 		CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
@@ -151,10 +155,40 @@ void ASTPlayerCharacter::EnemyInteract(TQueue<FAttackData> &MoveQueue, UAnimMont
 	bCanPerformNextAttack = false;
 }
 
+bool ASTPlayerCharacter::DetermineEnemyFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd)
+{
+	FHitResult Hit;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+	const bool bHitSuccess = GetWorld()->LineTraceSingleByChannel(
+		Hit, LineTraceStart, LineTraceEnd, ECollisionChannel::ECC_Pawn, CollisionQueryParams
+	);
+
+	bool isFacingFront = false;
+	if (bHitSuccess)
+	{
+		ASTEnemyCharacter* HitActor = Cast<ASTEnemyCharacter>(Hit.GetActor());
+		if (HitActor != nullptr && HitActor == CurrentEnemy)
+		{
+			const FVector EnemyForward = CurrentEnemy->GetActorForwardVector();
+			const FVector ToHit = (Hit.ImpactPoint - CurrentEnemy->GetActorLocation()).GetSafeNormal();
+			const double CosTheta = FVector::DotProduct(EnemyForward, ToHit);
+			double Theta = FMath::Acos(CosTheta);
+			Theta = FMath::RadiansToDegrees(Theta);
+			isFacingFront = Theta <= 90.0f;
+		}
+	}
+
+	return isFacingFront;
+}
+
 void ASTPlayerCharacter::Attack()
 {
+	if (CurrentEnemy == nullptr) return;
 	if (MontageAttack == nullptr && MontageComboEnder == nullptr) return;
-	EnemyInteract(AttackQueues, MontageAttack, SwordAttackComboEnders, MontageComboEnder, 30.f);
+	bool bIsEnemyFrontFacing = DetermineEnemyFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
+	TQueue<FAttackData> &AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
+	EnemyInteract(AttackQ, MontageAttack, SwordAttackComboEnders, MontageComboEnder, 30.f, bIsEnemyFrontFacing);
 }
 
 void ASTPlayerCharacter::Block()
@@ -208,6 +242,11 @@ void ASTPlayerCharacter::HandleBasicAttackCompleted()
 ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 {
 	return CurrentEnemy;
+}
+
+FName ASTPlayerCharacter::GetAttackSocketName() const
+{
+	return CurrentAttackSocketName;
 }
 
 void ASTPlayerCharacter::AttachSwordToSocket(FName SocketName)

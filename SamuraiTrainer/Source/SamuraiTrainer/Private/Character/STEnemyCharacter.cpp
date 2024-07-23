@@ -51,7 +51,7 @@ void ASTEnemyCharacter::UpdateWarpTarget(APawn* Target)
 	OnWarpTargetUpdated();
 }
 
-FTransform ASTEnemyCharacter::GetAttackTransform() const
+FTransform ASTEnemyCharacter::GetAttackTransform(FName SocketName) const
 {
-	return this->GetMesh()->GetSocketTransform(FName("AttackWarpSocket"), ERelativeTransformSpace::RTS_World);
+	return this->GetMesh()->GetSocketTransform(SocketName, ERelativeTransformSpace::RTS_World);
 }
