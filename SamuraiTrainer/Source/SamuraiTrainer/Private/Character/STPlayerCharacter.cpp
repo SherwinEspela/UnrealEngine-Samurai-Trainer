@@ -68,6 +68,7 @@ void ASTPlayerCharacter::InitQueues()
 
 	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1, ATTACK_SOCKET_FRONT));
 	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2, ATTACK_SOCKET_FRONT));
+	BackComboEnders.Add(FAttackData(SA_BACK_CE1, HR_BACK_CE1, ATTACK_SOCKET_BACK));
 
 	KickComboEnders.Add(FAttackData(KICK_COMBO_END1, HR_KICK_CE1));
 
@@ -185,10 +186,12 @@ bool ASTPlayerCharacter::DetermineEnemyFacingByLineTrace(FVector LineTraceStart,
 void ASTPlayerCharacter::Attack()
 {
 	if (CurrentEnemy == nullptr) return;
-	if (MontageAttack == nullptr && MontageComboEnder == nullptr) return;
-	bool bIsEnemyFrontFacing = DetermineEnemyFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
-	TQueue<FAttackData> &AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
-	EnemyInteract(AttackQ, MontageAttack, SwordAttackComboEnders, MontageComboEnder, 30.f, bIsEnemyFrontFacing);
+	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
+	const bool bIsEnemyFrontFacing = DetermineEnemyFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
+	TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
+	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
+	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
+	EnemyInteract(AttackQ, MontageAttack, ComboEndersArray, MontageComboEnder, 30.f, bIsEnemyFrontFacing);
 }
 
 void ASTPlayerCharacter::Block()
