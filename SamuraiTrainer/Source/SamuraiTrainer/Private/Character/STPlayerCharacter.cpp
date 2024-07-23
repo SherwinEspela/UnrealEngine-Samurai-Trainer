@@ -1,4 +1,4 @@
-// // Copyright 2024 Sherwin Espela. All rights reserved.
+// Copyright 2024 Sherwin Espela. All rights reserved.
 
 
 #include "Character/STPlayerCharacter.h"
@@ -9,9 +9,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Character/STEnemyCharacter.h"
 #include "Engine/DamageEvents.h"
-
-#define STRING_SHEATHE FName("Sheathe")
-#define STRING_UNSHEATHE FName("Unsheathe")
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
