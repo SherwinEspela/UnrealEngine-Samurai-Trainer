@@ -10,6 +10,8 @@
 
 class UAnimMontage;
 class UAnimInstance;
+class UBehaviorTree;
+class ASTEnemyAIController;
 
 /**
  * 
@@ -20,6 +22,8 @@ class SAMURAITRAINER_API ASTEnemyCharacter : public ASTBaseCharacter
 	GENERATED_BODY()
 
 public:
+	ASTEnemyCharacter();
+
 	virtual float TakeDamage
 	(
 		float DamageAmount,
@@ -27,6 +31,8 @@ public:
 		class AController* EventInstigator,
 		AActor* DamageCauser
 	) override;
+
+	virtual void PossessedBy(AController* NewController) override;
 
 public:
 	void PlayHitReaction(FName SectionName);
@@ -54,6 +60,12 @@ protected:
 	UAnimMontage* MontageCEHitReaction;
 
 	APawn* PlayerPawn;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<ASTEnemyAIController> EnemyAIController;
 
 private:
 	UAnimInstance* EnemyAnimInstance;

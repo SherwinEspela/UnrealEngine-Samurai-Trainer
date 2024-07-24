@@ -3,12 +3,33 @@
 
 #include "Character/STEnemyCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "AI/STEnemyAIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+ASTEnemyCharacter::ASTEnemyCharacter()
+{
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+}
 
 void ASTEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
 	EnemyAnimInstance = GetMesh()->GetAnimInstance();
+
+	GetCharacterMovement()->MaxWalkSpeed = 200.f;
+
+	EnemyAIController = Cast<ASTEnemyAIController>(EnemyAnimInstance->TryGetPawnOwner()->GetController());
+	if (EnemyAIController != nullptr)
+	{
+		EnemyAIController->Initialize(BehaviorTree);
+	}
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -28,6 +49,11 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	return 0.0f;
+}
+
+void ASTEnemyCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
 }
 
 void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
