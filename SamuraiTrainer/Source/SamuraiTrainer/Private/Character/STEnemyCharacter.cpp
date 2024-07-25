@@ -32,8 +32,8 @@ void ASTEnemyCharacter::BeginPlay()
 		EnemyAIController->Initialize(BehaviorTree);
 	}
 
-	SwordAttackSectionNames.Add(ENEMY_ATTACK1);
-	SwordAttackSectionNames.Add(ENEMY_ATTACK2);
+	SwordAttackSectionNames.Add(FEnemyAttackData(ATTACK_DOWNSLASH, BLOCK_DOWNSLASH));
+	SwordAttackSectionNames.Add(FEnemyAttackData(ATTACK_UPSLASH, BLOCK_UPSLASH));
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -74,9 +74,22 @@ void ASTEnemyCharacter::PlaySwordAttack()
 	if (EnemyAnimInstance && MontageSwordAttacks)
 	{
 		int MaxIndex = SwordAttackSectionNames.Num();
-		FName AttackSectionName = SwordAttackSectionNames[FMath::RandRange(0, MaxIndex - 1)];
+		FEnemyAttackData AttackData = SwordAttackSectionNames[FMath::RandRange(0, MaxIndex - 1)];
+		OnAttackStarted.Broadcast(AttackData.Block);
+		
 		EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
-		EnemyAnimInstance->Montage_JumpToSection(AttackSectionName, MontageSwordAttacks);
+		EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
+	}
+}
+
+void ASTEnemyCharacter::PlayAttackStagger(FName SectionName)
+{
+	Super::PlayAttackStagger(SectionName);
+
+	if (EnemyAnimInstance)
+	{
+		EnemyAnimInstance->Montage_Play(MontageAttackStagger);
+		EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageAttackStagger);
 	}
 }
 

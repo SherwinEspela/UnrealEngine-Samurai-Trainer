@@ -8,7 +8,6 @@
 #include "ConstantValues.h"
 #include "STPlayerCharacter.generated.h"
 
-class AKatana;
 class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
@@ -86,7 +85,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	void AttachSwordToSocket(FName SocketName);
 	void InitQueues();
 	void EnemyInteract(
 		TQueue<FAttackData> &MoveQueue, 
@@ -176,11 +174,12 @@ protected:
 		const FHitResult& SweepResult
 	);
 
+	UFUNCTION()
+	void OnEnemyAttackStarted(FName BlockSectionName);
+
 private:
-	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AKatana> KatanaClass;
-	AKatana* Katana;
 	UAnimInstance* PlayerAnimInstance;
 	FName CurrentAttackSocketName;
+	FName CurrentBlockSocketName;
 
 };

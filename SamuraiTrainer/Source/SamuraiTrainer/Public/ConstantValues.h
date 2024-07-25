@@ -6,11 +6,14 @@
 
 #define ATTACK_SOCKET_FRONT FName("AttackSocketFront")
 #define ATTACK_SOCKET_BACK FName("AttackSocketBack")
+#define BLOCK_SOCKET FName("BlockSocket")
 
-#define ATTACK_DOWNSLASH FName("Attack1")
-#define ATTACK_UPSLASH FName("Attack2")
+#define ATTACK_DOWNSLASH FName("AttackDownSlash")
+#define ATTACK_UPSLASH FName("AttackUpSlash")
 #define KICK1 FName("Kick1")
 #define KICK2 FName("Kick2")
+#define BLOCK_DOWNSLASH FName("BlockDownSlash")
+#define BLOCK_UPSLASH FName("BlockUpSlash")
 
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")
@@ -39,5 +42,7 @@
 #define ATTACK_COUNTER4 FName("Counter4")
 #define ATTACK_COUNTER5 FName("Counter5")
 
-#define ENEMY_ATTACK1 FName("EAttack1")
-#define ENEMY_ATTACK2 FName("EAttack2")
+//#define ENEMY_ATTACK1 FName("EAttack1")
+//#define ENEMY_ATTACK2 FName("EAttack2")
+#define ENEMY_ATTACK_STAGGER1 FName("EStagger1")
+#define ENEMY_ATTACK_STAGGER2 FName("EStagger2")

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/STBaseCharacter.h"
+#include "Structs/STStructsHolder.h"
 #include "STEnemyCharacter.generated.h"
 
 #define HR_COMBO_END1 FName("HRComboEnd1")
@@ -12,6 +13,7 @@ class UAnimMontage;
 class UAnimInstance;
 class UBehaviorTree;
 class ASTEnemyAIController;
+struct FEnemyAttackData;
 
 /**
  * 
@@ -39,6 +41,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlaySwordAttack();
+
+	virtual void PlayAttackStagger(FName SectionName) override;
 
 	UFUNCTION(BlueprintCallable)
 	APawn* GetPlayerPawn();
@@ -75,7 +79,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<ASTEnemyAIController> EnemyAIController;
 
-	TArray<FName> SwordAttackSectionNames;
+	TArray<FEnemyAttackData> SwordAttackSectionNames;
 
 private:
 	UAnimInstance* EnemyAnimInstance;

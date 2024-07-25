@@ -2,7 +2,6 @@
 
 
 #include "Character/STPlayerCharacter.h"
-#include "Items/Katana.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Animation/AnimMontage.h"
@@ -35,9 +34,6 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 void ASTPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Katana = GetWorld()->SpawnActor<AKatana>(KatanaClass);
-	AttachSwordToSocket(FName("WEAPON_R"));
 
 	bIsSwordArmed = false;
 	MovementState = EMovementStates::EPMS_Default;
@@ -194,8 +190,19 @@ void ASTPlayerCharacter::Attack()
 void ASTPlayerCharacter::Block()
 {
 	if (MontageBlock == nullptr) return;
+
 	PlayerAnimInstance->Montage_Play(MontageBlock);
-	PlayerAnimInstance->Montage_JumpToSection(FName("1"), MontageBlock);
+	if (CurrentEnemy)
+	{
+		CurrentAttackSocketName = BLOCK_SOCKET;
+		OnWarpTargetUpdated();
+
+		PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSocketName, MontageBlock);
+		CurrentEnemy->PlayAttackStagger(ENEMY_ATTACK_STAGGER1);
+	}
+	else {
+		PlayerAnimInstance->Montage_JumpToSection(BLOCK_UPSLASH, MontageBlock);
+	}
 }
 
 void ASTPlayerCharacter::Kick()
@@ -249,17 +256,19 @@ FName ASTPlayerCharacter::GetAttackSocketName() const
 	return CurrentAttackSocketName;
 }
 
-void ASTPlayerCharacter::AttachSwordToSocket(FName SocketName)
-{
-	if (Katana)
-	{
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Katana->AttachToComponent(GetMesh(), TransformRules, SocketName);
-	}
-}
-
 void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (CurrentEnemy && OtherActor->GetName() == CurrentEnemy->GetName()) return;
-	if (OtherActor) CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
+	if (OtherActor) {
+		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
+		if (CurrentEnemy)
+		{
+			CurrentEnemy->OnAttackStarted.AddDynamic(this, &ASTPlayerCharacter::OnEnemyAttackStarted);
+		}
+	}
+}
+
+void ASTPlayerCharacter::OnEnemyAttackStarted(FName BlockSectionName)
+{
+	CurrentBlockSocketName = BlockSectionName;
 }
