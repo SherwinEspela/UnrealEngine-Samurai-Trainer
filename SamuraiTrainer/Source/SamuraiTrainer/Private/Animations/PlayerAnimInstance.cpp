@@ -12,20 +12,6 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 	
 	PlayerCharacter = Cast<ASTPlayerCharacter>(TryGetPawnOwner());
-	if (PlayerCharacter)
-	{
-		MovementComponent = PlayerCharacter->GetCharacterMovement();
-	}
-}
-
-void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaTime)
-{
-	Super::NativeUpdateAnimation(DeltaTime);
-
-	if (MovementComponent)
-	{
-		MovementSpeed = UKismetMathLibrary::VSizeXY(MovementComponent->Velocity);
-	}
 }
 
 void UPlayerAnimInstance::OnSwordInteractionCompleted()

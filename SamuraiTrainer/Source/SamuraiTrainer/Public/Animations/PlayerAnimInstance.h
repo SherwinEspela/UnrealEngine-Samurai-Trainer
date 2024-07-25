@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "CustomEnums.h"
+#include "Animations/STBaseAnimInstance.h"
 #include "PlayerAnimInstance.generated.h"
 
 class ASTPlayerCharacter;
@@ -14,13 +15,13 @@ class UCharacterMovementComponent;
  * 
  */
 UCLASS()
-class SAMURAITRAINER_API UPlayerAnimInstance : public UAnimInstance
+class SAMURAITRAINER_API UPlayerAnimInstance : public USTBaseAnimInstance
 {
 	GENERATED_BODY()
 	
 public:
 	virtual void NativeInitializeAnimation() override;
-	virtual void NativeUpdateAnimation(float DeltaTime) override;
+	//virtual void NativeUpdateAnimation(float DeltaTime) override;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -34,8 +35,8 @@ protected:
 	void OnAttackCompleted();
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
-	float MovementSpeed;
+	/*UPROPERTY(BlueprintReadOnly)
+	float MovementSpeed;*/
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon State")
 	EWeaponStates WeaponState;

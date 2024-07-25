@@ -7,6 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ConstantValues.h"
 
 ASTEnemyCharacter::ASTEnemyCharacter()
 {
@@ -30,6 +31,9 @@ void ASTEnemyCharacter::BeginPlay()
 	{
 		EnemyAIController->Initialize(BehaviorTree);
 	}
+
+	SwordAttackSectionNames.Add(ENEMY_ATTACK1);
+	SwordAttackSectionNames.Add(ENEMY_ATTACK2);
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -62,6 +66,17 @@ void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 	{
 		EnemyAnimInstance->Montage_Play(MontageHitReaction);
 		EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageHitReaction);
+	}
+}
+
+void ASTEnemyCharacter::PlaySwordAttack()
+{
+	if (EnemyAnimInstance && MontageSwordAttacks)
+	{
+		int MaxIndex = SwordAttackSectionNames.Num();
+		FName AttackSectionName = SwordAttackSectionNames[FMath::RandRange(0, MaxIndex - 1)];
+		EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
+		EnemyAnimInstance->Montage_JumpToSection(AttackSectionName, MontageSwordAttacks);
 	}
 }
 

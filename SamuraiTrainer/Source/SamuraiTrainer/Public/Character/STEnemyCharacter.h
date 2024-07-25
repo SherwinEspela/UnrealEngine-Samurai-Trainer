@@ -36,7 +36,10 @@ public:
 
 public:
 	void PlayHitReaction(FName SectionName);
-	
+
+	UFUNCTION(BlueprintCallable)
+	void PlaySwordAttack();
+
 	UFUNCTION(BlueprintCallable)
 	APawn* GetPlayerPawn();
 
@@ -53,12 +56,17 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
+	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageHitReaction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageCEHitReaction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageSwordAttacks;
+
+protected:
 	APawn* PlayerPawn;
 
 	UPROPERTY(EditAnywhere, Category = "Enemy AI")
@@ -66,6 +74,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ASTEnemyAIController> EnemyAIController;
+
+	TArray<FName> SwordAttackSectionNames;
 
 private:
 	UAnimInstance* EnemyAnimInstance;

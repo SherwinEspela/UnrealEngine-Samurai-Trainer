@@ -38,3 +38,6 @@
 #define ATTACK_COUNTER3 FName("Counter3")
 #define ATTACK_COUNTER4 FName("Counter4")
 #define ATTACK_COUNTER5 FName("Counter5")
+
+#define ENEMY_ATTACK1 FName("EAttack1")
+#define ENEMY_ATTACK2 FName("EAttack2")
