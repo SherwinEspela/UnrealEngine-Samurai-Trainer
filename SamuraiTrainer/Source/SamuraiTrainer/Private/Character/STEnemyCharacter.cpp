@@ -32,8 +32,18 @@ void ASTEnemyCharacter::BeginPlay()
 		EnemyAIController->Initialize(BehaviorTree);
 	}
 
-	SwordAttackSectionNames.Add(FEnemyAttackData(ATTACK_DOWNSLASH, BLOCK_DOWNSLASH));
-	SwordAttackSectionNames.Add(FEnemyAttackData(ATTACK_UPSLASH, BLOCK_UPSLASH));
+	FEnemyAttackData AttackData1;
+	AttackData1.Attack = ATTACK_DOWNSLASH;
+	AttackData1.NextPlayerBlock = BLOCK_DOWNSLASH;
+	AttackData1.NextStagger = STAGGER_DOWNSLASH;
+
+	FEnemyAttackData AttackData2;
+	AttackData2.Attack = ATTACK_UPSLASH;
+	AttackData2.NextPlayerBlock = BLOCK_UPSLASH;
+	AttackData2.NextStagger = STAGGER_UPSLASH;
+
+	SwordAttackSectionNames.Add(AttackData1);
+	SwordAttackSectionNames.Add(AttackData2);
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -71,12 +81,16 @@ void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 
 void ASTEnemyCharacter::PlaySwordAttack()
 {
+	//UE_LOG(LogTemp, Warning, TEXT("Play sword attack ......"));
 	if (EnemyAnimInstance && MontageSwordAttacks)
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("Play sword attack ......"));
 		int MaxIndex = SwordAttackSectionNames.Num();
 		FEnemyAttackData AttackData = SwordAttackSectionNames[FMath::RandRange(0, MaxIndex - 1)];
-		OnAttackStarted.Broadcast(AttackData.Block);
-		
+		//OnAttackStarted.Broadcast(AttackData.NextPlayerBlock);
+		OnAttackStartedWithTwoParams.Broadcast(AttackData.NextPlayerBlock, AttackData.NextStagger);
+		//NextStaggerSectionName = AttackData.NextStagger;
+		//UE_LOG(LogTemp, Warning, TEXT("NextStaggerSectionName: %s"), *AttackData.NextStagger.ToString());
 		EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 		EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
 	}
@@ -90,6 +104,15 @@ void ASTEnemyCharacter::PlayAttackStagger(FName SectionName)
 	{
 		EnemyAnimInstance->Montage_Play(MontageAttackStagger);
 		EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageAttackStagger);
+	}
+}
+
+void ASTEnemyCharacter::PlayNextStagger()
+{
+	if (EnemyAnimInstance)
+	{
+		EnemyAnimInstance->Montage_Play(MontageAttackStagger);
+		EnemyAnimInstance->Montage_JumpToSection(NextStaggerSectionName, MontageAttackStagger);
 	}
 }
 

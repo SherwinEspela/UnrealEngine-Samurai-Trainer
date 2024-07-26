@@ -198,7 +198,7 @@ void ASTPlayerCharacter::Block()
 		OnWarpTargetUpdated();
 
 		PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSocketName, MontageBlock);
-		CurrentEnemy->PlayAttackStagger(ENEMY_ATTACK_STAGGER1);
+		CurrentEnemy->PlayAttackStagger(NextEnemyStaggerSocketName);
 	}
 	else {
 		PlayerAnimInstance->Montage_JumpToSection(BLOCK_UPSLASH, MontageBlock);
@@ -263,12 +263,13 @@ void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* Overla
 		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
 		if (CurrentEnemy)
 		{
-			CurrentEnemy->OnAttackStarted.AddDynamic(this, &ASTPlayerCharacter::OnEnemyAttackStarted);
+			CurrentEnemy->OnAttackStartedWithTwoParams.AddDynamic(this, &ASTPlayerCharacter::OnEnemyAttackStartedWithTwoParams);
 		}
 	}
 }
 
-void ASTPlayerCharacter::OnEnemyAttackStarted(FName BlockSectionName)
+void ASTPlayerCharacter::OnEnemyAttackStartedWithTwoParams(FName BlockSectionName, FName StaggerSectionName)
 {
 	CurrentBlockSocketName = BlockSectionName;
+	NextEnemyStaggerSocketName = StaggerSectionName;
 }

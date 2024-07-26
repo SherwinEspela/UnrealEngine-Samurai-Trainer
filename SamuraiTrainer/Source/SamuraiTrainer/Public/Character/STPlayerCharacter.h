@@ -175,11 +175,12 @@ protected:
 	);
 
 	UFUNCTION()
-	void OnEnemyAttackStarted(FName BlockSectionName);
+	void OnEnemyAttackStartedWithTwoParams(FName BlockSectionName, FName StaggerSectionName);
 
 private:
 	UAnimInstance* PlayerAnimInstance;
 	FName CurrentAttackSocketName;
 	FName CurrentBlockSocketName;
+	FName NextEnemyStaggerSocketName;
 
 };

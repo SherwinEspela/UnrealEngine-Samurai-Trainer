@@ -11,12 +11,24 @@ struct FEnemyAttackData
 {
 	GENERATED_BODY()
 
+//public:
+//	FEnemyAttackData();
+//
+//	FEnemyAttackData(FName attack, FName block, FName stagger) {
+//		Attack = attack;
+//		NextPlayerBlock = block;
+//		NextStagger = stagger;
+//	}
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName Attack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName Block;
+	FName NextPlayerBlock;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName NextStagger;
 };
 
 // This class does not need to be modified.

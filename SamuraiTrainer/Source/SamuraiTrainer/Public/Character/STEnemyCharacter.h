@@ -43,6 +43,7 @@ public:
 	void PlaySwordAttack();
 
 	virtual void PlayAttackStagger(FName SectionName) override;
+	void PlayNextStagger();
 
 	UFUNCTION(BlueprintCallable)
 	APawn* GetPlayerPawn();
@@ -84,5 +85,6 @@ protected:
 private:
 	UAnimInstance* EnemyAnimInstance;
 	FName NextHitReactionSectionName;
+	FName NextStaggerSectionName;
 	
 };

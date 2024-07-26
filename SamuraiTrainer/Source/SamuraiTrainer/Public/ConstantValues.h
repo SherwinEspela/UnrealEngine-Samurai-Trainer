@@ -42,7 +42,5 @@
 #define ATTACK_COUNTER4 FName("Counter4")
 #define ATTACK_COUNTER5 FName("Counter5")
 
-//#define ENEMY_ATTACK1 FName("EAttack1")
-//#define ENEMY_ATTACK2 FName("EAttack2")
-#define ENEMY_ATTACK_STAGGER1 FName("EStagger1")
-#define ENEMY_ATTACK_STAGGER2 FName("EStagger2")
+#define STAGGER_DOWNSLASH FName("StaggerDownslash")
+#define STAGGER_UPSLASH FName("StaggerUpslash")

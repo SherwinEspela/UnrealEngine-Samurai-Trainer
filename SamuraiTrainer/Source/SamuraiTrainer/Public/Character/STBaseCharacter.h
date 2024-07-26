@@ -9,6 +9,7 @@
 class AKatana;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStartedSignature, FName, BlockSectionName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackStartedWithTwoParamsSignature, FName, BlockSectionName, FName, StaggerSectionName);
 
 UCLASS()
 class SAMURAITRAINER_API ASTBaseCharacter : public ACharacter
@@ -40,6 +41,7 @@ public:
 
 public:
 	FOnAttackStartedSignature OnAttackStarted;
+	FOnAttackStartedWithTwoParamsSignature OnAttackStartedWithTwoParams;
 
 protected:
 	virtual void BeginPlay() override;
