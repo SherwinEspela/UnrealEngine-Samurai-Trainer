@@ -7,18 +7,25 @@
 #include "STStructsHolder.generated.h"
 
 USTRUCT(BlueprintType)
-struct FEnemyAttackData
+struct FAttackData
 {
 	GENERATED_BODY()
 
-//public:
-//	FEnemyAttackData();
-//
-//	FEnemyAttackData(FName attack, FName block, FName stagger) {
-//		Attack = attack;
-//		NextPlayerBlock = block;
-//		NextStagger = stagger;
-//	}
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName Attack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName HitReaction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName AttackSocketName;
+};
+
+USTRUCT(BlueprintType)
+struct FEnemyAttackData
+{
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

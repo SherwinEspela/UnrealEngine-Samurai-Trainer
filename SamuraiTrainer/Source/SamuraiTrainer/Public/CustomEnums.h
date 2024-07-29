@@ -15,6 +15,9 @@ enum class EMovementStates : uint8
 	EPMS_Attacking		UMETA(DisplayName = "Attacking"),
 	EPMS_Interacting	UMETA(DisplayName = "Interacting"),
 	EPMS_Idle			UMETA(DisplayName = "Idle"),
+	EPMS_Blocking		UMETA(DisplayName = "Blocking"),
+	EPMS_Staggered		UMETA(DisplayName = "Staggered"),
+	EPMS_Walking		UMETA(DisplayName = "Walking"),
 	EPMS_Default		UMETA(DisplayName = "Default")
 };
 
@@ -25,3 +28,7 @@ enum class EWeaponStates : uint8
 	EWS_Holding			UMETA(DisplayName = "Holding"),
 	EWS_Default			UMETA(DisplayName = "Default")
 };
+
+FORCEINLINE void PrintMovementState(EMovementStates MovementState) {
+	UE_LOG(LogTemp, Log, TEXT("Movement State is : %s"), *UEnum::GetValueAsName(MovementState).ToString());
+}

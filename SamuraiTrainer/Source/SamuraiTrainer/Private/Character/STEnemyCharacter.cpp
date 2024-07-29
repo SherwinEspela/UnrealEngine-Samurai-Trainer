@@ -7,6 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animations/STEnemyAnimInstance.h"
 #include "ConstantValues.h"
 
 ASTEnemyCharacter::ASTEnemyCharacter()
@@ -22,8 +23,9 @@ void ASTEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	EnemyAnimInstance = GetMesh()->GetAnimInstance();
-
+	EnemyAnimInstance = CastChecked<USTEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	SubscribeToAnimationEvents();
+	
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 
 	EnemyAIController = Cast<ASTEnemyAIController>(EnemyAnimInstance->TryGetPawnOwner()->GetController());
@@ -44,6 +46,40 @@ void ASTEnemyCharacter::BeginPlay()
 
 	SwordAttackSectionNames.Add(AttackData1);
 	SwordAttackSectionNames.Add(AttackData2);
+
+
+}
+
+void ASTEnemyCharacter::SubscribeToAnimationEvents()
+{
+	if (EnemyAnimInstance == nullptr) return;
+
+	EnemyAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleAttackAnimCompleted);
+	EnemyAnimInstance->OnStaggeredAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleStaggerAnimCompleted);
+	EnemyAnimInstance->OnHitReactionAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleHitReactsionAnimCompleted);
+}
+
+void ASTEnemyCharacter::HandleAttackAnimCompleted()
+{
+	Super::HandleAttackAnimCompleted();
+}
+
+void ASTEnemyCharacter::HandleStaggerAnimCompleted()
+{
+	Super::HandleStaggerAnimCompleted();
+	if (EnemyAIController)
+	{
+		EnemyAIController->SetStaggered(false);
+	}
+}
+
+void ASTEnemyCharacter::HandleHitReactsionAnimCompleted()
+{
+	Super::HandleHitReactsionAnimCompleted();
+	if (EnemyAIController)
+	{
+		EnemyAIController->SetHitReacting(false);
+	}
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -56,6 +92,11 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageCEHitReaction);
 		}
 		else {
+			if (EnemyAIController)
+			{
+				EnemyAIController->SetHitReacting();
+			}
+			
 			EnemyAnimInstance->Montage_Play(MontageHitReaction);
 			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageHitReaction);
 		}
@@ -81,16 +122,12 @@ void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 
 void ASTEnemyCharacter::PlaySwordAttack()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Play sword attack ......"));
 	if (EnemyAnimInstance && MontageSwordAttacks)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Play sword attack ......"));
+		MovementState = EMovementStates::EPMS_Attacking;
 		int MaxIndex = SwordAttackSectionNames.Num();
 		FEnemyAttackData AttackData = SwordAttackSectionNames[FMath::RandRange(0, MaxIndex - 1)];
-		//OnAttackStarted.Broadcast(AttackData.NextPlayerBlock);
 		OnAttackStartedWithTwoParams.Broadcast(AttackData.NextPlayerBlock, AttackData.NextStagger);
-		//NextStaggerSectionName = AttackData.NextStagger;
-		//UE_LOG(LogTemp, Warning, TEXT("NextStaggerSectionName: %s"), *AttackData.NextStagger.ToString());
 		EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 		EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
 	}
@@ -100,8 +137,10 @@ void ASTEnemyCharacter::PlayAttackStagger(FName SectionName)
 {
 	Super::PlayAttackStagger(SectionName);
 
-	if (EnemyAnimInstance)
+	if (EnemyAnimInstance && EnemyAIController)
 	{
+		EnemyAIController->SetStaggered();
+
 		EnemyAnimInstance->Montage_Play(MontageAttackStagger);
 		EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageAttackStagger);
 	}

@@ -9,6 +9,10 @@
 class ASTBaseCharacter;
 class UCharacterMovementComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHitReactionAnimCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttackAnimCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStaggeredAnimCompletedSignature);
+
 /**
  * 
  */
@@ -20,6 +24,22 @@ class SAMURAITRAINER_API USTBaseAnimInstance : public UAnimInstance
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
+
+public:
+	// MULTICAST DELEGATES
+	FHitReactionAnimCompletedSignature OnHitReactionAnimCompleted;
+	FAttackAnimCompletedSignature OnAttackAnimCompleted;
+	FStaggeredAnimCompletedSignature OnStaggeredAnimCompleted;
+
+protected:
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleAttackCompleted();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleStaggerCompleted();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleHitReactionAnimCompleted();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = Movement)

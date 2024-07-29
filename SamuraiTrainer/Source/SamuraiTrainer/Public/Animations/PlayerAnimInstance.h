@@ -21,7 +21,6 @@ class SAMURAITRAINER_API UPlayerAnimInstance : public USTBaseAnimInstance
 	
 public:
 	virtual void NativeInitializeAnimation() override;
-	//virtual void NativeUpdateAnimation(float DeltaTime) override;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -31,13 +30,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void OnSwordInteractionCompleted();
 
-	UFUNCTION(BlueprintCallable)
-	void OnAttackCompleted();
-
 protected:
-	/*UPROPERTY(BlueprintReadOnly)
-	float MovementSpeed;*/
-
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon State")
 	EWeaponStates WeaponState;
 

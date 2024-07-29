@@ -55,4 +55,20 @@ void ASTBaseCharacter::ReduceHealth(int Value)
 void ASTBaseCharacter::PlayAttackStagger(FName SectionName)
 {
 	if (MontageAttackStagger == nullptr) return;
+	MovementState = EMovementStates::EPMS_Staggered;
+}
+
+void ASTBaseCharacter::HandleAttackAnimCompleted()
+{
+	MovementState = EMovementStates::EPMS_Idle;
+}
+
+void ASTBaseCharacter::HandleStaggerAnimCompleted()
+{
+	MovementState = EMovementStates::EPMS_Idle;
+}
+
+void ASTBaseCharacter::HandleHitReactsionAnimCompleted()
+{
+	MovementState = EMovementStates::EPMS_Idle;
 }

@@ -10,9 +10,9 @@
 #define HR_COMBO_END1 FName("HRComboEnd1")
 
 class UAnimMontage;
-class UAnimInstance;
 class UBehaviorTree;
 class ASTEnemyAIController;
+class USTEnemyAnimInstance;
 struct FEnemyAttackData;
 
 /**
@@ -60,6 +60,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	void SubscribeToAnimationEvents();
+
+protected:
+	// Animations Event Handlers
+	virtual void HandleAttackAnimCompleted() override;
+	virtual void HandleStaggerAnimCompleted() override;
+	virtual void HandleHitReactsionAnimCompleted() override;
+
 protected:
 	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
@@ -83,7 +91,7 @@ protected:
 	TArray<FEnemyAttackData> SwordAttackSectionNames;
 
 private:
-	UAnimInstance* EnemyAnimInstance;
+	USTEnemyAnimInstance* EnemyAnimInstance;
 	FName NextHitReactionSectionName;
 	FName NextStaggerSectionName;
 	

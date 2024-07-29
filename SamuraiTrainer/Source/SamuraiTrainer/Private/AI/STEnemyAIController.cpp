@@ -26,3 +26,15 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 	RunBehaviorTree(BehaviorTree);
 	GetBlackboardComponent()->SetValueAsObject(BB_KEY_PLAYER_PAWN, PlayerPawn);
 }
+
+void ASTEnemyAIController::SetHitReacting(bool HitReacting)
+{
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_HIT_REACTING, HitReacting);
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_STAGGERED, false);
+}
+
+void ASTEnemyAIController::SetStaggered(bool Staggered)
+{
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_STAGGERED, Staggered);
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_HIT_REACTING, false);
+}

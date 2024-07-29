@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Character/STBaseCharacter.h"
-#include "CustomEnums.h"
 #include "ConstantValues.h"
+#include "Structs/STStructsHolder.h"
 #include "STPlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -14,22 +14,7 @@ class UAnimMontage;
 class USkeletalMeshComponent;
 class ASTEnemyCharacter;
 class UCapsuleComponent;
-
-USTRUCT(BlueprintType)
-struct FAttackData
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName Attack; 
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName HitReaction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName AttackSocketName = ATTACK_SOCKET_FRONT;
-};
+class UPlayerAnimInstance;
 
 /**
  * 
@@ -68,6 +53,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetNextHitReactionSectionName(FName Value);
 
+	UFUNCTION()
 	void HandleBasicAttackCompleted();
 
 	UFUNCTION(BlueprintCallable)
@@ -79,7 +65,6 @@ public:
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
-	FORCEINLINE void SetMovementState(EMovementStates Value) { MovementState = Value; }
 	FORCEINLINE void SetCanPerformNextAttack(bool Value) { bCanPerformNextAttack = Value; }
 
 protected:
@@ -102,9 +87,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
 	TObjectPtr<UCameraComponent> FollowCamera;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Movement States")
-	EMovementStates MovementState = EMovementStates::EPMS_Default;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon States")
 	EWeaponStates WeaponState = EWeaponStates::EWS_Stored;
@@ -178,7 +160,7 @@ protected:
 	void OnEnemyAttackStartedWithTwoParams(FName BlockSectionName, FName StaggerSectionName);
 
 private:
-	UAnimInstance* PlayerAnimInstance;
+	UPlayerAnimInstance* PlayerAnimInstance;
 	FName CurrentAttackSocketName;
 	FName CurrentBlockSocketName;
 	FName NextEnemyStaggerSocketName;

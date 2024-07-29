@@ -14,6 +14,7 @@
 #define KICK2 FName("Kick2")
 #define BLOCK_DOWNSLASH FName("BlockDownSlash")
 #define BLOCK_UPSLASH FName("BlockUpSlash")
+#define BLOCK_NO_MW FName("BlockNoMW")
 
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")

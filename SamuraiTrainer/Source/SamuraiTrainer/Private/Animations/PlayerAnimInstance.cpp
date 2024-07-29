@@ -22,8 +22,3 @@ void UPlayerAnimInstance::OnSwordInteractionCompleted()
 		WeaponState = PlayerCharacter->GetWeaponState();
 	}
 }
-
-void UPlayerAnimInstance::OnAttackCompleted()
-{
-	PlayerCharacter->HandleBasicAttackCompleted();
-}

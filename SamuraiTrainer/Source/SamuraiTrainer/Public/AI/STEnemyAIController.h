@@ -21,6 +21,8 @@ public:
 	ASTEnemyAIController();
 
 	void Initialize(TObjectPtr<UBehaviorTree> BehaviorTree);
+	void SetHitReacting(bool HitReacting = true);
+	void SetStaggered(bool Staggered = true);
 
 protected:
 	virtual void BeginPlay() override;

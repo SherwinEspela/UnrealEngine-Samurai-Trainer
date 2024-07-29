@@ -6,6 +6,8 @@
 #include "Animations/STBaseAnimInstance.h"
 #include "STEnemyAnimInstance.generated.h"
 
+class ASTEnemyCharacter;
+
 /**
  * 
  */

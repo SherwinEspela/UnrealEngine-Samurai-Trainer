@@ -7,6 +7,7 @@
 #include "Animation/AnimMontage.h"
 #include "Components/CapsuleComponent.h"
 #include "Character/STEnemyCharacter.h"
+#include "Animations/PlayerAnimInstance.h"
 #include "Engine/DamageEvents.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
@@ -39,7 +40,12 @@ void ASTPlayerCharacter::BeginPlay()
 	MovementState = EMovementStates::EPMS_Default;
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
-	PlayerAnimInstance = GetMesh()->GetAnimInstance();
+
+	PlayerAnimInstance = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	if (PlayerAnimInstance)
+	{
+		PlayerAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleBasicAttackCompleted);
+	}
 
 	if (CapsuleEnemyDetector)
 	{
@@ -194,14 +200,21 @@ void ASTPlayerCharacter::Block()
 	PlayerAnimInstance->Montage_Play(MontageBlock);
 	if (CurrentEnemy)
 	{
-		CurrentAttackSocketName = BLOCK_SOCKET;
-		OnWarpTargetUpdated();
-
-		PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSocketName, MontageBlock);
-		CurrentEnemy->PlayAttackStagger(NextEnemyStaggerSocketName);
+		bool isAttacking = CurrentEnemy->GetMovementState() == EMovementStates::EPMS_Attacking;
+		if (isAttacking)
+		{
+			CurrentAttackSocketName = BLOCK_SOCKET;
+			OnWarpTargetUpdated();
+			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSocketName, MontageBlock);
+			CurrentEnemy->PlayAttackStagger(NextEnemyStaggerSocketName);
+		}
+		else {
+			PrintMovementState(CurrentEnemy->GetMovementState());
+			PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
+		}
 	}
 	else {
-		PlayerAnimInstance->Montage_JumpToSection(BLOCK_UPSLASH, MontageBlock);
+		PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
 	}
 }
 

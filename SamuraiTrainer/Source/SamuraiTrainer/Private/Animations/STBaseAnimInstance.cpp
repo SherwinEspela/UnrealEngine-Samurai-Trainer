@@ -33,6 +33,19 @@ void USTBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 			MovementSpeed = UKismetMathLibrary::VSizeXY(MovementComponent->Velocity);
 		}
 	}
+}
 
-	
+void USTBaseAnimInstance::HandleAttackCompleted()
+{
+	OnAttackAnimCompleted.Broadcast();
+}
+
+void USTBaseAnimInstance::HandleStaggerCompleted()
+{
+	OnStaggeredAnimCompleted.Broadcast();
+}
+
+void USTBaseAnimInstance::HandleHitReactionAnimCompleted()
+{
+	OnHitReactionAnimCompleted.Broadcast();
 }

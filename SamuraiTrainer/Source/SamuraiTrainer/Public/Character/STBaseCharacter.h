@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "CustomEnums.h"
 #include "STBaseCharacter.generated.h"
 
 class AKatana;
@@ -38,6 +39,8 @@ public:
 
 public:
 	FORCEINLINE bool IsHealthCritical() const { return bIsHealthCritical; }
+	FORCEINLINE EMovementStates GetMovementState() const { return MovementState; }
+	FORCEINLINE void SetMovementState(EMovementStates Value) { MovementState = Value; }
 
 public:
 	FOnAttackStartedSignature OnAttackStarted;
@@ -49,12 +52,26 @@ protected:
 	void AttachSwordToSocket(FName SocketName);
 
 protected:
+	// Animation Event Handlers
+	UFUNCTION()
+	virtual void HandleAttackAnimCompleted();
+	
+	UFUNCTION()
+	virtual void HandleStaggerAnimCompleted();
+	
+	UFUNCTION()
+	virtual void HandleHitReactsionAnimCompleted();
+
+protected:
 	// Character States
 	UPROPERTY(VisibleAnywhere)
 	float Health;
 
 	UPROPERTY(EditDefaultsOnly)
 	float HealthMax = 100;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement States")
+	EMovementStates MovementState = EMovementStates::EPMS_Default;
 
 	bool bIsHealthCritical = false;
 
