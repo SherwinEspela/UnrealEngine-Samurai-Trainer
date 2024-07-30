@@ -37,6 +37,12 @@ public:
 
 	virtual void PlayAttackStagger(FName SectionName);
 
+	UFUNCTION(BlueprintCallable)
+	FTransform GetAttackTransform(FName SocketName) const;
+
+	UFUNCTION(BlueprintCallable)
+	FName GetAttackSocketName() const;
+
 public:
 	FORCEINLINE bool IsHealthCritical() const { return bIsHealthCritical; }
 	FORCEINLINE EMovementStates GetMovementState() const { return MovementState; }
@@ -50,6 +56,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	void AttachSwordToSocket(FName SocketName);
+
+	bool DetermineTargetFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd);
 
 protected:
 	// Animation Event Handlers
@@ -89,5 +97,9 @@ protected:
 	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageAttackStagger;
+
+protected:
+	FName CurrentAttackSocketName;
+	APawn* CurrentTargetPawn;
 
 };

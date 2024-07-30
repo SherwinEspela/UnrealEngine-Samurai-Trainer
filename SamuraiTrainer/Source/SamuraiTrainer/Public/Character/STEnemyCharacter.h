@@ -51,8 +51,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateWarpTarget(APawn* Target);
 
-	UFUNCTION(BlueprintCallable)
-	FTransform GetAttackTransform(FName SocketName) const;
+	/*UFUNCTION(BlueprintCallable)
+	FTransform GetAttackTransform(FName SocketName) const;*/
 
 public:
 	FORCEINLINE void SetNextHitReactionSectionName(FName Value) { NextHitReactionSectionName = Value; }

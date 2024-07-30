@@ -31,6 +31,29 @@ void ASTBaseCharacter::AttachSwordToSocket(FName SocketName)
 	}
 }
 
+bool ASTBaseCharacter::DetermineTargetFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd)
+{
+	FHitResult Hit;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+	const bool bHitSuccess = GetWorld()->LineTraceSingleByChannel(
+		Hit, LineTraceStart, LineTraceEnd, ECollisionChannel::ECC_Pawn, CollisionQueryParams
+	);
+
+	bool isFacingFront = false;
+	if (bHitSuccess)
+	{
+		const FVector EnemyForward = CurrentTargetPawn->GetActorForwardVector();
+		const FVector ToHit = (Hit.ImpactPoint - CurrentTargetPawn->GetActorLocation()).GetSafeNormal();
+		const double CosTheta = FVector::DotProduct(EnemyForward, ToHit);
+		double Theta = FMath::Acos(CosTheta);
+		Theta = FMath::RadiansToDegrees(Theta);
+		isFacingFront = Theta <= 90.0f;
+	}
+
+	return isFacingFront;
+}
+
 void ASTBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -56,6 +79,16 @@ void ASTBaseCharacter::PlayAttackStagger(FName SectionName)
 {
 	if (MontageAttackStagger == nullptr) return;
 	MovementState = EMovementStates::EPMS_Staggered;
+}
+
+FTransform ASTBaseCharacter::GetAttackTransform(FName SocketName) const
+{
+	return this->GetMesh()->GetSocketTransform(SocketName, ERelativeTransformSpace::RTS_World);
+}
+
+FName ASTBaseCharacter::GetAttackSocketName() const
+{
+	return CurrentAttackSocketName;
 }
 
 void ASTBaseCharacter::HandleAttackAnimCompleted()

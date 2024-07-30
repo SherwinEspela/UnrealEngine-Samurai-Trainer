@@ -155,38 +155,12 @@ void ASTPlayerCharacter::EnemyInteract(
 	bCanPerformNextAttack = false;
 }
 
-bool ASTPlayerCharacter::DetermineEnemyFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd)
-{
-	FHitResult Hit;
-	FCollisionQueryParams CollisionQueryParams;
-	CollisionQueryParams.AddIgnoredActor(this);
-	const bool bHitSuccess = GetWorld()->LineTraceSingleByChannel(
-		Hit, LineTraceStart, LineTraceEnd, ECollisionChannel::ECC_Pawn, CollisionQueryParams
-	);
-
-	bool isFacingFront = false;
-	if (bHitSuccess)
-	{
-		ASTEnemyCharacter* HitActor = Cast<ASTEnemyCharacter>(Hit.GetActor());
-		if (HitActor != nullptr && HitActor == CurrentEnemy)
-		{
-			const FVector EnemyForward = CurrentEnemy->GetActorForwardVector();
-			const FVector ToHit = (Hit.ImpactPoint - CurrentEnemy->GetActorLocation()).GetSafeNormal();
-			const double CosTheta = FVector::DotProduct(EnemyForward, ToHit);
-			double Theta = FMath::Acos(CosTheta);
-			Theta = FMath::RadiansToDegrees(Theta);
-			isFacingFront = Theta <= 90.0f;
-		}
-	}
-
-	return isFacingFront;
-}
-
 void ASTPlayerCharacter::Attack()
 {
 	if (CurrentEnemy == nullptr) return;
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
-	const bool bIsEnemyFrontFacing = DetermineEnemyFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
+	
+	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
 	TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
 	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
 	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
@@ -206,7 +180,7 @@ void ASTPlayerCharacter::Block()
 			CurrentAttackSocketName = BLOCK_SOCKET;
 			OnWarpTargetUpdated();
 			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSocketName, MontageBlock);
-			CurrentEnemy->PlayAttackStagger(NextEnemyStaggerSocketName);
+			CurrentEnemy->PlayNextStagger(); // PlayAttackStagger(NextEnemyStaggerSocketName);
 		}
 		else {
 			PrintMovementState(CurrentEnemy->GetMovementState());
@@ -264,10 +238,10 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 	return CurrentEnemy;
 }
 
-FName ASTPlayerCharacter::GetAttackSocketName() const
-{
-	return CurrentAttackSocketName;
-}
+//FName ASTPlayerCharacter::GetAttackSocketName() const
+//{
+//	return CurrentAttackSocketName;
+//}
 
 void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -276,13 +250,20 @@ void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* Overla
 		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
 		if (CurrentEnemy)
 		{
-			CurrentEnemy->OnAttackStartedWithTwoParams.AddDynamic(this, &ASTPlayerCharacter::OnEnemyAttackStartedWithTwoParams);
+			//CurrentEnemy->OnAttackStartedWithTwoParams.AddDynamic(this, &ASTPlayerCharacter::OnEnemyAttackStartedWithTwoParams);
+			CurrentEnemy->OnAttackStarted.AddDynamic(this, &ASTPlayerCharacter::OnEnemyAttackStarted);
+			CurrentTargetPawn = CurrentEnemy;
 		}
 	}
 }
 
-void ASTPlayerCharacter::OnEnemyAttackStartedWithTwoParams(FName BlockSectionName, FName StaggerSectionName)
+void ASTPlayerCharacter::OnEnemyAttackStarted(FName BlockSectionName)
 {
 	CurrentBlockSocketName = BlockSectionName;
-	NextEnemyStaggerSocketName = StaggerSectionName;
 }
+
+//void ASTPlayerCharacter::OnEnemyAttackStartedWithTwoParams(FName BlockSectionName, FName StaggerSectionName)
+//{
+//	CurrentBlockSocketName = BlockSectionName;
+//	NextEnemyStaggerSocketName = StaggerSectionName;
+//}

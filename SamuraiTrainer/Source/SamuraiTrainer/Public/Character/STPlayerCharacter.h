@@ -59,8 +59,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ASTEnemyCharacter* GetTargetLockedEnemy() const;
 
-	UFUNCTION(BlueprintCallable)
-	FName GetAttackSocketName() const;
+	/*UFUNCTION(BlueprintCallable)
+	FName GetAttackSocketName() const;*/
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
@@ -79,7 +79,6 @@ protected:
 		float Damage,
 		bool IsEnemyFacingFront = true
 	);
-	bool DetermineEnemyFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
@@ -157,12 +156,11 @@ protected:
 	);
 
 	UFUNCTION()
-	void OnEnemyAttackStartedWithTwoParams(FName BlockSectionName, FName StaggerSectionName);
+	void OnEnemyAttackStarted(FName BlockSectionName);
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;
-	FName CurrentAttackSocketName;
+	//FName CurrentAttackSocketName;
 	FName CurrentBlockSocketName;
-	FName NextEnemyStaggerSocketName;
 
 };

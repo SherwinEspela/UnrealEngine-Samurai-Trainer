@@ -127,7 +127,8 @@ void ASTEnemyCharacter::PlaySwordAttack()
 		MovementState = EMovementStates::EPMS_Attacking;
 		int MaxIndex = SwordAttackSectionNames.Num();
 		FEnemyAttackData AttackData = SwordAttackSectionNames[FMath::RandRange(0, MaxIndex - 1)];
-		OnAttackStartedWithTwoParams.Broadcast(AttackData.NextPlayerBlock, AttackData.NextStagger);
+		OnAttackStarted.Broadcast(AttackData.NextPlayerBlock);
+		NextStaggerSectionName = AttackData.NextStagger;
 		EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 		EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
 	}
@@ -167,7 +168,7 @@ void ASTEnemyCharacter::UpdateWarpTarget(APawn* Target)
 	OnWarpTargetUpdated();
 }
 
-FTransform ASTEnemyCharacter::GetAttackTransform(FName SocketName) const
-{
-	return this->GetMesh()->GetSocketTransform(SocketName, ERelativeTransformSpace::RTS_World);
-}
+//FTransform ASTEnemyCharacter::GetAttackTransform(FName SocketName) const
+//{
+//	return this->GetMesh()->GetSocketTransform(SocketName, ERelativeTransformSpace::RTS_World);
+//}
