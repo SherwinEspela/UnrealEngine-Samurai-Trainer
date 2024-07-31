@@ -77,6 +77,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	void InitPlayerAnimInstance();
 	void InitQueues();
 	void EnemyInteract(
 		TQueue<FAttackData> &MoveQueue, 
@@ -86,6 +87,10 @@ protected:
 		float Damage,
 		bool IsEnemyFacingFront = true
 	);
+
+protected:
+	// Animation Event Handlers
+	virtual void HandleAttackAnimCompleted() override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
@@ -158,9 +163,6 @@ protected:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult
 	);
-
-	/*UFUNCTION()
-	void OnEnemyAttackStarted(FName BlockSectionName);*/
 
 	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName) override;
 

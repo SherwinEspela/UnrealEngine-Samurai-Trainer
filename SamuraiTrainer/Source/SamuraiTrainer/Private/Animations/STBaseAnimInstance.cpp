@@ -49,3 +49,8 @@ void USTBaseAnimInstance::HandleHitReactionAnimCompleted()
 {
 	OnHitReactionAnimCompleted.Broadcast();
 }
+
+void USTBaseAnimInstance::HandleBlockAnimCompleted()
+{
+	OnBlockAnimCompleted.Broadcast();
+}

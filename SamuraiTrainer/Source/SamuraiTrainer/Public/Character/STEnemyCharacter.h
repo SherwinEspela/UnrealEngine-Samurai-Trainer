@@ -13,6 +13,7 @@ class UAnimMontage;
 class UBehaviorTree;
 class ASTEnemyAIController;
 class USTEnemyAnimInstance;
+class ASTPlayerCharacter;
 struct FAttackAndCounterReactionData;
 
 /**
@@ -46,7 +47,7 @@ public:
 	void PlayNextStagger();
 
 	UFUNCTION(BlueprintCallable)
-	APawn* GetPlayerPawn();
+	ASTPlayerCharacter* GetPlayerCharacter();
 
 public:
 	FORCEINLINE void SetNextHitReactionSectionName(FName Value) { NextHitReactionSectionName = Value; }
@@ -67,9 +68,6 @@ protected:
 
 protected:
 	// Animations
-	/*UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
-	UAnimMontage* MontageHitReaction;*/
-
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageCEHitReaction;
 
@@ -77,7 +75,8 @@ protected:
 	UAnimMontage* MontageSwordAttacks;
 
 protected:
-	APawn* PlayerPawn;
+	//APawn* PlayerPawn;
+	ASTPlayerCharacter* PlayerCharacter;
 
 	UPROPERTY(EditAnywhere, Category = "Enemy AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;

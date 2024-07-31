@@ -93,17 +93,22 @@ FName ASTBaseCharacter::GetAttackSocketName() const
 
 void ASTBaseCharacter::HandleAttackAnimCompleted()
 {
-	MovementState = EMovementStates::EPMS_Idle;
+	ResetCounterAttackStates();
 }
 
 void ASTBaseCharacter::HandleStaggerAnimCompleted()
 {
-	MovementState = EMovementStates::EPMS_Idle;
+	ResetCounterAttackStates();
 }
 
 void ASTBaseCharacter::HandleHitReactsionAnimCompleted()
 {
-	MovementState = EMovementStates::EPMS_Idle;
+	ResetCounterAttackStates();
+}
+
+void ASTBaseCharacter::HandleBlockAnimCompleted()
+{
+	ResetCounterAttackStates();
 }
 
 void ASTBaseCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName)
@@ -117,5 +122,13 @@ void ASTBaseCharacter::OnCounterAttackFrameBegan()
 
 void ASTBaseCharacter::OnCounterAttackFrameEnded()
 {
+
+}
+
+void ASTBaseCharacter::ResetCounterAttackStates()
+{
+	bDidCounterAttack = false;
+	bCanCounterAttack = false;
+	MovementState = EMovementStates::EPMS_Idle;
 }
 

@@ -41,18 +41,24 @@ void ASTPlayerCharacter::BeginPlay()
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
 
-	PlayerAnimInstance = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	if (PlayerAnimInstance)
-	{
-		PlayerAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleBasicAttackCompleted);
-	}
-
 	if (CapsuleEnemyDetector)
 	{
 		CapsuleEnemyDetector->OnComponentBeginOverlap.AddDynamic(this, &ASTPlayerCharacter::OnEnemyDetectorBeginOverlap);
 	}
 
+	InitPlayerAnimInstance();
 	InitQueues();
+}
+
+void ASTPlayerCharacter::InitPlayerAnimInstance()
+{
+	PlayerAnimInstance = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	if (PlayerAnimInstance)
+	{
+		PlayerAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleAttackAnimCompleted);
+		PlayerAnimInstance->OnBlockAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleBlockAnimCompleted);
+		PlayerAnimInstance->OnHitReactionAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleHitReactsionAnimCompleted);
+	}
 }
 
 void ASTPlayerCharacter::InitQueues()
@@ -158,12 +164,13 @@ void ASTPlayerCharacter::Attack()
 {
 	if (CurrentEnemy == nullptr) return;
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
-	
+	if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
+
 	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
 	TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
 	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
 	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
-	EnemyInteract(AttackQ, MontageAttack, ComboEndersArray, MontageComboEnder, 30.f, bIsEnemyFrontFacing);
+	EnemyInteract(AttackQ, MontageAttack, ComboEndersArray, MontageComboEnder, SWORD_DAMAGE_PLAYER, bIsEnemyFrontFacing);
 }
 
 void ASTPlayerCharacter::Block()
@@ -173,9 +180,9 @@ void ASTPlayerCharacter::Block()
 	PlayerAnimInstance->Montage_Play(MontageBlock);
 	if (CurrentEnemy)
 	{
-		bool isAttacking = CurrentEnemy->GetMovementState() == EMovementStates::EPMS_Attacking;
-		if (isAttacking)
+		if (CurrentEnemy->IsAttacking())
 		{
+			if (bCanCounterAttack) bDidCounterAttack = true;
 			CurrentMWPSocketName = BLOCK_SOCKET;
 			OnWarpTargetUpdated();
 			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSectionName, MontageBlock);
@@ -194,13 +201,13 @@ void ASTPlayerCharacter::Block()
 void ASTPlayerCharacter::Kick()
 {
 	if (MontageKick == nullptr && MontageKickComboEnder == nullptr) return;
-	EnemyInteract(KickQueues, MontageKick, KickComboEnders, MontageKickComboEnder, 10.f);
+	EnemyInteract(KickQueues, MontageKick, KickComboEnders, MontageKickComboEnder, KICK_DAMAGE);
 }
 
 void ASTPlayerCharacter::Counter()
 {
 	if (MontageCounter == nullptr && MontageCounterComboEnder == nullptr) return;
-	EnemyInteract(CounterQueues, MontageCounter, CounterComboEnders, MontageCounterComboEnder, 10.f);
+	EnemyInteract(CounterQueues, MontageCounter, CounterComboEnders, MontageCounterComboEnder, STAGGER_DAMAGE);
 }
 
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)
@@ -223,8 +230,16 @@ void ASTPlayerCharacter::OnComboEnderCompleted()
 	HandleBasicAttackCompleted();
 }
 
+void ASTPlayerCharacter::HandleAttackAnimCompleted()
+{
+	Super::HandleAttackAnimCompleted();
+	HandleBasicAttackCompleted();
+}
+
 void ASTPlayerCharacter::HandleBasicAttackCompleted()
 {
+	bDidCounterAttack = false;
+	bCanCounterAttack = false;
 	bCanPerformNextAttack = true;
 	bIsLastBasicAttack = false;
 	NextAttackSectionName = ATTACK_DOWNSLASH;
@@ -244,7 +259,7 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 
 float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (PlayerAnimInstance)
+	if (PlayerAnimInstance && MontageHitReaction)
 	{
 		PlayerAnimInstance->Montage_Play(MontageHitReaction);
 		PlayerAnimInstance->Montage_JumpToSection(CurrentHRSectionName, MontageHitReaction);

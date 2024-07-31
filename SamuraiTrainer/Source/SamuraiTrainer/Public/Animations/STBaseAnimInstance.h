@@ -12,6 +12,7 @@ class UCharacterMovementComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHitReactionAnimCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttackAnimCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStaggeredAnimCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBlockAnimCompletedSignature);
 
 /**
  * 
@@ -30,6 +31,7 @@ public:
 	FHitReactionAnimCompletedSignature OnHitReactionAnimCompleted;
 	FAttackAnimCompletedSignature OnAttackAnimCompleted;
 	FStaggeredAnimCompletedSignature OnStaggeredAnimCompleted;
+	FBlockAnimCompletedSignature OnBlockAnimCompleted;
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -40,6 +42,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleHitReactionAnimCompleted();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleBlockAnimCompleted();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = Movement)

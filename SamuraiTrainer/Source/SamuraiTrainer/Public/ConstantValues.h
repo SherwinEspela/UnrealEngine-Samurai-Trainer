@@ -45,3 +45,9 @@
 
 #define STAGGER_DOWNSLASH FName("StaggerDownslash")
 #define STAGGER_UPSLASH FName("StaggerUpslash")
+
+#define SWORD_DAMAGE_PLAYER 30.f
+#define SWORD_DAMAGE_ENEMY 20.f
+#define KICK_DAMAGE 10.f
+#define STAGGER_DAMAGE 5.f
+#define FATAL_DAMAGE 100.f

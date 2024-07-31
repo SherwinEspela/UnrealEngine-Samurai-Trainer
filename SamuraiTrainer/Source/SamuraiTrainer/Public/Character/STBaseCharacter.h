@@ -47,6 +47,9 @@ public:
 	FORCEINLINE bool IsHealthCritical() const { return bIsHealthCritical; }
 	FORCEINLINE EMovementStates GetMovementState() const { return MovementState; }
 	FORCEINLINE void SetMovementState(EMovementStates Value) { MovementState = Value; }
+	FORCEINLINE void SetCanCounterAttack(bool Value) { bCanCounterAttack = Value; }
+	FORCEINLINE bool IsAttacking() const { return MovementState == EMovementStates::EPMS_Attacking; }
+	FORCEINLINE bool DidCounterAttack() const { return bDidCounterAttack; }
 
 public:
 	FOnAttackStartedSignature OnAttackStarted;
@@ -71,6 +74,9 @@ protected:
 	virtual void HandleHitReactsionAnimCompleted();
 
 	UFUNCTION()
+	virtual void HandleBlockAnimCompleted();
+
+	UFUNCTION()
 	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName);
 
 	UFUNCTION(BlueprintCallable)
@@ -78,6 +84,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnCounterAttackFrameEnded();
+
+	void ResetCounterAttackStates();
 
 protected:
 	// Character States
@@ -115,4 +123,6 @@ protected:
 	APawn* CurrentTargetPawn;
 	FName CurrentBlockSectionName;
 	FName CurrentHRSectionName;
+	bool bCanCounterAttack = false;
+	bool bDidCounterAttack = false;
 };

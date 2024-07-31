@@ -2,6 +2,7 @@
 
 
 #include "Character/STEnemyCharacter.h"
+#include "Character/STPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "AI/STEnemyAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -9,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animations/STEnemyAnimInstance.h"
 #include "ConstantValues.h"
+#include "Engine/DamageEvents.h"
 
 ASTEnemyCharacter::ASTEnemyCharacter()
 {
@@ -34,7 +36,7 @@ void ASTEnemyCharacter::BeginPlay()
 		EnemyAIController->Initialize(BehaviorTree);
 	}
 
-	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	PlayerCharacter = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	FAttackAndCounterReactionData AttackData1;
 	AttackData1.Attack = ATTACK_DOWNSLASH;
@@ -88,12 +90,19 @@ void ASTEnemyCharacter::OnCounterAttackFrameBegan()
 {
 	Super::OnCounterAttackFrameBegan();
 	UE_LOG(LogTemp, Warning, TEXT("ASTEnemyCharacter::OnCounterAttackFrameBegan"));
+	PlayerCharacter->SetCanCounterAttack(true);
 }
 
 void ASTEnemyCharacter::OnCounterAttackFrameEnded()
 {
 	Super::OnCounterAttackFrameEnded();
 	UE_LOG(LogTemp, Warning, TEXT("ASTEnemyCharacter::OnCounterAttackFrameEnded..."));
+	PlayerCharacter->SetCanCounterAttack(false);
+	if (!PlayerCharacter->DidCounterAttack()) {
+		// Player failed to counter-attack
+		FDamageEvent DamageEvent;
+		PlayerCharacter->TakeDamage(SWORD_DAMAGE_ENEMY, DamageEvent, GetController(), this);
+	}
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -173,7 +182,7 @@ void ASTEnemyCharacter::PlayNextStagger()
 	}
 }
 
-APawn* ASTEnemyCharacter::GetPlayerPawn()
+ASTPlayerCharacter* ASTEnemyCharacter::GetPlayerCharacter()
 {
-	return PlayerPawn;
+	return PlayerCharacter;
 }
