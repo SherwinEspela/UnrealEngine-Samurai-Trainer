@@ -13,7 +13,7 @@ class UAnimMontage;
 class UBehaviorTree;
 class ASTEnemyAIController;
 class USTEnemyAnimInstance;
-struct FEnemyAttackData;
+struct FAttackAndCounterReactionData;
 
 /**
  * 
@@ -48,12 +48,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	APawn* GetPlayerPawn();
 
-	UFUNCTION(BlueprintCallable)
-	void UpdateWarpTarget(APawn* Target);
-
-	/*UFUNCTION(BlueprintCallable)
-	FTransform GetAttackTransform(FName SocketName) const;*/
-
 public:
 	FORCEINLINE void SetNextHitReactionSectionName(FName Value) { NextHitReactionSectionName = Value; }
 
@@ -68,10 +62,13 @@ protected:
 	virtual void HandleStaggerAnimCompleted() override;
 	virtual void HandleHitReactsionAnimCompleted() override;
 
+	virtual void OnCounterAttackFrameBegan() override;
+	virtual void OnCounterAttackFrameEnded() override;
+
 protected:
 	// Animations
-	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
-	UAnimMontage* MontageHitReaction;
+	/*UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageHitReaction;*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageCEHitReaction;
@@ -88,7 +85,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<ASTEnemyAIController> EnemyAIController;
 
-	TArray<FEnemyAttackData> SwordAttackSectionNames;
+	TArray<FAttackAndCounterReactionData> SwordAttacks;
 
 private:
 	USTEnemyAnimInstance* EnemyAnimInstance;

@@ -137,8 +137,7 @@ void ASTPlayerCharacter::EnemyInteract(
 			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageToPlay);
 		}
 
-		CurrentAttackSocketName = AttackData.AttackSocketName;
-		CurrentEnemy->UpdateWarpTarget(this);
+		CurrentMWPSocketName = AttackData.AttackSocketName;
 		OnWarpTargetUpdated();
 		CurrentEnemy->SetNextHitReactionSectionName(AttackData.HitReaction);
 		FDamageEvent DamageEvent;
@@ -177,10 +176,10 @@ void ASTPlayerCharacter::Block()
 		bool isAttacking = CurrentEnemy->GetMovementState() == EMovementStates::EPMS_Attacking;
 		if (isAttacking)
 		{
-			CurrentAttackSocketName = BLOCK_SOCKET;
+			CurrentMWPSocketName = BLOCK_SOCKET;
 			OnWarpTargetUpdated();
-			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSocketName, MontageBlock);
-			CurrentEnemy->PlayNextStagger(); // PlayAttackStagger(NextEnemyStaggerSocketName);
+			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSectionName, MontageBlock);
+			CurrentEnemy->PlayNextStagger();
 		}
 		else {
 			PrintMovementState(CurrentEnemy->GetMovementState());
@@ -233,15 +232,27 @@ void ASTPlayerCharacter::HandleBasicAttackCompleted()
 	SetMovementState(EMovementStates::EPMS_Idle);
 }
 
+void ASTPlayerCharacter::OnCounterAttackFrameBegan()
+{
+	Super::OnCounterAttackFrameBegan();
+}
+
 ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 {
 	return CurrentEnemy;
 }
 
-//FName ASTPlayerCharacter::GetAttackSocketName() const
-//{
-//	return CurrentAttackSocketName;
-//}
+float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (PlayerAnimInstance)
+	{
+		PlayerAnimInstance->Montage_Play(MontageHitReaction);
+		PlayerAnimInstance->Montage_JumpToSection(CurrentHRSectionName, MontageHitReaction);
+	}
+
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	return 0.0f;
+}
 
 void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -250,20 +261,14 @@ void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* Overla
 		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
 		if (CurrentEnemy)
 		{
-			//CurrentEnemy->OnAttackStartedWithTwoParams.AddDynamic(this, &ASTPlayerCharacter::OnEnemyAttackStartedWithTwoParams);
-			CurrentEnemy->OnAttackStarted.AddDynamic(this, &ASTPlayerCharacter::OnEnemyAttackStarted);
+			CurrentEnemy->OnAttackStartedWithTwoParams.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
 			CurrentTargetPawn = CurrentEnemy;
 		}
 	}
 }
 
-void ASTPlayerCharacter::OnEnemyAttackStarted(FName BlockSectionName)
+void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName)
 {
-	CurrentBlockSocketName = BlockSectionName;
+	CurrentBlockSectionName = BlockSectionName;
+	CurrentHRSectionName = HRSectionName;
 }
-
-//void ASTPlayerCharacter::OnEnemyAttackStartedWithTwoParams(FName BlockSectionName, FName StaggerSectionName)
-//{
-//	CurrentBlockSocketName = BlockSectionName;
-//	NextEnemyStaggerSocketName = StaggerSectionName;
-//}

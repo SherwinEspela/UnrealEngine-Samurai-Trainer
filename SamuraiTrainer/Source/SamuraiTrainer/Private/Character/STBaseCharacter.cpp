@@ -88,7 +88,7 @@ FTransform ASTBaseCharacter::GetAttackTransform(FName SocketName) const
 
 FName ASTBaseCharacter::GetAttackSocketName() const
 {
-	return CurrentAttackSocketName;
+	return CurrentMWPSocketName;
 }
 
 void ASTBaseCharacter::HandleAttackAnimCompleted()
@@ -105,3 +105,17 @@ void ASTBaseCharacter::HandleHitReactsionAnimCompleted()
 {
 	MovementState = EMovementStates::EPMS_Idle;
 }
+
+void ASTBaseCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName)
+{
+}
+
+void ASTBaseCharacter::OnCounterAttackFrameBegan()
+{
+
+}
+
+void ASTBaseCharacter::OnCounterAttackFrameEnded()
+{
+}
+

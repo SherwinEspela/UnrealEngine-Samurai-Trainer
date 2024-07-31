@@ -34,20 +34,22 @@ void ASTEnemyCharacter::BeginPlay()
 		EnemyAIController->Initialize(BehaviorTree);
 	}
 
-	FEnemyAttackData AttackData1;
+	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+	FAttackAndCounterReactionData AttackData1;
 	AttackData1.Attack = ATTACK_DOWNSLASH;
-	AttackData1.NextPlayerBlock = BLOCK_DOWNSLASH;
-	AttackData1.NextStagger = STAGGER_DOWNSLASH;
+	AttackData1.CounterBlock = BLOCK_DOWNSLASH;
+	AttackData1.CBStagger = STAGGER_DOWNSLASH;
+	AttackData1.MWPSocketName = ATTACK_SOCKET_FRONT;
 
-	FEnemyAttackData AttackData2;
+	FAttackAndCounterReactionData AttackData2;
 	AttackData2.Attack = ATTACK_UPSLASH;
-	AttackData2.NextPlayerBlock = BLOCK_UPSLASH;
-	AttackData2.NextStagger = STAGGER_UPSLASH;
+	AttackData2.CounterBlock = BLOCK_UPSLASH;
+	AttackData2.CBStagger = STAGGER_UPSLASH;
+	AttackData2.MWPSocketName = ATTACK_SOCKET_FRONT;
 
-	SwordAttackSectionNames.Add(AttackData1);
-	SwordAttackSectionNames.Add(AttackData2);
-
-
+	SwordAttacks.Add(AttackData1);
+	SwordAttacks.Add(AttackData2);
 }
 
 void ASTEnemyCharacter::SubscribeToAnimationEvents()
@@ -80,6 +82,18 @@ void ASTEnemyCharacter::HandleHitReactsionAnimCompleted()
 	{
 		EnemyAIController->SetHitReacting(false);
 	}
+}
+
+void ASTEnemyCharacter::OnCounterAttackFrameBegan()
+{
+	Super::OnCounterAttackFrameBegan();
+	UE_LOG(LogTemp, Warning, TEXT("ASTEnemyCharacter::OnCounterAttackFrameBegan"));
+}
+
+void ASTEnemyCharacter::OnCounterAttackFrameEnded()
+{
+	Super::OnCounterAttackFrameEnded();
+	UE_LOG(LogTemp, Warning, TEXT("ASTEnemyCharacter::OnCounterAttackFrameEnded..."));
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -125,10 +139,13 @@ void ASTEnemyCharacter::PlaySwordAttack()
 	if (EnemyAnimInstance && MontageSwordAttacks)
 	{
 		MovementState = EMovementStates::EPMS_Attacking;
-		int MaxIndex = SwordAttackSectionNames.Num();
-		FEnemyAttackData AttackData = SwordAttackSectionNames[FMath::RandRange(0, MaxIndex - 1)];
-		OnAttackStarted.Broadcast(AttackData.NextPlayerBlock);
-		NextStaggerSectionName = AttackData.NextStagger;
+		int MaxIndex = SwordAttacks.Num();
+		FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
+		//OnAttackStarted.Broadcast(AttackData.CounterBlock);
+		OnAttackStartedWithTwoParams.Broadcast(AttackData.CounterBlock, AttackData.HitReaction);
+		CurrentMWPSocketName = AttackData.MWPSocketName;
+		NextStaggerSectionName = AttackData.CBStagger;
+		OnWarpTargetUpdated();
 		EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 		EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
 	}
@@ -160,15 +177,3 @@ APawn* ASTEnemyCharacter::GetPlayerPawn()
 {
 	return PlayerPawn;
 }
-
-void ASTEnemyCharacter::UpdateWarpTarget(APawn* Target)
-{
-	this->GetTransform();
-	PlayerPawn = Target;
-	OnWarpTargetUpdated();
-}
-
-//FTransform ASTEnemyCharacter::GetAttackTransform(FName SocketName) const
-//{
-//	return this->GetMesh()->GetSocketTransform(SocketName, ERelativeTransformSpace::RTS_World);
-//}

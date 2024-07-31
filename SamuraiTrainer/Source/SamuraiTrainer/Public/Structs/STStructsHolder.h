@@ -38,6 +38,28 @@ public:
 	FName NextStagger;
 };
 
+USTRUCT(BlueprintType)
+struct FAttackAndCounterReactionData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName Attack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName CounterBlock;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName HitReaction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName CBStagger;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName MWPSocketName;
+};
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class USTStructsHolder : public UInterface

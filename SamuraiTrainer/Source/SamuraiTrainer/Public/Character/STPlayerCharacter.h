@@ -56,11 +56,18 @@ public:
 	UFUNCTION()
 	void HandleBasicAttackCompleted();
 
+	virtual void OnCounterAttackFrameBegan() override;
+
 	UFUNCTION(BlueprintCallable)
 	ASTEnemyCharacter* GetTargetLockedEnemy() const;
 
-	/*UFUNCTION(BlueprintCallable)
-	FName GetAttackSocketName() const;*/
+	virtual float TakeDamage
+	(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator,
+		AActor* DamageCauser
+	) override;
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
@@ -144,9 +151,6 @@ protected:
 	bool bCanPerformNextAttack = false;
 	bool bIsLastBasicAttack = false;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sword Damage Amount")
-	float DamageAmount = 30.f;
-
 protected:
 	UFUNCTION()
 	void OnEnemyDetectorBeginOverlap(
@@ -155,12 +159,12 @@ protected:
 		const FHitResult& SweepResult
 	);
 
-	UFUNCTION()
-	void OnEnemyAttackStarted(FName BlockSectionName);
+	/*UFUNCTION()
+	void OnEnemyAttackStarted(FName BlockSectionName);*/
+
+	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName) override;
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;
-	//FName CurrentAttackSocketName;
-	FName CurrentBlockSocketName;
-
+	
 };

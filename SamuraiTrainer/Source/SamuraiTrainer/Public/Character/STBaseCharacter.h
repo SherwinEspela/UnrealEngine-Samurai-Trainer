@@ -10,7 +10,7 @@
 class AKatana;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStartedSignature, FName, BlockSectionName);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackStartedWithTwoParamsSignature, FName, BlockSectionName, FName, StaggerSectionName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackStartedWithTwoParamsSignature, FName, BlockSectionName, FName, HRSectionName);
 
 UCLASS()
 class SAMURAITRAINER_API ASTBaseCharacter : public ACharacter
@@ -70,6 +70,15 @@ protected:
 	UFUNCTION()
 	virtual void HandleHitReactsionAnimCompleted();
 
+	UFUNCTION()
+	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnCounterAttackFrameBegan();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnCounterAttackFrameEnded();
+
 protected:
 	// Character States
 	UPROPERTY(VisibleAnywhere)
@@ -96,10 +105,14 @@ protected:
 protected:
 	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageHitReaction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageAttackStagger;
 
 protected:
-	FName CurrentAttackSocketName;
+	FName CurrentMWPSocketName;
 	APawn* CurrentTargetPawn;
-
+	FName CurrentBlockSectionName;
+	FName CurrentHRSectionName;
 };
