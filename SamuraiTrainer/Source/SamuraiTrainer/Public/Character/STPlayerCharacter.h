@@ -153,7 +153,6 @@ protected:
 
 	bool bIsSwordArmed = false;
 	bool bIsInteractingWithWeapon = false;
-	bool bCanPerformNextAttack = false;
 	bool bIsLastBasicAttack = false;
 
 protected:

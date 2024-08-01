@@ -133,7 +133,7 @@ void ASTPlayerCharacter::EnemyInteract(
 
 	if (CurrentEnemy)
 	{
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+		SetSlowMotion(false);
 		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
 
 		if (CurrentEnemy->IsHealthCritical())

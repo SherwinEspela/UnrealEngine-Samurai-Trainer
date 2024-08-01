@@ -121,10 +121,14 @@ protected:
 	UAnimMontage* MontageAttackStagger;
 
 protected:
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+	bool bCanApplyDamage;
+
 	FName CurrentMWPSocketName;
 	APawn* CurrentTargetPawn;
 	FName CurrentBlockSectionName;
 	FName CurrentHRSectionName;
 	bool bCanCounterAttack = false;
 	bool bDidCounterAttack = false;
+	bool bCanPerformNextAttack = false;
 };

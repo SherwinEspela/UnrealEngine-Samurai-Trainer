@@ -126,7 +126,11 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 		}
 	}
 
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (bCanApplyDamage)
+	{
+		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	}
+	
 	return 0.0f;
 }
 

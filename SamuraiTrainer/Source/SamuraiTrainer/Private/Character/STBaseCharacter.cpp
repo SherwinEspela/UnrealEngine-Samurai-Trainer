@@ -65,10 +65,14 @@ void ASTBaseCharacter::Tick(float DeltaTime)
 float ASTBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	DamageApplied = FMath::Min(Health, DamageApplied);
-	Health -= DamageApplied;
-	bIsHealthCritical = Health <= CriticalHealthAmount;
-
+	
+	if (bCanApplyDamage)
+	{
+		DamageApplied = FMath::Min(Health, DamageApplied);
+		Health -= DamageApplied;
+		bIsHealthCritical = Health <= CriticalHealthAmount;
+	}
+	
 	return DamageApplied;
 }
 
@@ -151,5 +155,6 @@ void ASTBaseCharacter::ResetCounterAttackStates()
 	bDidCounterAttack = false;
 	bCanCounterAttack = false;
 	MovementState = EMovementStates::EPMS_Idle;
+	bCanPerformNextAttack = true;
 }
 
