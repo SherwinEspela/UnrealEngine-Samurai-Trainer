@@ -59,6 +59,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionCounter;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* InputActionRestartLevel;
+
+private:
+	void RestartLevel();
+
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;
 	UEnhancedInputComponent* EnhancedInputComponent;
