@@ -13,6 +13,12 @@ class ASamuraiTrainerGameMode : public AGameModeBase
 
 public:
 	ASamuraiTrainerGameMode();
+
+	FORCEINLINE float GetSlowMotionTime() const { return SlowMotionTime; }
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "Time Controls")
+	float SlowMotionTime = 0.45f;
 };
 
 

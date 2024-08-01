@@ -9,6 +9,7 @@
 #include "Character/STEnemyCharacter.h"
 #include "Animations/PlayerAnimInstance.h"
 #include "Engine/DamageEvents.h"
+#include "Kismet/GameplayStatics.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -132,6 +133,9 @@ void ASTPlayerCharacter::EnemyInteract(
 
 	if (CurrentEnemy)
 	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
+
 		if (CurrentEnemy->IsHealthCritical())
 		{
 			AttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
@@ -164,7 +168,6 @@ void ASTPlayerCharacter::Attack()
 {
 	if (CurrentEnemy == nullptr) return;
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
-	if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
 
 	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
 	TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;

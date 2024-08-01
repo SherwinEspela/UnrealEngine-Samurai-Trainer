@@ -2,6 +2,8 @@
 
 #include "Character/STBaseCharacter.h"
 #include "Items/Katana.h"
+#include "Kismet/GameplayStatics.h"
+#include "SamuraiTrainer/SamuraiTrainerGameMode.h"
 
 ASTBaseCharacter::ASTBaseCharacter()
 {
@@ -89,6 +91,25 @@ FTransform ASTBaseCharacter::GetAttackTransform(FName SocketName) const
 FName ASTBaseCharacter::GetAttackSocketName() const
 {
 	return CurrentMWPSocketName;
+}
+
+void ASTBaseCharacter::SetSlowMotion(bool IsSlow)
+{
+	if (IsSlow)
+	{
+		ASamuraiTrainerGameMode* CurrentMode = Cast<ASamuraiTrainerGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+		if (CurrentMode)
+		{
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), CurrentMode->GetSlowMotionTime());
+		}
+	}
+	else {
+		float TimeDilation = UGameplayStatics::GetGlobalTimeDilation(GetWorld());
+		if (TimeDilation < 1.f)
+		{
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+		}
+	}
 }
 
 void ASTBaseCharacter::HandleAttackAnimCompleted()

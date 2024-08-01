@@ -43,6 +43,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FName GetAttackSocketName() const;
 
+	void SetSlowMotion(bool IsSlow = true);
+
 public:
 	FORCEINLINE bool IsHealthCritical() const { return bIsHealthCritical; }
 	FORCEINLINE EMovementStates GetMovementState() const { return MovementState; }

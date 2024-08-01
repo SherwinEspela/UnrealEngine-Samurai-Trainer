@@ -89,14 +89,15 @@ void ASTEnemyCharacter::HandleHitReactsionAnimCompleted()
 void ASTEnemyCharacter::OnCounterAttackFrameBegan()
 {
 	Super::OnCounterAttackFrameBegan();
-	UE_LOG(LogTemp, Warning, TEXT("ASTEnemyCharacter::OnCounterAttackFrameBegan"));
+	SetSlowMotion();
 	PlayerCharacter->SetCanCounterAttack(true);
 }
 
 void ASTEnemyCharacter::OnCounterAttackFrameEnded()
 {
 	Super::OnCounterAttackFrameEnded();
-	UE_LOG(LogTemp, Warning, TEXT("ASTEnemyCharacter::OnCounterAttackFrameEnded..."));
+	
+	SetSlowMotion(false);
 	PlayerCharacter->SetCanCounterAttack(false);
 	if (!PlayerCharacter->DidCounterAttack()) {
 		// Player failed to counter-attack
@@ -150,7 +151,6 @@ void ASTEnemyCharacter::PlaySwordAttack()
 		MovementState = EMovementStates::EPMS_Attacking;
 		int MaxIndex = SwordAttacks.Num();
 		FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
-		//OnAttackStarted.Broadcast(AttackData.CounterBlock);
 		OnAttackStartedWithTwoParams.Broadcast(AttackData.CounterBlock, AttackData.HitReaction);
 		CurrentMWPSocketName = AttackData.MWPSocketName;
 		NextStaggerSectionName = AttackData.CBStagger;
