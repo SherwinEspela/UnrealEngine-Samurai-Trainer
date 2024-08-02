@@ -31,7 +31,6 @@ public:
 
 	void SwordInteract();
 	void Attack();
-	void Block();
 	void Kick();
 	void Counter();
 
@@ -73,6 +72,11 @@ public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
 	FORCEINLINE void SetCanPerformNextAttack(bool Value) { bCanPerformNextAttack = Value; }
+
+public:
+	// Movmentments
+	virtual void Block() override;
+	virtual void HitReact() override;
 
 protected:
 	virtual void BeginPlay() override;

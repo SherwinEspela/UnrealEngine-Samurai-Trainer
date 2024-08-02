@@ -171,7 +171,6 @@ void ASTEnemyCharacter::PlayAttackStagger(FName SectionName)
 	if (EnemyAnimInstance && EnemyAIController)
 	{
 		EnemyAIController->SetStaggered();
-
 		EnemyAnimInstance->Montage_Play(MontageAttackStagger);
 		EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageAttackStagger);
 	}
@@ -179,6 +178,7 @@ void ASTEnemyCharacter::PlayAttackStagger(FName SectionName)
 
 void ASTEnemyCharacter::PlayNextStagger()
 {
+	MovementState = EMovementStates::EPMS_Staggered;
 	if (EnemyAnimInstance)
 	{
 		EnemyAnimInstance->Montage_Play(MontageAttackStagger);

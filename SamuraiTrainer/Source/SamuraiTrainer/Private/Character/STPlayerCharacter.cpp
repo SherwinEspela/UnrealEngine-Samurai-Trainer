@@ -38,7 +38,6 @@ void ASTPlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	bIsSwordArmed = false;
-	MovementState = EMovementStates::EPMS_Default;
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
 
@@ -159,13 +158,13 @@ void ASTPlayerCharacter::EnemyInteract(
 	}
 
 	MoveQueue.Enqueue(AttackData);
-
 	MovementState = EMovementStates::EPMS_Attacking;
 	bCanPerformNextAttack = false;
 }
 
 void ASTPlayerCharacter::Attack()
 {
+	if (!bCanSwordAttack) return;
 	if (CurrentEnemy == nullptr) return;
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
 
@@ -178,9 +177,11 @@ void ASTPlayerCharacter::Attack()
 
 void ASTPlayerCharacter::Block()
 {
+	if (MovementState != EMovementStates::EPMS_Idle) return;
 	if (MontageBlock == nullptr) return;
 
 	PlayerAnimInstance->Montage_Play(MontageBlock);
+	bCanSwordAttack = true;
 	if (CurrentEnemy)
 	{
 		if (CurrentEnemy->IsAttacking())
@@ -192,13 +193,14 @@ void ASTPlayerCharacter::Block()
 			CurrentEnemy->PlayNextStagger();
 		}
 		else {
-			PrintMovementState(CurrentEnemy->GetMovementState());
 			PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
 		}
 	}
 	else {
 		PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
 	}
+
+	Super::Block();
 }
 
 void ASTPlayerCharacter::Kick()
@@ -211,6 +213,17 @@ void ASTPlayerCharacter::Counter()
 {
 	if (MontageCounter == nullptr && MontageCounterComboEnder == nullptr) return;
 	EnemyInteract(CounterQueues, MontageCounter, CounterComboEnders, MontageCounterComboEnder, STAGGER_DAMAGE);
+}
+
+void ASTPlayerCharacter::HitReact()
+{
+	Super::HitReact();
+
+	if (PlayerAnimInstance && MontageHitReaction)
+	{
+		PlayerAnimInstance->Montage_Play(MontageHitReaction);
+		PlayerAnimInstance->Montage_JumpToSection(CurrentHRSectionName, MontageHitReaction);
+	}
 }
 
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)
@@ -262,12 +275,7 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 
 float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (PlayerAnimInstance && MontageHitReaction)
-	{
-		PlayerAnimInstance->Montage_Play(MontageHitReaction);
-		PlayerAnimInstance->Montage_JumpToSection(CurrentHRSectionName, MontageHitReaction);
-	}
-
+	HitReact();
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	return 0.0f;
 }
@@ -289,4 +297,5 @@ void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FNa
 {
 	CurrentBlockSectionName = BlockSectionName;
 	CurrentHRSectionName = HRSectionName;
+	bCanSwordAttack = false;
 }

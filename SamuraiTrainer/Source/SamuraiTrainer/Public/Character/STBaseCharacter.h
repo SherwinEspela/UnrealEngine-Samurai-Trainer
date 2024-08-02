@@ -61,8 +61,12 @@ protected:
 	virtual void BeginPlay() override;
 
 	void AttachSwordToSocket(FName SocketName);
-
 	bool DetermineTargetFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd);
+
+protected:
+	// Movmentments
+	virtual void Block();
+	virtual void HitReact();
 
 protected:
 	// Animation Event Handlers
@@ -98,7 +102,7 @@ protected:
 	float HealthMax = 100;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement States")
-	EMovementStates MovementState = EMovementStates::EPMS_Default;
+	EMovementStates MovementState = EMovementStates::EPMS_Idle;
 
 	bool bIsHealthCritical = false;
 
@@ -131,4 +135,5 @@ protected:
 	bool bCanCounterAttack = false;
 	bool bDidCounterAttack = false;
 	bool bCanPerformNextAttack = false;
+	bool bCanSwordAttack = true;
 };

@@ -14,8 +14,9 @@ ASTBaseCharacter::ASTBaseCharacter()
 void ASTBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	Health = HealthMax;
+	MovementState = EMovementStates::EPMS_Idle;
 
 	if (KatanaClass)
 	{
@@ -54,6 +55,16 @@ bool ASTBaseCharacter::DetermineTargetFacingByLineTrace(FVector LineTraceStart, 
 	}
 
 	return isFacingFront;
+}
+
+void ASTBaseCharacter::Block()
+{
+	MovementState = EMovementStates::EPMS_Blocking;
+}
+
+void ASTBaseCharacter::HitReact()
+{
+	MovementState = EMovementStates::EPMS_HitReacting;
 }
 
 void ASTBaseCharacter::Tick(float DeltaTime)
@@ -152,9 +163,10 @@ void ASTBaseCharacter::OnCounterAttackFrameEnded()
 
 void ASTBaseCharacter::ResetCounterAttackStates()
 {
+	MovementState = EMovementStates::EPMS_Idle;
 	bDidCounterAttack = false;
 	bCanCounterAttack = false;
-	MovementState = EMovementStates::EPMS_Idle;
 	bCanPerformNextAttack = true;
+	bCanSwordAttack = true;
 }
 
