@@ -132,7 +132,6 @@ void ASTPlayerCharacter::EnemyInteract(
 
 	if (CurrentEnemy)
 	{
-		SetSlowMotion(false);
 		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
 
 		if (CurrentEnemy->IsHealthCritical())
@@ -162,45 +161,30 @@ void ASTPlayerCharacter::EnemyInteract(
 	bCanPerformNextAttack = false;
 }
 
-void ASTPlayerCharacter::Attack()
+void ASTPlayerCharacter::SwordAttack()
 {
-	if (!bCanSwordAttack) return;
-	if (CurrentEnemy == nullptr) return;
-	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
+	SetSlowMotion(false);
+	if (bIsQTEMode)
+	{
+		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_SwordAttack;
+		QTEResult();
+		return;
+	}
 
-	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
-	TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
-	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
-	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
-	EnemyInteract(AttackQ, MontageAttack, ComboEndersArray, MontageComboEnder, SWORD_DAMAGE_PLAYER, bIsEnemyFrontFacing);
+	ExecuteSwordAttack();
 }
 
 void ASTPlayerCharacter::Block()
 {
-	if (MovementState != EMovementStates::EPMS_Idle) return;
-	if (MontageBlock == nullptr) return;
-
-	PlayerAnimInstance->Montage_Play(MontageBlock);
-	bCanSwordAttack = true;
-	if (CurrentEnemy)
+	SetSlowMotion(false);
+	if (bIsQTEMode)
 	{
-		if (CurrentEnemy->IsAttacking())
-		{
-			if (bCanCounterAttack) bDidCounterAttack = true;
-			CurrentMWPSocketName = BLOCK_SOCKET;
-			OnWarpTargetUpdated();
-			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSectionName, MontageBlock);
-			CurrentEnemy->PlayNextStagger();
-		}
-		else {
-			PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
-		}
-	}
-	else {
-		PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
+		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_Block;
+		QTEResult();
+		return;
 	}
 
-	Super::Block();
+	ExecuteBlock();
 }
 
 void ASTPlayerCharacter::Kick()
@@ -287,15 +271,87 @@ void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* Overla
 		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
 		if (CurrentEnemy)
 		{
-			CurrentEnemy->OnAttackStartedWithTwoParams.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+			CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
 			CurrentTargetPawn = CurrentEnemy;
 		}
 	}
 }
 
-void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName)
+void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType)
 {
 	CurrentBlockSectionName = BlockSectionName;
 	CurrentHRSectionName = HRSectionName;
+	CurrentPlayerQTEResponse = ResponseType;
 	bCanSwordAttack = false;
+	bIsQTEMode = true;
+}
+
+void ASTPlayerCharacter::QTEResult()
+{
+	if (ExpectedPlayerQTEResponse != CurrentPlayerQTEResponse)
+	{
+		// Player made a wrong QTE response
+		FDamageEvent DamageEvent;
+		TakeDamage(SWORD_DAMAGE_ENEMY, DamageEvent, GetController(), this);
+		return;
+	}
+
+	switch (CurrentPlayerQTEResponse)
+	{
+	case EPlayerQTEResponseType::EPQTER_SwordAttack:
+		ExecuteSwordAttack();
+		break;
+	case EPlayerQTEResponseType::EPQTER_Kick:
+		break;
+	case EPlayerQTEResponseType::EPQTER_Block:
+		ExecuteBlock();
+		break;
+	case EPlayerQTEResponseType::EPQTER_Evade:
+		break;
+	default:
+		break;
+	}
+}
+
+void ASTPlayerCharacter::ExecuteSwordAttack()
+{
+	if (MovementState != EMovementStates::EPMS_Idle) return;
+	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
+	if (!bCanSwordAttack) return;
+	if (CurrentEnemy == nullptr) return;
+	Super::SwordAttack();
+
+	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
+	TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
+	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
+	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
+	EnemyInteract(AttackQ, MontageAttack, ComboEndersArray, MontageComboEnder, SWORD_DAMAGE_PLAYER, bIsEnemyFrontFacing);
+}
+
+void ASTPlayerCharacter::ExecuteBlock()
+{
+	if (MovementState != EMovementStates::EPMS_Idle) return;
+	if (MontageBlock == nullptr) return;
+
+	PlayerAnimInstance->Montage_Play(MontageBlock);
+	bCanSwordAttack = true;
+	if (CurrentEnemy)
+	{
+		if (CurrentEnemy->IsAttacking())
+		{
+			if (bCanCounterAttack) bDidCounterAttack = true;
+			CurrentMWPSocketName = BLOCK_SOCKET;
+			OnWarpTargetUpdated();
+			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSectionName, MontageBlock);
+			CurrentEnemy->PlayNextStagger();
+		}
+		else {
+			PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
+		}
+	}
+	else {
+		PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
+	}
+
+	Super::Block();
 }

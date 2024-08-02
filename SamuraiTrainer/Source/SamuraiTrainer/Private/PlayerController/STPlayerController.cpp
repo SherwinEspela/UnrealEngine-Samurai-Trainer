@@ -61,7 +61,7 @@ void ASTPlayerController::SwordInteract()
 
 void ASTPlayerController::Attack()
 {
-	PlayerCharacter->Attack();
+	PlayerCharacter->SwordAttack();
 }
 
 void ASTPlayerController::Block()

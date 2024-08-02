@@ -13,6 +13,7 @@ UENUM(BlueprintType)
 enum class EMovementStates : uint8
 {
 	EPMS_Attacking		UMETA(DisplayName = "Attacking"),
+	EPMS_SwordAttacking	UMETA(DisplayName = "Sword Attacking"),
 	EPMS_Interacting	UMETA(DisplayName = "Interacting"),
 	EPMS_Idle			UMETA(DisplayName = "Idle"),
 	EPMS_Blocking		UMETA(DisplayName = "Blocking"),

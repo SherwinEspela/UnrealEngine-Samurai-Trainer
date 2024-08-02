@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/STBaseCharacter.h"
 #include "ConstantValues.h"
+#include "PlayerQTEResponseEnum.h"
 #include "Structs/STStructsHolder.h"
 #include "STPlayerCharacter.generated.h"
 
@@ -30,7 +31,6 @@ public:
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 
 	void SwordInteract();
-	void Attack();
 	void Kick();
 	void Counter();
 
@@ -75,6 +75,7 @@ public:
 
 public:
 	// Movmentments
+	virtual void SwordAttack() override;
 	virtual void Block() override;
 	virtual void HitReact() override;
 
@@ -158,6 +159,7 @@ protected:
 	bool bIsSwordArmed = false;
 	bool bIsInteractingWithWeapon = false;
 	bool bIsLastBasicAttack = false;
+	bool bIsQTEMode = false;
 
 protected:
 	UFUNCTION()
@@ -167,9 +169,20 @@ protected:
 		const FHitResult& SweepResult
 	);
 
-	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName) override;
+	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType) override;
+
+protected:
+	// QTE
+	EPlayerQTEResponseType CurrentPlayerQTEResponse;
+	EPlayerQTEResponseType ExpectedPlayerQTEResponse;
+	virtual void QTEResult();
+
+private:
+	// Movement Execution
+	void ExecuteSwordAttack();
+	void ExecuteBlock();
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;
-	
+
 };

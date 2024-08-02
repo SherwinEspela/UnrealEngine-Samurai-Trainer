@@ -57,6 +57,11 @@ bool ASTBaseCharacter::DetermineTargetFacingByLineTrace(FVector LineTraceStart, 
 	return isFacingFront;
 }
 
+void ASTBaseCharacter::SwordAttack()
+{
+	MovementState = EMovementStates::EPMS_SwordAttacking;
+}
+
 void ASTBaseCharacter::Block()
 {
 	MovementState = EMovementStates::EPMS_Blocking;
@@ -147,7 +152,7 @@ void ASTBaseCharacter::HandleBlockAnimCompleted()
 	ResetCounterAttackStates();
 }
 
-void ASTBaseCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName)
+void ASTBaseCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType)
 {
 }
 

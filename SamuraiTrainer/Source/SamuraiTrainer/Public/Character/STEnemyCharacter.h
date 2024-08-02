@@ -40,6 +40,7 @@ public:
 public:
 	void PlayHitReaction(FName SectionName);
 
+	// Called in the AI Controller
 	UFUNCTION(BlueprintCallable)
 	void PlaySwordAttack();
 
@@ -48,6 +49,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	ASTPlayerCharacter* GetPlayerCharacter();
+
+public:
+	// Movmentments
+	virtual void SwordAttack() override;
 
 public:
 	FORCEINLINE void SetNextHitReactionSectionName(FName Value) { NextHitReactionSectionName = Value; }

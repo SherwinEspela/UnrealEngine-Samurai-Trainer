@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CustomEnums.h"
+#include "PlayerQTEResponseEnum.h"
 #include "STBaseCharacter.generated.h"
 
 class AKatana;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStartedSignature, FName, BlockSectionName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackStartedWithTwoParamsSignature, FName, BlockSectionName, FName, HRSectionName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAttackStartedWith3ParamsSignature, FName, BlockSectionName, FName, HRSectionName, EPlayerQTEResponseType, PlayerQTEResposeType);
 
 UCLASS()
 class SAMURAITRAINER_API ASTBaseCharacter : public ACharacter
@@ -46,6 +48,12 @@ public:
 	void SetSlowMotion(bool IsSlow = true);
 
 public:
+	// Movmentments
+	virtual void SwordAttack();
+	virtual void Block();
+	virtual void HitReact();
+
+public:
 	FORCEINLINE bool IsHealthCritical() const { return bIsHealthCritical; }
 	FORCEINLINE EMovementStates GetMovementState() const { return MovementState; }
 	FORCEINLINE void SetMovementState(EMovementStates Value) { MovementState = Value; }
@@ -56,17 +64,13 @@ public:
 public:
 	FOnAttackStartedSignature OnAttackStarted;
 	FOnAttackStartedWithTwoParamsSignature OnAttackStartedWithTwoParams;
+	FOnAttackStartedWith3ParamsSignature OnAttackStartedWith3Params;
 
 protected:
 	virtual void BeginPlay() override;
 
 	void AttachSwordToSocket(FName SocketName);
 	bool DetermineTargetFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd);
-
-protected:
-	// Movmentments
-	virtual void Block();
-	virtual void HitReact();
 
 protected:
 	// Animation Event Handlers
@@ -83,7 +87,7 @@ protected:
 	virtual void HandleBlockAnimCompleted();
 
 	UFUNCTION()
-	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName);
+	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnCounterAttackFrameBegan();

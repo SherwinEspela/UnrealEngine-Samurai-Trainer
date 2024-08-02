@@ -150,18 +150,7 @@ void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 
 void ASTEnemyCharacter::PlaySwordAttack()
 {
-	if (EnemyAnimInstance && MontageSwordAttacks)
-	{
-		MovementState = EMovementStates::EPMS_Attacking;
-		int MaxIndex = SwordAttacks.Num();
-		FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
-		OnAttackStartedWithTwoParams.Broadcast(AttackData.CounterBlock, AttackData.HitReaction);
-		CurrentMWPSocketName = AttackData.MWPSocketName;
-		NextStaggerSectionName = AttackData.CBStagger;
-		OnWarpTargetUpdated();
-		EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
-		EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
-	}
+	SwordAttack();
 }
 
 void ASTEnemyCharacter::PlayAttackStagger(FName SectionName)
@@ -189,4 +178,20 @@ void ASTEnemyCharacter::PlayNextStagger()
 ASTPlayerCharacter* ASTEnemyCharacter::GetPlayerCharacter()
 {
 	return PlayerCharacter;
+}
+
+void ASTEnemyCharacter::SwordAttack()
+{
+	if (EnemyAnimInstance == nullptr || MontageSwordAttacks == nullptr) return;
+
+	int MaxIndex = SwordAttacks.Num();
+	FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
+	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block);
+	CurrentMWPSocketName = AttackData.MWPSocketName;
+	NextStaggerSectionName = AttackData.CBStagger;
+	OnWarpTargetUpdated();
+	EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
+	EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
+
+	Super::SwordAttack();
 }
