@@ -30,10 +30,6 @@ public:
 public:
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 
-	void SwordInteract();
-	void Kick();
-	void Counter();
-
 	UFUNCTION(BlueprintCallable)
 	void OnComboFrameBegan(bool IsLastBasicAttack);
 
@@ -75,7 +71,10 @@ public:
 
 public:
 	// Movmentments
+	void SwordInteract();
 	virtual void SwordAttack() override;
+	void Kick();
+	void Counter();
 	virtual void Block() override;
 	virtual void HitReact() override;
 
@@ -181,6 +180,8 @@ private:
 	// Movement Execution
 	void ExecuteSwordAttack();
 	void ExecuteBlock();
+	void ExecuteKick();
+	void ExecuteCounter();
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;

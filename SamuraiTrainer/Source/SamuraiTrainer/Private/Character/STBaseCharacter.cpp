@@ -59,6 +59,7 @@ bool ASTBaseCharacter::DetermineTargetFacingByLineTrace(FVector LineTraceStart, 
 
 void ASTBaseCharacter::SwordAttack()
 {
+
 	MovementState = EMovementStates::EPMS_SwordAttacking;
 }
 

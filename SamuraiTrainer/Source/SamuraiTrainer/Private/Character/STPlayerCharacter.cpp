@@ -189,14 +189,28 @@ void ASTPlayerCharacter::Block()
 
 void ASTPlayerCharacter::Kick()
 {
-	if (MontageKick == nullptr && MontageKickComboEnder == nullptr) return;
-	EnemyInteract(KickQueues, MontageKick, KickComboEnders, MontageKickComboEnder, KICK_DAMAGE);
+	SetSlowMotion(false);
+	if (bIsQTEMode)
+	{
+		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_Kick;
+		QTEResult();
+		return;
+	}
+
+	ExecuteKick();
 }
 
 void ASTPlayerCharacter::Counter()
 {
-	if (MontageCounter == nullptr && MontageCounterComboEnder == nullptr) return;
-	EnemyInteract(CounterQueues, MontageCounter, CounterComboEnders, MontageCounterComboEnder, STAGGER_DAMAGE);
+	SetSlowMotion(false);
+	if (bIsQTEMode)
+	{
+		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_Counter;
+		QTEResult();
+		return;
+	}
+
+	ExecuteCounter();
 }
 
 void ASTPlayerCharacter::HitReact()
@@ -281,13 +295,16 @@ void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FNa
 {
 	CurrentBlockSectionName = BlockSectionName;
 	CurrentHRSectionName = HRSectionName;
-	CurrentPlayerQTEResponse = ResponseType;
+	ExpectedPlayerQTEResponse = ResponseType;
 	bCanSwordAttack = false;
 	bIsQTEMode = true;
 }
 
 void ASTPlayerCharacter::QTEResult()
 {
+	bIsQTEMode = false;
+	bDidCounterAttack = true;
+
 	if (ExpectedPlayerQTEResponse != CurrentPlayerQTEResponse)
 	{
 		// Player made a wrong QTE response
@@ -302,11 +319,13 @@ void ASTPlayerCharacter::QTEResult()
 		ExecuteSwordAttack();
 		break;
 	case EPlayerQTEResponseType::EPQTER_Kick:
+		ExecuteKick();
 		break;
 	case EPlayerQTEResponseType::EPQTER_Block:
 		ExecuteBlock();
 		break;
-	case EPlayerQTEResponseType::EPQTER_Evade:
+	case EPlayerQTEResponseType::EPQTER_Counter:
+		ExecuteCounter();
 		break;
 	default:
 		break;
@@ -315,7 +334,7 @@ void ASTPlayerCharacter::QTEResult()
 
 void ASTPlayerCharacter::ExecuteSwordAttack()
 {
-	if (MovementState != EMovementStates::EPMS_Idle) return;
+	//if (MovementState != EMovementStates::EPMS_Idle) return;
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
 	if (!bCanSwordAttack) return;
 	if (CurrentEnemy == nullptr) return;
@@ -343,6 +362,7 @@ void ASTPlayerCharacter::ExecuteBlock()
 			CurrentMWPSocketName = BLOCK_SOCKET;
 			OnWarpTargetUpdated();
 			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSectionName, MontageBlock);
+		
 			CurrentEnemy->PlayNextStagger();
 		}
 		else {
@@ -354,4 +374,16 @@ void ASTPlayerCharacter::ExecuteBlock()
 	}
 
 	Super::Block();
+}
+
+void ASTPlayerCharacter::ExecuteKick()
+{
+	if (MontageKick == nullptr && MontageKickComboEnder == nullptr) return;
+	EnemyInteract(KickQueues, MontageKick, KickComboEnders, MontageKickComboEnder, KICK_DAMAGE);
+}
+
+void ASTPlayerCharacter::ExecuteCounter()
+{
+	if (MontageCounter == nullptr && MontageCounterComboEnder == nullptr) return;
+	EnemyInteract(CounterQueues, MontageCounter, CounterComboEnders, MontageCounterComboEnder, STAGGER_DAMAGE);
 }

@@ -184,6 +184,7 @@ void ASTEnemyCharacter::SwordAttack()
 {
 	if (EnemyAnimInstance == nullptr || MontageSwordAttacks == nullptr) return;
 
+	MovementState = EMovementStates::EPMS_Attacking;
 	int MaxIndex = SwordAttacks.Num();
 	FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
 	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block);
@@ -192,6 +193,4 @@ void ASTEnemyCharacter::SwordAttack()
 	OnWarpTargetUpdated();
 	EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 	EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
-
-	Super::SwordAttack();
 }
