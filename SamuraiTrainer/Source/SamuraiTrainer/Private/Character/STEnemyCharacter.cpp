@@ -139,6 +139,21 @@ void ASTEnemyCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 }
 
+void ASTEnemyCharacter::AttackReaction(float DamageAmount, FName HitReaction)
+{
+	const int BlockChances = FMath::RandRange(0, 100);
+	bool CanBlock = BlockChances > 80;
+	if (CanBlock)
+	{
+
+	}
+	else {
+		FDamageEvent DamageEvent;
+		NextHitReactionSectionName = HitReaction;
+		TakeDamage(DamageAmount, DamageEvent, PlayerCharacter->GetController(), PlayerCharacter);
+	}
+}
+
 void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 {
 	if (EnemyAnimInstance && MontageHitReaction)
@@ -193,4 +208,10 @@ void ASTEnemyCharacter::SwordAttack()
 	OnWarpTargetUpdated();
 	EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 	EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
+}
+
+void ASTEnemyCharacter::Block(FName SectionName)
+{
+	EnemyAnimInstance->Montage_Play(MontageBlock);
+	EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageBlock);
 }

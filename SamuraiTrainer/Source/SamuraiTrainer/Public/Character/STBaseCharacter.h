@@ -51,6 +51,7 @@ public:
 	// Movmentments
 	virtual void SwordAttack();
 	virtual void Block();
+	virtual void Block(FName SectionName);
 	virtual void HitReact();
 
 public:
@@ -127,6 +128,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageAttackStagger;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageBlock;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Debugging")

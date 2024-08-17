@@ -20,6 +20,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName AttackSocketName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName Block;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName AttackStagger;
 };
 
 USTRUCT(BlueprintType)

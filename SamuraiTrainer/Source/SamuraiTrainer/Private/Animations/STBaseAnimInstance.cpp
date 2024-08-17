@@ -54,3 +54,8 @@ void USTBaseAnimInstance::HandleBlockAnimCompleted()
 {
 	OnBlockAnimCompleted.Broadcast();
 }
+
+void USTBaseAnimInstance::HandleEnemyCanBlockEvent()
+{
+	OnEnemyCanBlockEvent.Broadcast();
+}

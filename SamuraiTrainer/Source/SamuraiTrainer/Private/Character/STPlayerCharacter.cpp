@@ -58,13 +58,16 @@ void ASTPlayerCharacter::InitPlayerAnimInstance()
 		PlayerAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleAttackAnimCompleted);
 		PlayerAnimInstance->OnBlockAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleBlockAnimCompleted);
 		PlayerAnimInstance->OnHitReactionAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleHitReactsionAnimCompleted);
+		PlayerAnimInstance->OnEnemyCanBlockEvent.AddDynamic(this, &ASTPlayerCharacter::HandleEnemyCanBlockEvent);
+		PlayerAnimInstance->OnStaggeredAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleStaggerAnimCompleted);
 	}
 }
 
 void ASTPlayerCharacter::InitQueues()
 {
-	FrontAttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HIT_REACTION_DOWNSLASH, ATTACK_SOCKET_FRONT));
-	FrontAttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HIT_REACTION_UPSLASH, ATTACK_SOCKET_FRONT));
+	FrontAttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HIT_REACTION_DOWNSLASH, ATTACK_SOCKET_FRONT, BLOCK_DOWNSLASH, STAGGER_DOWNSLASH));
+	FrontAttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HIT_REACTION_UPSLASH, ATTACK_SOCKET_FRONT, BLOCK_UPSLASH, STAGGER_UPSLASH));
+
 	BackAttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HR_BEHIND1, ATTACK_SOCKET_BACK));
 	BackAttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HR_BEHIND2, ATTACK_SOCKET_BACK));
 
@@ -136,20 +139,29 @@ void ASTPlayerCharacter::EnemyInteract(
 
 		if (CurrentEnemy->IsHealthCritical())
 		{
-			AttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
+			CurrentAttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
 			PlayerAnimInstance->Montage_Play(MontageEnder);
-			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageEnder);
+			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageEnder);
 		}
 		else {
 			PlayerAnimInstance->Montage_Play(MontageToPlay);
-			PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageToPlay);
+			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageToPlay);
 		}
 
 		CurrentMWPSocketName = AttackData.AttackSocketName;
 		OnWarpTargetUpdated();
-		CurrentEnemy->SetNextHitReactionSectionName(AttackData.HitReaction);
-		FDamageEvent DamageEvent;
-		CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
+
+		const int BlockChances = FMath::RandRange(0, 100);
+		bEnemyCanBlock = BlockChances > 50;
+
+		if (!bEnemyCanBlock)
+		{
+			// Enemy takes hit
+			CurrentEnemy->SetNextHitReactionSectionName(CurrentAttackData.HitReaction);
+			FDamageEvent DamageEvent;
+			// TODO: remove hardcoded damage value
+			CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
+		}
 	}
 	else {
 		PlayerAnimInstance->Montage_Play(MontageToPlay);
@@ -224,6 +236,17 @@ void ASTPlayerCharacter::HitReact()
 	}
 }
 
+void ASTPlayerCharacter::PlayAttackStagger(FName SectionName)
+{
+	Super::PlayAttackStagger(SectionName);
+
+	if (PlayerAnimInstance && MontageAttackStagger)
+	{
+		PlayerAnimInstance->Montage_Play(MontageAttackStagger);
+		PlayerAnimInstance->Montage_JumpToSection(CurrentHRSectionName, MontageAttackStagger);
+	}
+}
+
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)
 {
 	bIsLastBasicAttack = IsLastBasicAttack;
@@ -248,6 +271,17 @@ void ASTPlayerCharacter::HandleAttackAnimCompleted()
 {
 	Super::HandleAttackAnimCompleted();
 	HandleBasicAttackCompleted();
+}
+
+void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
+{
+	if (bEnemyCanBlock)
+	{
+		// Enemy blocks or evade the attack
+		CurrentEnemy->Block(CurrentAttackData.Block);
+		PlayerAnimInstance->Montage_Play(MontageAttackStagger);
+		PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.AttackStagger, MontageAttackStagger);
+	}
 }
 
 void ASTPlayerCharacter::HandleBasicAttackCompleted()

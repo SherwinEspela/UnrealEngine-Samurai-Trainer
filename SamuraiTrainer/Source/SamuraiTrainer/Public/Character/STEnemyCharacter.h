@@ -38,6 +38,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 public:
+	void AttackReaction(float Damage, FName HitReaction);
+
 	void PlayHitReaction(FName SectionName);
 
 	// Called in the AI Controller
@@ -53,6 +55,7 @@ public:
 public:
 	// Movmentments
 	virtual void SwordAttack() override;
+	virtual void Block(FName SectionName) override;
 
 public:
 	FORCEINLINE void SetNextHitReactionSectionName(FName Value) { NextHitReactionSectionName = Value; }

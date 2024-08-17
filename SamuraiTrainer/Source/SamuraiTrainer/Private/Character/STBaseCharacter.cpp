@@ -68,6 +68,11 @@ void ASTBaseCharacter::Block()
 	MovementState = EMovementStates::EPMS_Blocking;
 }
 
+void ASTBaseCharacter::Block(FName SectionName)
+{
+	MovementState = EMovementStates::EPMS_Blocking;
+}
+
 void ASTBaseCharacter::HitReact()
 {
 	MovementState = EMovementStates::EPMS_HitReacting;

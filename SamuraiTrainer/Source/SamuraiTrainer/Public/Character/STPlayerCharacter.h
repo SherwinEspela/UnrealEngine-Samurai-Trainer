@@ -77,6 +77,7 @@ public:
 	void Counter();
 	virtual void Block() override;
 	virtual void HitReact() override;
+	virtual void PlayAttackStagger(FName SectionName) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -95,6 +96,9 @@ protected:
 protected:
 	// Animation Event Handlers
 	virtual void HandleAttackAnimCompleted() override;
+
+	UFUNCTION()
+	virtual void HandleEnemyCanBlockEvent();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
@@ -123,6 +127,8 @@ protected:
 	TArray<FAttackData> CounterComboEnders;
 	TArray<FAttackData> AttackCounterList;
 
+	FAttackData CurrentAttackData;
+
 protected:
 	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
@@ -142,9 +148,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageCounterComboEnder;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
-	UAnimMontage* MontageBlock;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageKick;
@@ -185,5 +188,6 @@ private:
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;
+	bool bEnemyCanBlock;
 
 };
