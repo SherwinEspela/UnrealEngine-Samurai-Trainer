@@ -65,14 +65,32 @@ void ASTPlayerCharacter::InitPlayerAnimInstance()
 
 void ASTPlayerCharacter::InitQueues()
 {
-	FrontAttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HIT_REACTION_DOWNSLASH, ATTACK_SOCKET_FRONT, BLOCK_DOWNSLASH, STAGGER_DOWNSLASH));
-	FrontAttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HIT_REACTION_UPSLASH, ATTACK_SOCKET_FRONT, BLOCK_UPSLASH, STAGGER_UPSLASH));
+	FAttackData Attack1 = FAttackData(ATTACK_DOWNSLASH, HIT_REACTION_DOWNSLASH, ATTACK_SOCKET_FRONT, BLOCK_UPSLASH, STAGGER_UPSLASH);
+	FAttackData Attack2 = FAttackData(ATTACK_UPSLASH, HIT_REACTION_UPSLASH, ATTACK_SOCKET_FRONT, BLOCK_DOWNSLASH, STAGGER_DOWNSLASH);
 
-	BackAttackQueues.Enqueue(FAttackData(ATTACK_DOWNSLASH, HR_BEHIND1, ATTACK_SOCKET_BACK));
-	BackAttackQueues.Enqueue(FAttackData(ATTACK_UPSLASH, HR_BEHIND2, ATTACK_SOCKET_BACK));
+	Attack1.AttackType = EAttackType::EAT_Sword;
+	Attack2.AttackType = EAttackType::EAT_Sword;
 
-	KickQueues.Enqueue(FAttackData(KICK1, HIT_REACTION_KICK1, ATTACK_SOCKET_FRONT));
-	KickQueues.Enqueue(FAttackData(KICK2, HIT_REACTION_KICK2, ATTACK_SOCKET_FRONT));
+	FrontAttackQueues.Enqueue(Attack1);
+	FrontAttackQueues.Enqueue(Attack2);
+
+	FAttackData BackAttack1 = FAttackData(ATTACK_DOWNSLASH, HR_BEHIND1, ATTACK_SOCKET_BACK);
+	FAttackData BackAttack2 = FAttackData(ATTACK_UPSLASH, HR_BEHIND2, ATTACK_SOCKET_BACK);
+	
+	BackAttack1.AttackType = EAttackType::EAT_Sword;
+	BackAttack2.AttackType = EAttackType::EAT_Sword;
+
+	BackAttackQueues.Enqueue(BackAttack1);
+	BackAttackQueues.Enqueue(BackAttack2);
+
+	FAttackData Kick1 = FAttackData(KICK1, HIT_REACTION_KICK1, ATTACK_SOCKET_FRONT);
+	FAttackData Kick2 = FAttackData(KICK2, HIT_REACTION_KICK2, ATTACK_SOCKET_FRONT);
+
+	Kick1.AttackType = EAttackType::EAT_Kick;
+	Kick2.AttackType = EAttackType::EAT_Kick;
+
+	KickQueues.Enqueue(Kick1);
+	KickQueues.Enqueue(Kick2);
 
 	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1, ATTACK_SOCKET_FRONT));
 	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2, ATTACK_SOCKET_FRONT));
@@ -129,9 +147,7 @@ void ASTPlayerCharacter::EnemyInteract(
 {
 	if (!bCanPerformNextAttack) return;
 	if (PlayerAnimInstance == nullptr) return;
-
-	FAttackData AttackData;
-	MoveQueue.Dequeue(AttackData);
+	MoveQueue.Dequeue(CurrentAttackData);
 
 	if (CurrentEnemy)
 	{
@@ -148,27 +164,26 @@ void ASTPlayerCharacter::EnemyInteract(
 			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageToPlay);
 		}
 
-		CurrentMWPSocketName = AttackData.AttackSocketName;
+		CurrentMWPSocketName = CurrentAttackData.AttackSocketName;
 		OnWarpTargetUpdated();
 
-		const int BlockChances = FMath::RandRange(0, 100);
-		bEnemyCanBlock = BlockChances > 50;
+		const int Chances = FMath::RandRange(0, 100);
+		bEnemyCanBlockOrEvade = Chances > 50;
 
-		if (!bEnemyCanBlock)
+		if (!bEnemyCanBlockOrEvade)
 		{
 			// Enemy takes hit
 			CurrentEnemy->SetNextHitReactionSectionName(CurrentAttackData.HitReaction);
 			FDamageEvent DamageEvent;
-			// TODO: remove hardcoded damage value
 			CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
 		}
 	}
 	else {
 		PlayerAnimInstance->Montage_Play(MontageToPlay);
-		PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageToPlay);
+		PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageToPlay);
 	}
 
-	MoveQueue.Enqueue(AttackData);
+	MoveQueue.Enqueue(CurrentAttackData);
 	MovementState = EMovementStates::EPMS_Attacking;
 	bCanPerformNextAttack = false;
 }
@@ -275,12 +290,21 @@ void ASTPlayerCharacter::HandleAttackAnimCompleted()
 
 void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
 {
-	if (bEnemyCanBlock)
+	if (!bEnemyCanBlockOrEvade) return;
+
+	EAttackType AttackType = CurrentAttackData.AttackType;
+	switch (AttackType)
 	{
-		// Enemy blocks or evade the attack
+	case EAttackType::EAT_Sword:
 		CurrentEnemy->Block(CurrentAttackData.Block);
 		PlayerAnimInstance->Montage_Play(MontageAttackStagger);
 		PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.AttackStagger, MontageAttackStagger);
+		break;
+	case EAttackType::EAT_Kick:
+		CurrentEnemy->Counter();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -412,7 +436,7 @@ void ASTPlayerCharacter::ExecuteBlock()
 
 void ASTPlayerCharacter::ExecuteKick()
 {
-	if (MontageKick == nullptr && MontageKickComboEnder == nullptr) return;
+	//if (MontageKick == nullptr && MontageKickComboEnder == nullptr) return;
 	EnemyInteract(KickQueues, MontageKick, KickComboEnders, MontageKickComboEnder, KICK_DAMAGE);
 }
 

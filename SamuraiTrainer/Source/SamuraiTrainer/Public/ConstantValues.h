@@ -30,6 +30,7 @@
 #define HR_COUNTER1 FName("HRCounter1")
 #define HR_COUNTER2 FName("HRCounter2")
 #define HR_COUNTER_BLANK FName("CounterBlank")
+#define COUNTER5 FName("Counter5")
 
 #define SWORD_ATTACK_COMBO_END1 FName("ComboEnd1")
 #define SWORD_ATTACK_COMBO_END2 FName("ComboEnd2")

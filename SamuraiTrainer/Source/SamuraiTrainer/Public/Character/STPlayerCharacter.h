@@ -152,9 +152,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageKick;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
-	UAnimMontage* MontageCounter;
-
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
 	FName NextHitReactionSectionName = HIT_REACTION_DOWNSLASH;
 
@@ -188,6 +185,6 @@ private:
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;
-	bool bEnemyCanBlock;
+	bool bEnemyCanBlockOrEvade;
 
 };

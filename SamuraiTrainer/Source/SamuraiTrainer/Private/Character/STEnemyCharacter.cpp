@@ -212,6 +212,14 @@ void ASTEnemyCharacter::SwordAttack()
 
 void ASTEnemyCharacter::Block(FName SectionName)
 {
+	if (!MontageBlock) return;
 	EnemyAnimInstance->Montage_Play(MontageBlock);
 	EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageBlock);
+}
+
+void ASTEnemyCharacter::Counter()
+{
+	if (!MontageCounter) return;
+	EnemyAnimInstance->Montage_Play(MontageCounter);
+	EnemyAnimInstance->Montage_JumpToSection(COUNTER5, MontageCounter);
 }

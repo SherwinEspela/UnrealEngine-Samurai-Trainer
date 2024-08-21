@@ -132,6 +132,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageBlock;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageCounter;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Debugging")
 	bool bCanApplyDamage;

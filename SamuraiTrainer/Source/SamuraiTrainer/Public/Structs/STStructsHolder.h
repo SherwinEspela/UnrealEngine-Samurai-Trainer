@@ -26,7 +26,20 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName AttackStagger;
+
+	EAttackType AttackType;
 };
+
+UENUM(BlueprintType)
+enum class EAttackType : uint8
+{
+	EAT_Sword		UMETA(DisplayName = "Sword"),
+	EAT_Kick		UMETA(DisplayName = "Kick")
+};
+
+FORCEINLINE void PrintAttackType(EAttackType Value) {
+	UE_LOG(LogTemp, Log, TEXT("Attack Type is : %s"), *UEnum::GetValueAsName(Value).ToString());
+}
 
 USTRUCT(BlueprintType)
 struct FEnemyAttackData

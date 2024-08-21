@@ -56,6 +56,7 @@ public:
 	// Movmentments
 	virtual void SwordAttack() override;
 	virtual void Block(FName SectionName) override;
+	virtual void Counter();
 
 public:
 	FORCEINLINE void SetNextHitReactionSectionName(FName Value) { NextHitReactionSectionName = Value; }
