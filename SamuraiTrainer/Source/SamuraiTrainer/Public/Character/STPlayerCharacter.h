@@ -100,6 +100,9 @@ protected:
 	UFUNCTION()
 	virtual void HandleEnemyCanBlockEvent();
 
+	UFUNCTION()
+	virtual void HandleEnemyCanHitReactEvent();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
 	TObjectPtr<USpringArmComponent> CameraBoom;
@@ -128,6 +131,7 @@ protected:
 	TArray<FAttackData> AttackCounterList;
 
 	FAttackData CurrentAttackData;
+	EAttackType CurrentAttackType;
 
 protected:
 	// Animations

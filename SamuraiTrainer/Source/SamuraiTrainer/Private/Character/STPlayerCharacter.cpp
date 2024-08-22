@@ -60,6 +60,7 @@ void ASTPlayerCharacter::InitPlayerAnimInstance()
 		PlayerAnimInstance->OnHitReactionAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleHitReactsionAnimCompleted);
 		PlayerAnimInstance->OnEnemyCanBlockEvent.AddDynamic(this, &ASTPlayerCharacter::HandleEnemyCanBlockEvent);
 		PlayerAnimInstance->OnStaggeredAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleStaggerAnimCompleted);
+		PlayerAnimInstance->OnOpponentCanHitReactEvent.AddDynamic(this, &ASTPlayerCharacter::HandleEnemyCanHitReactEvent);
 	}
 }
 
@@ -308,6 +309,27 @@ void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
 	}
 }
 
+void ASTPlayerCharacter::HandleEnemyCanHitReactEvent()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::HandleEnemyCanHitReactEvent"));
+
+	FDamageEvent DamageEvent;
+
+	switch (CurrentAttackType)
+	{
+	case EAttackType::EAT_Sword:
+		break;
+	case EAttackType::EAT_Kick:
+		if (CurrentEnemy)
+		{
+			CurrentEnemy->TakeDamage(KICK_DAMAGE, DamageEvent, GetController(), this);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 void ASTPlayerCharacter::HandleBasicAttackCompleted()
 {
 	bDidCounterAttack = false;
@@ -436,7 +458,19 @@ void ASTPlayerCharacter::ExecuteBlock()
 
 void ASTPlayerCharacter::ExecuteKick()
 {
-	//if (MontageKick == nullptr && MontageKickComboEnder == nullptr) return;
+	if (CurrentEnemy && CurrentEnemy->IsAttacking())
+	{
+		if (bCanCounterAttack) bDidCounterAttack = true;
+		PlayerAnimInstance->Montage_Play(MontageKick);
+		PlayerAnimInstance->Montage_JumpToSection(KICK2, MontageKick);
+		CurrentMWPSocketName = ATTACK_SOCKET_FRONT;
+		OnWarpTargetUpdated();
+
+		CurrentAttackType = EAttackType::EAT_Kick;
+		CurrentEnemy->SetNextHitReactionSectionName(HIT_REACTION_KICK2);
+		return;
+	}
+
 	EnemyInteract(KickQueues, MontageKick, KickComboEnders, MontageKickComboEnder, KICK_DAMAGE);
 }
 

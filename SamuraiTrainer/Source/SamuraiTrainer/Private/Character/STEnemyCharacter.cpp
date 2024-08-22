@@ -14,6 +14,12 @@
 #include "NiagaraComponent.h"
 #include "SamuraiTrainer/SamuraiTrainerGameMode.h"
 
+#define NV_LINEAR_COLOR FString("SpriteColor")
+#define ATTACK_INDICATOR_COLOR_RED FLinearColor(FColor::Red)
+#define ATTACK_INDICATOR_COLOR_YELLOW FLinearColor(FColor::Yellow)
+#define ATTACK_INDICATOR_COLOR_BLUE FLinearColor(FColor::Blue)
+#define ATTACK_INDICATOR_COLOR_GREEN FLinearColor(FColor::Green)
+
 ASTEnemyCharacter::ASTEnemyCharacter()
 {
 	bUseControllerRotationPitch = false;
@@ -64,6 +70,7 @@ void ASTEnemyCharacter::BeginPlay()
 	FXAttackIndicator->Deactivate();
 	FXAttackIndicator->SetForceSolo(true);
 	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
+	FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
 	FXAttackIndicator->OnSystemFinished.AddDynamic(this, &ASTEnemyCharacter::OnFXAttackIndicatorFinished);
 }
 
@@ -122,6 +129,33 @@ void ASTEnemyCharacter::OnCounterAttackFrameEnded()
 void ASTEnemyCharacter::OnFXAttackIndicatorFinished(UNiagaraComponent* Value)
 {
 	FXAttackIndicator->Deactivate();
+}
+
+EPlayerQTEResponseType ASTEnemyCharacter::GenerateRandomQTEResponse()
+{
+	EPlayerQTEResponseType ResponseType = EPlayerQTEResponseType::EPQTER_Block;
+
+	int RandomNumber = FMath::RandRange(1, 3);
+	
+		switch (RandomNumber)
+		{
+		case 1:
+			FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
+			ResponseType = EPlayerQTEResponseType::EPQTER_Counter;
+			break;
+
+		case 2:
+			FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_GREEN);
+			ResponseType = EPlayerQTEResponseType::EPQTER_Kick;
+			break;
+
+		default:
+			FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_YELLOW);
+			ResponseType = EPlayerQTEResponseType::EPQTER_Block;
+			break;
+		}
+
+	return ResponseType;
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -220,7 +254,15 @@ void ASTEnemyCharacter::SwordAttack()
 	MovementState = EMovementStates::EPMS_Attacking;
 	int MaxIndex = SwordAttacks.Num();
 	FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
-	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block);
+	EPlayerQTEResponseType ResponseType = GenerateRandomQTEResponse();
+
+
+
+
+
+
+
+	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Counter);
 	CurrentMWPSocketName = AttackData.MWPSocketName;
 	NextStaggerSectionName = AttackData.CBStagger;
 	OnWarpTargetUpdated();

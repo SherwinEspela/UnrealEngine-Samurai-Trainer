@@ -59,3 +59,8 @@ void USTBaseAnimInstance::HandleEnemyCanBlockEvent()
 {
 	OnEnemyCanBlockEvent.Broadcast();
 }
+
+void USTBaseAnimInstance::HandleOpponentCanHitReactEvent()
+{
+	OnOpponentCanHitReactEvent.Broadcast();
+}

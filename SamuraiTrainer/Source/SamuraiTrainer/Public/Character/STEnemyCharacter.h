@@ -82,6 +82,9 @@ protected:
 	void OnFXAttackIndicatorFinished(UNiagaraComponent* Value);
 
 protected:
+	EPlayerQTEResponseType GenerateRandomQTEResponse();
+
+protected:
 	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageCEHitReaction;

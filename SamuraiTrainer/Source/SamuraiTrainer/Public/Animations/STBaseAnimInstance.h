@@ -14,6 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttackAnimCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStaggeredAnimCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBlockAnimCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnemyCanBlockEventSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOpponentCanHitReactEventSignature);
 
 /**
  * 
@@ -34,6 +35,7 @@ public:
 	FStaggeredAnimCompletedSignature OnStaggeredAnimCompleted;
 	FBlockAnimCompletedSignature OnBlockAnimCompleted;
 	FEnemyCanBlockEventSignature OnEnemyCanBlockEvent;
+	FOpponentCanHitReactEventSignature OnOpponentCanHitReactEvent;
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -50,6 +52,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleEnemyCanBlockEvent();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleOpponentCanHitReactEvent();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
