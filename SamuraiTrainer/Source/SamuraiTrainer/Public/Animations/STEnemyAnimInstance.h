@@ -15,5 +15,5 @@ UCLASS()
 class SAMURAITRAINER_API USTEnemyAnimInstance : public USTBaseAnimInstance
 {
 	GENERATED_BODY()
-	
+
 };

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CustomEnums.h"
+#include "EnumDeathPoseType.h"
 #include "PlayerQTEResponseEnum.h"
 #include "STBaseCharacter.generated.h"
 
@@ -47,6 +48,7 @@ public:
 	FName GetAttackSocketName() const;
 
 	void SetSlowMotion(bool IsSlow = true);
+	virtual void SetDeathPoseType(EDeathPoseTypes Value);
 
 public:
 	// Movmentments
@@ -62,7 +64,8 @@ public:
 	FORCEINLINE void SetCanCounterAttack(bool Value) { bCanCounterAttack = Value; }
 	FORCEINLINE bool IsAttacking() const { return MovementState == EMovementStates::EPMS_Attacking; }
 	FORCEINLINE bool DidCounterAttack() const { return bDidCounterAttack; }
-
+	FORCEINLINE bool IsDead() const { return bIsDead; }
+	
 public:
 	FOnAttackStartedSignature OnAttackStarted;
 	FOnAttackStartedWithTwoParamsSignature OnAttackStartedWithTwoParams;
@@ -111,6 +114,7 @@ protected:
 	EMovementStates MovementState = EMovementStates::EPMS_Idle;
 
 	bool bIsHealthCritical = false;
+	bool bIsDead = false;
 
 	UPROPERTY(EditDefaultsOnly)
 	float CriticalHealthAmount = 20.f;

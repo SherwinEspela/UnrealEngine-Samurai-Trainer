@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "EnumDeathPoseType.h"
 #include "STBaseAnimInstance.generated.h"
 
 class ASTBaseCharacter;
@@ -27,6 +28,10 @@ class SAMURAITRAINER_API USTBaseAnimInstance : public UAnimInstance
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
+
+public:
+	FORCEINLINE void SetDead(){ bIsDead = true; }
+	FORCEINLINE void SetDeathPoseType(EDeathPoseTypes Value) { DeathPoseType = Value; }
 
 public:
 	// MULTICAST DELEGATES
@@ -65,6 +70,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	FRotator MovementRotation;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsDead = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EDeathPoseTypes DeathPoseType;
 
 private:
 	TObjectPtr<ASTBaseCharacter> BaseCharacter;

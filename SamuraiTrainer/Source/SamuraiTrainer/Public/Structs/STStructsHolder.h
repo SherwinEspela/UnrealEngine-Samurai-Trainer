@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "EnumDeathPoseType.h"
 #include "STStructsHolder.generated.h"
 
 USTRUCT(BlueprintType)
@@ -28,6 +29,7 @@ public:
 	FName AttackStagger;
 
 	EAttackType AttackType;
+	EDeathPoseTypes OpponentDeathPoseType;
 };
 
 UENUM(BlueprintType)

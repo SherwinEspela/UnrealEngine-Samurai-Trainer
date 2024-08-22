@@ -62,7 +62,6 @@ bool ASTBaseCharacter::DetermineTargetFacingByLineTrace(FVector LineTraceStart, 
 
 void ASTBaseCharacter::SwordAttack()
 {
-
 	MovementState = EMovementStates::EPMS_SwordAttacking;
 }
 
@@ -89,6 +88,8 @@ void ASTBaseCharacter::Tick(float DeltaTime)
 
 float ASTBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (bIsDead) 0.f;
+
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
 	if (bCanApplyDamage)
@@ -96,6 +97,7 @@ float ASTBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		DamageApplied = FMath::Min(Health, DamageApplied);
 		Health -= DamageApplied;
 		bIsHealthCritical = Health <= CriticalHealthAmount;
+		bIsDead = Health <= 0.f;
 	}
 	
 	return DamageApplied;
@@ -140,6 +142,10 @@ void ASTBaseCharacter::SetSlowMotion(bool IsSlow)
 	}
 }
 
+void ASTBaseCharacter::SetDeathPoseType(EDeathPoseTypes Value)
+{
+}
+
 void ASTBaseCharacter::HandleAttackAnimCompleted()
 {
 	ResetCounterAttackStates();
@@ -166,12 +172,10 @@ void ASTBaseCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName
 
 void ASTBaseCharacter::OnCounterAttackFrameBegan()
 {
-
 }
 
 void ASTBaseCharacter::OnCounterAttackFrameEnded()
 {
-
 }
 
 void ASTBaseCharacter::ResetCounterAttackStates()

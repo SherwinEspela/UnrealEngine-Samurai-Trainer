@@ -53,6 +53,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ASTPlayerCharacter* GetPlayerCharacter();
 
+	virtual void SetDeathPoseType(EDeathPoseTypes Value) override;
+
 public:
 	// Movmentments
 	virtual void SwordAttack() override;
@@ -64,7 +66,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 	void SubscribeToAnimationEvents();
 
 protected:

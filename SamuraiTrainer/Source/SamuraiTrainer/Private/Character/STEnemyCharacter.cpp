@@ -160,6 +160,8 @@ EPlayerQTEResponseType ASTEnemyCharacter::GenerateRandomQTEResponse()
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (bIsDead) 0.f;
+
 	if (EnemyAnimInstance && MontageHitReaction)
 	{
 		if (bIsHealthCritical)
@@ -181,6 +183,12 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	if (bCanApplyDamage)
 	{
 		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	}
+
+	if (bIsDead)
+	{
+		DetachFromControllerPendingDestroy();
+		EnemyAnimInstance->SetDead();
 	}
 	
 	return 0.0f;
@@ -247,6 +255,12 @@ ASTPlayerCharacter* ASTEnemyCharacter::GetPlayerCharacter()
 	return PlayerCharacter;
 }
 
+void ASTEnemyCharacter::SetDeathPoseType(EDeathPoseTypes Value)
+{
+	Super::SetDeathPoseType(Value);
+	EnemyAnimInstance->SetDeathPoseType(Value);
+}
+
 void ASTEnemyCharacter::SwordAttack()
 {
 	if (EnemyAnimInstance == nullptr || MontageSwordAttacks == nullptr) return;
@@ -255,14 +269,7 @@ void ASTEnemyCharacter::SwordAttack()
 	int MaxIndex = SwordAttacks.Num();
 	FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
 	EPlayerQTEResponseType ResponseType = GenerateRandomQTEResponse();
-
-
-
-
-
-
-
-	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Counter);
+	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, ResponseType);
 	CurrentMWPSocketName = AttackData.MWPSocketName;
 	NextStaggerSectionName = AttackData.CBStagger;
 	OnWarpTargetUpdated();

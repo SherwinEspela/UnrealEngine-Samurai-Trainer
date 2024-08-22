@@ -10,6 +10,7 @@
 #include "Animations/PlayerAnimInstance.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "EnumDeathPoseType.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -93,12 +94,6 @@ void ASTPlayerCharacter::InitQueues()
 	KickQueues.Enqueue(Kick1);
 	KickQueues.Enqueue(Kick2);
 
-	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1, ATTACK_SOCKET_FRONT));
-	SwordAttackComboEnders.Add(FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2, ATTACK_SOCKET_FRONT));
-	BackComboEnders.Add(FAttackData(SA_BACK_CE1, HR_BACK_CE1, ATTACK_SOCKET_BACK));
-
-	KickComboEnders.Add(FAttackData(KICK_COMBO_END1, HR_KICK_CE1));
-
 	//AttackCounterList.Add(FAttackData(ATTACK_COUNTER1, HR_COUNTER1));
 	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER1, HR_COUNTER1, ATTACK_SOCKET_FRONT));
 	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER2, HR_COUNTER2, ATTACK_SOCKET_FRONT));
@@ -106,7 +101,23 @@ void ASTPlayerCharacter::InitQueues()
 	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER4, HR_COUNTER_BLANK, ATTACK_SOCKET_FRONT));
 	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER5, HR_COUNTER_BLANK, ATTACK_SOCKET_FRONT));
 
-	CounterComboEnders.Add(FAttackData(COUNTER_COMBO_END1, HR_COUNTER_CE1, ATTACK_SOCKET_FRONT));
+	FAttackData SwordAttackCE1 = FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1, ATTACK_SOCKET_FRONT);
+	FAttackData SwordAttackCE2 = FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2, ATTACK_SOCKET_FRONT);
+	FAttackData BackCE = FAttackData(SA_BACK_CE1, HR_BACK_CE1, ATTACK_SOCKET_BACK);
+	FAttackData KickCE = FAttackData(KICK_COMBO_END1, HR_KICK_CE1);
+	FAttackData CounterCE = FAttackData(COUNTER_COMBO_END1, HR_COUNTER_CE1, ATTACK_SOCKET_FRONT);
+
+	SwordAttackCE1.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose1;
+	SwordAttackCE2.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose2;
+	BackCE.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose5;
+	KickCE.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose3;
+	CounterCE.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose4;
+
+	SwordAttackComboEnders.Add(SwordAttackCE1);
+	SwordAttackComboEnders.Add(SwordAttackCE2);
+	BackComboEnders.Add(BackCE);
+	KickComboEnders.Add(KickCE);
+	CounterComboEnders.Add(CounterCE);
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -148,8 +159,9 @@ void ASTPlayerCharacter::EnemyInteract(
 {
 	if (!bCanPerformNextAttack) return;
 	if (PlayerAnimInstance == nullptr) return;
+	if (CurrentEnemy && CurrentEnemy->IsDead()) return;
+	
 	MoveQueue.Dequeue(CurrentAttackData);
-
 	if (CurrentEnemy)
 	{
 		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
@@ -159,6 +171,8 @@ void ASTPlayerCharacter::EnemyInteract(
 			CurrentAttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
 			PlayerAnimInstance->Montage_Play(MontageEnder);
 			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageEnder);
+			Damage = FATAL_DAMAGE;
+			CurrentEnemy->SetDeathPoseType(CurrentAttackData.OpponentDeathPoseType);
 		}
 		else {
 			PlayerAnimInstance->Montage_Play(MontageToPlay);
@@ -169,7 +183,7 @@ void ASTPlayerCharacter::EnemyInteract(
 		OnWarpTargetUpdated();
 
 		const int Chances = FMath::RandRange(0, 100);
-		bEnemyCanBlockOrEvade = Chances > 50;
+		bEnemyCanBlockOrEvade = Chances > 99;
 
 		if (!bEnemyCanBlockOrEvade)
 		{
@@ -311,10 +325,6 @@ void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
 
 void ASTPlayerCharacter::HandleEnemyCanHitReactEvent()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::HandleEnemyCanHitReactEvent"));
-
-	FDamageEvent DamageEvent;
-
 	switch (CurrentAttackType)
 	{
 	case EAttackType::EAT_Sword:
@@ -322,6 +332,7 @@ void ASTPlayerCharacter::HandleEnemyCanHitReactEvent()
 	case EAttackType::EAT_Kick:
 		if (CurrentEnemy)
 		{
+			FDamageEvent DamageEvent;
 			CurrentEnemy->TakeDamage(KICK_DAMAGE, DamageEvent, GetController(), this);
 		}
 		break;
@@ -477,5 +488,13 @@ void ASTPlayerCharacter::ExecuteKick()
 void ASTPlayerCharacter::ExecuteCounter()
 {
 	if (MontageCounter == nullptr && MontageCounterComboEnder == nullptr) return;
+
+	if (CurrentEnemy && CurrentEnemy->IsAttacking()) {
+		if (bCanCounterAttack) bDidCounterAttack = true;
+		PlayerAnimInstance->Montage_Play(MontageCounter);
+		PlayerAnimInstance->Montage_JumpToSection(COUNTER5, MontageCounter);
+		return;
+	}
+
 	EnemyInteract(CounterQueues, MontageCounter, CounterComboEnders, MontageCounterComboEnder, STAGGER_DAMAGE);
 }
