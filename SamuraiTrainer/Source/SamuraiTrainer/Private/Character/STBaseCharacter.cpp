@@ -4,11 +4,12 @@
 #include "Items/Katana.h"
 #include "Kismet/GameplayStatics.h"
 #include "SamuraiTrainer/SamuraiTrainerGameMode.h"
+#include "Components/ActorComponent.h"
 
 ASTBaseCharacter::ASTBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 }
 
 void ASTBaseCharacter::BeginPlay()
@@ -23,6 +24,8 @@ void ASTBaseCharacter::BeginPlay()
 		Katana = GetWorld()->SpawnActor<AKatana>(KatanaClass);
 		AttachSwordToSocket(FName("WEAPON_R"));
 	}
+
+	CurrentMode = Cast<ASamuraiTrainerGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 }
 
 void ASTBaseCharacter::AttachSwordToSocket(FName SocketName)
@@ -123,7 +126,6 @@ void ASTBaseCharacter::SetSlowMotion(bool IsSlow)
 {
 	if (IsSlow)
 	{
-		ASamuraiTrainerGameMode* CurrentMode = Cast<ASamuraiTrainerGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 		if (CurrentMode)
 		{
 			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), CurrentMode->GetSlowMotionTime());

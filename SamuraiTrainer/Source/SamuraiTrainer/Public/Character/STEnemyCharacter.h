@@ -14,6 +14,7 @@ class UBehaviorTree;
 class ASTEnemyAIController;
 class USTEnemyAnimInstance;
 class ASTPlayerCharacter;
+class UNiagaraComponent;
 struct FAttackAndCounterReactionData;
 
 /**
@@ -76,6 +77,11 @@ protected:
 	virtual void OnCounterAttackFrameEnded() override;
 
 protected:
+	// Niagara FX Event Handler
+	UFUNCTION()
+	void OnFXAttackIndicatorFinished(UNiagaraComponent* Value);
+
+protected:
 	// Animations
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageCEHitReaction;
@@ -94,6 +100,11 @@ protected:
 	TObjectPtr<ASTEnemyAIController> EnemyAIController;
 
 	TArray<FAttackAndCounterReactionData> SwordAttacks;
+
+protected:
+	// FX
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	UNiagaraComponent* FXAttackIndicator;
 
 private:
 	USTEnemyAnimInstance* EnemyAnimInstance;

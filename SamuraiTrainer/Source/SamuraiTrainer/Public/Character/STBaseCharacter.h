@@ -9,6 +9,7 @@
 #include "STBaseCharacter.generated.h"
 
 class AKatana;
+class ASamuraiTrainerGameMode;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStartedSignature, FName, BlockSectionName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackStartedWithTwoParamsSignature, FName, BlockSectionName, FName, HRSectionName);
@@ -147,4 +148,6 @@ protected:
 	bool bDidCounterAttack = false;
 	bool bCanPerformNextAttack = false;
 	bool bCanSwordAttack = true;
+
+	ASamuraiTrainerGameMode* CurrentMode;
 };

@@ -11,6 +11,8 @@
 #include "Animations/STEnemyAnimInstance.h"
 #include "ConstantValues.h"
 #include "Engine/DamageEvents.h"
+#include "NiagaraComponent.h"
+#include "SamuraiTrainer/SamuraiTrainerGameMode.h"
 
 ASTEnemyCharacter::ASTEnemyCharacter()
 {
@@ -19,6 +21,12 @@ ASTEnemyCharacter::ASTEnemyCharacter()
 	bUseControllerRotationRoll = false;
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+	FXAttackIndicator = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FX Attack Indicator"));
+	FXAttackIndicator->SetupAttachment(GetMesh());
+
+	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+	FXAttackIndicator->AttachToComponent(GetMesh(), TransformRules, FName("HAIR"));
 }
 
 void ASTEnemyCharacter::BeginPlay()
@@ -52,6 +60,11 @@ void ASTEnemyCharacter::BeginPlay()
 
 	SwordAttacks.Add(AttackData1);
 	SwordAttacks.Add(AttackData2);
+
+	FXAttackIndicator->Deactivate();
+	FXAttackIndicator->SetForceSolo(true);
+	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
+	FXAttackIndicator->OnSystemFinished.AddDynamic(this, &ASTEnemyCharacter::OnFXAttackIndicatorFinished);
 }
 
 void ASTEnemyCharacter::SubscribeToAnimationEvents()
@@ -104,6 +117,11 @@ void ASTEnemyCharacter::OnCounterAttackFrameEnded()
 		FDamageEvent DamageEvent;
 		PlayerCharacter->TakeDamage(SWORD_DAMAGE_ENEMY, DamageEvent, GetController(), this);
 	}
+}
+
+void ASTEnemyCharacter::OnFXAttackIndicatorFinished(UNiagaraComponent* Value)
+{
+	FXAttackIndicator->Deactivate();
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -208,6 +226,7 @@ void ASTEnemyCharacter::SwordAttack()
 	OnWarpTargetUpdated();
 	EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 	EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
+	FXAttackIndicator->Activate();
 }
 
 void ASTEnemyCharacter::Block(FName SectionName)
