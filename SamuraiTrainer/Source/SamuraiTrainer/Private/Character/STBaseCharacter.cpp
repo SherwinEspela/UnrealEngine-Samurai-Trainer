@@ -60,6 +60,30 @@ bool ASTBaseCharacter::DetermineTargetFacingByLineTrace(FVector LineTraceStart, 
 	return isFacingFront;
 }
 
+void ASTBaseCharacter::PlaySoundSlashNoHit()
+{
+	if (SoundSlashNoHit == nullptr) return;
+	UGameplayStatics::PlaySound2D(this, SoundSlashNoHit);
+}
+
+void ASTBaseCharacter::PlaySoundSlashHit()
+{
+	if (SoundSlashHit == nullptr) return;
+	UGameplayStatics::PlaySound2D(this, SoundSlashHit);
+}
+
+void ASTBaseCharacter::PlaySoundVoiceAttack()
+{
+	if (SoundVoiceAttack == nullptr) return;
+	UGameplayStatics::PlaySound2D(this, SoundVoiceAttack);
+}
+
+void ASTBaseCharacter::PlaySoundSwordClash()
+{
+	if (SoundSwordClash == nullptr) return;
+	UGameplayStatics::PlaySound2D(this, SoundSwordClash);
+}
+
 void ASTBaseCharacter::SwordAttack()
 {
 	MovementState = EMovementStates::EPMS_SwordAttacking;
@@ -88,15 +112,13 @@ void ASTBaseCharacter::Tick(float DeltaTime)
 
 float ASTBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (bIsDead) 0.f;
-
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	
+
 	if (bCanApplyDamage)
 	{
 		DamageApplied = FMath::Min(Health, DamageApplied);
 		Health -= DamageApplied;
-		bIsHealthCritical = Health <= CriticalHealthAmount;
+		bIsHealthCritical = Health > 0 && Health <= CriticalHealthAmount;
 		bIsDead = Health <= 0.f;
 	}
 	
@@ -187,3 +209,10 @@ void ASTBaseCharacter::ResetCounterAttackStates()
 	bCanSwordAttack = true;
 }
 
+void ASTBaseCharacter::HandleBeginSlashSound()
+{
+}
+
+void ASTBaseCharacter::HandleDyingAnimationCompleted()
+{
+}

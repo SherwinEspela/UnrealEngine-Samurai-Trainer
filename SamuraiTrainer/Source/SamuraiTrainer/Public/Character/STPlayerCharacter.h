@@ -103,6 +103,8 @@ protected:
 	UFUNCTION()
 	virtual void HandleEnemyCanHitReactEvent();
 
+	virtual void HandleBeginSlashSound() override;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
 	TObjectPtr<USpringArmComponent> CameraBoom;
@@ -163,6 +165,9 @@ protected:
 	bool bIsInteractingWithWeapon = false;
 	bool bIsLastBasicAttack = false;
 	bool bIsQTEMode = false;
+	
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+	bool bDebugEnemyCannotCounterAttack = false;
 
 protected:
 	UFUNCTION()

@@ -11,6 +11,7 @@
 
 class AKatana;
 class ASamuraiTrainerGameMode;
+class USoundBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStartedSignature, FName, BlockSectionName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackStartedWithTwoParamsSignature, FName, BlockSectionName, FName, HRSectionName);
@@ -51,7 +52,7 @@ public:
 	virtual void SetDeathPoseType(EDeathPoseTypes Value);
 
 public:
-	// Movmentments
+	// Movementments
 	virtual void SwordAttack();
 	virtual void Block();
 	virtual void Block(FName SectionName);
@@ -76,6 +77,14 @@ protected:
 
 	void AttachSwordToSocket(FName SocketName);
 	bool DetermineTargetFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd);
+	
+
+protected:
+	// SFX
+	virtual void PlaySoundSlashNoHit();
+	virtual void PlaySoundSlashHit();
+	virtual void PlaySoundVoiceAttack();
+	virtual void PlaySoundSwordClash();
 
 protected:
 	// Animation Event Handlers
@@ -102,6 +111,12 @@ protected:
 
 	void ResetCounterAttackStates();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleBeginSlashSound();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleDyingAnimationCompleted();
+
 protected:
 	// Character States
 	UPROPERTY(VisibleAnywhere)
@@ -115,6 +130,7 @@ protected:
 
 	bool bIsHealthCritical = false;
 	bool bIsDead = false;
+	bool bIsDying = false;
 
 	UPROPERTY(EditDefaultsOnly)
 	float CriticalHealthAmount = 20.f;
@@ -139,6 +155,20 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageCounter;
+
+protected:
+	// SFX
+	UPROPERTY(EditAnywhere, Category = "SFX")
+	USoundBase* SoundSlashNoHit;
+
+	UPROPERTY(EditAnywhere, Category = "SFX")
+	USoundBase* SoundSlashHit;
+
+	UPROPERTY(EditAnywhere, Category = "SFX")
+	USoundBase* SoundVoiceAttack;
+
+	UPROPERTY(EditAnywhere, Category = "SFX")
+	USoundBase* SoundSwordClash;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Debugging")

@@ -126,6 +126,17 @@ void ASTEnemyCharacter::OnCounterAttackFrameEnded()
 	}
 }
 
+void ASTEnemyCharacter::HandleDyingAnimationCompleted()
+{
+	Super::HandleDyingAnimationCompleted();
+
+	if (bIsDead)
+	{
+		DetachFromControllerPendingDestroy();
+		EnemyAnimInstance->SetDead();
+	}
+}
+
 void ASTEnemyCharacter::OnFXAttackIndicatorFinished(UNiagaraComponent* Value)
 {
 	FXAttackIndicator->Deactivate();
@@ -160,11 +171,16 @@ EPlayerQTEResponseType ASTEnemyCharacter::GenerateRandomQTEResponse()
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (bIsDead) 0.f;
+	if (bIsDead) return 0.f;
+
+	if (bCanApplyDamage)
+	{
+		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	}
 
 	if (EnemyAnimInstance && MontageHitReaction)
 	{
-		if (bIsHealthCritical)
+		if (bIsDead)
 		{
 			EnemyAnimInstance->Montage_Play(MontageCEHitReaction);
 			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageCEHitReaction);
@@ -178,17 +194,6 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 			EnemyAnimInstance->Montage_Play(MontageHitReaction);
 			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageHitReaction);
 		}
-	}
-
-	if (bCanApplyDamage)
-	{
-		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	}
-
-	if (bIsDead)
-	{
-		DetachFromControllerPendingDestroy();
-		EnemyAnimInstance->SetDead();
 	}
 	
 	return 0.0f;
@@ -265,6 +270,7 @@ void ASTEnemyCharacter::SwordAttack()
 {
 	if (EnemyAnimInstance == nullptr || MontageSwordAttacks == nullptr) return;
 
+	PlaySoundVoiceAttack();
 	MovementState = EMovementStates::EPMS_Attacking;
 	int MaxIndex = SwordAttacks.Num();
 	FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
@@ -288,6 +294,7 @@ void ASTEnemyCharacter::Block(FName SectionName)
 void ASTEnemyCharacter::Counter()
 {
 	if (!MontageCounter) return;
+	PlaySoundVoiceAttack();
 	EnemyAnimInstance->Montage_Play(MontageCounter);
 	EnemyAnimInstance->Montage_JumpToSection(COUNTER5, MontageCounter);
 }

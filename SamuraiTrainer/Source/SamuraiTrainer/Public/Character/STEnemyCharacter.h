@@ -76,6 +76,7 @@ protected:
 
 	virtual void OnCounterAttackFrameBegan() override;
 	virtual void OnCounterAttackFrameEnded() override;
+	virtual void HandleDyingAnimationCompleted() override;
 
 protected:
 	// Niagara FX Event Handler

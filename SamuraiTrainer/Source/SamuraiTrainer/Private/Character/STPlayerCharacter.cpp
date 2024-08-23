@@ -160,7 +160,7 @@ void ASTPlayerCharacter::EnemyInteract(
 	if (!bCanPerformNextAttack) return;
 	if (PlayerAnimInstance == nullptr) return;
 	if (CurrentEnemy && CurrentEnemy->IsDead()) return;
-	
+
 	MoveQueue.Dequeue(CurrentAttackData);
 	if (CurrentEnemy)
 	{
@@ -182,8 +182,11 @@ void ASTPlayerCharacter::EnemyInteract(
 		CurrentMWPSocketName = CurrentAttackData.AttackSocketName;
 		OnWarpTargetUpdated();
 
-		const int Chances = FMath::RandRange(0, 100);
-		bEnemyCanBlockOrEvade = Chances > 99;
+		if (!bDebugEnemyCannotCounterAttack)
+		{
+			const int Chances = FMath::RandRange(0, 100);
+			bEnemyCanBlockOrEvade = Chances > 50;
+		}
 
 		if (!bEnemyCanBlockOrEvade)
 		{
@@ -206,6 +209,8 @@ void ASTPlayerCharacter::EnemyInteract(
 void ASTPlayerCharacter::SwordAttack()
 {
 	SetSlowMotion(false);
+	PlaySoundVoiceAttack();
+
 	if (bIsQTEMode)
 	{
 		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_SwordAttack;
@@ -219,6 +224,8 @@ void ASTPlayerCharacter::SwordAttack()
 void ASTPlayerCharacter::Block()
 {
 	SetSlowMotion(false);
+	PlaySoundVoiceAttack();
+
 	if (bIsQTEMode)
 	{
 		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_Block;
@@ -232,6 +239,8 @@ void ASTPlayerCharacter::Block()
 void ASTPlayerCharacter::Kick()
 {
 	SetSlowMotion(false);
+	PlaySoundVoiceAttack();
+
 	if (bIsQTEMode)
 	{
 		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_Kick;
@@ -245,6 +254,8 @@ void ASTPlayerCharacter::Kick()
 void ASTPlayerCharacter::Counter()
 {
 	SetSlowMotion(false);
+	PlaySoundVoiceAttack();
+
 	if (bIsQTEMode)
 	{
 		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_Counter;
@@ -306,11 +317,11 @@ void ASTPlayerCharacter::HandleAttackAnimCompleted()
 void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
 {
 	if (!bEnemyCanBlockOrEvade) return;
-
 	EAttackType AttackType = CurrentAttackData.AttackType;
 	switch (AttackType)
 	{
 	case EAttackType::EAT_Sword:
+		PlaySoundSwordClash();
 		CurrentEnemy->Block(CurrentAttackData.Block);
 		PlayerAnimInstance->Montage_Play(MontageAttackStagger);
 		PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.AttackStagger, MontageAttackStagger);
@@ -341,6 +352,19 @@ void ASTPlayerCharacter::HandleEnemyCanHitReactEvent()
 	}
 }
 
+void ASTPlayerCharacter::HandleBeginSlashSound()
+{
+	Super::HandleBeginSlashSound();
+
+	if (bEnemyCanBlockOrEvade)
+	{
+		PlaySoundSlashNoHit();
+	}
+	else {
+		PlaySoundSlashHit();
+	}
+}
+
 void ASTPlayerCharacter::HandleBasicAttackCompleted()
 {
 	bDidCounterAttack = false;
@@ -364,6 +388,7 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 
 float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	PlaySoundSlashHit();
 	HitReact();
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	return 0.0f;
@@ -416,6 +441,7 @@ void ASTPlayerCharacter::QTEResult()
 		ExecuteBlock();
 		break;
 	case EPlayerQTEResponseType::EPQTER_Counter:
+		PlaySoundSlashNoHit();
 		ExecuteCounter();
 		break;
 	default:
@@ -450,10 +476,10 @@ void ASTPlayerCharacter::ExecuteBlock()
 		if (CurrentEnemy->IsAttacking())
 		{
 			if (bCanCounterAttack) bDidCounterAttack = true;
+			PlaySoundSwordClash();
 			CurrentMWPSocketName = BLOCK_SOCKET;
 			OnWarpTargetUpdated();
 			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSectionName, MontageBlock);
-		
 			CurrentEnemy->PlayNextStagger();
 		}
 		else {
@@ -469,6 +495,7 @@ void ASTPlayerCharacter::ExecuteBlock()
 
 void ASTPlayerCharacter::ExecuteKick()
 {
+	if (MontageKick == nullptr) return;
 	if (CurrentEnemy && CurrentEnemy->IsAttacking())
 	{
 		if (bCanCounterAttack) bDidCounterAttack = true;
