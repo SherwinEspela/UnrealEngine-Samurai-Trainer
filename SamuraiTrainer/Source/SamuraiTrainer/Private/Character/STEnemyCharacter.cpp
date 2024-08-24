@@ -275,7 +275,7 @@ void ASTEnemyCharacter::SwordAttack()
 	int MaxIndex = SwordAttacks.Num();
 	FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
 	EPlayerQTEResponseType ResponseType = GenerateRandomQTEResponse();
-	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, ResponseType);
+	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block); //ResponseType);
 	CurrentMWPSocketName = AttackData.MWPSocketName;
 	NextStaggerSectionName = AttackData.CBStagger;
 	OnWarpTargetUpdated();

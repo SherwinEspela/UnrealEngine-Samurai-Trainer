@@ -169,6 +169,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Debugging")
 	bool bDebugEnemyCannotCounterAttack = false;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Block or Evade Chance")
+	int EnemyBlockOrEvadeChance = 50;
+
 protected:
 	UFUNCTION()
 	void OnEnemyDetectorBeginOverlap(

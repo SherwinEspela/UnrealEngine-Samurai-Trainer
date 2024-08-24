@@ -185,7 +185,7 @@ void ASTPlayerCharacter::EnemyInteract(
 		if (!bDebugEnemyCannotCounterAttack)
 		{
 			const int Chances = FMath::RandRange(0, 100);
-			bEnemyCanBlockOrEvade = Chances > 50;
+			bEnemyCanBlockOrEvade = Chances > EnemyBlockOrEvadeChance;
 		}
 
 		if (!bEnemyCanBlockOrEvade)
@@ -321,7 +321,6 @@ void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
 	switch (AttackType)
 	{
 	case EAttackType::EAT_Sword:
-		PlaySoundSwordClash();
 		CurrentEnemy->Block(CurrentAttackData.Block);
 		PlayerAnimInstance->Montage_Play(MontageAttackStagger);
 		PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.AttackStagger, MontageAttackStagger);
@@ -476,7 +475,6 @@ void ASTPlayerCharacter::ExecuteBlock()
 		if (CurrentEnemy->IsAttacking())
 		{
 			if (bCanCounterAttack) bDidCounterAttack = true;
-			PlaySoundSwordClash();
 			CurrentMWPSocketName = BLOCK_SOCKET;
 			OnWarpTargetUpdated();
 			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSectionName, MontageBlock);

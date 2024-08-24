@@ -117,6 +117,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleDyingAnimationCompleted();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleBlockImpactEvent();
+
 protected:
 	// Character States
 	UPROPERTY(VisibleAnywhere)

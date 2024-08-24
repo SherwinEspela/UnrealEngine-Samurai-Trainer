@@ -82,6 +82,11 @@ void ASTBaseCharacter::PlaySoundSwordClash()
 {
 	if (SoundSwordClash == nullptr) return;
 	UGameplayStatics::PlaySound2D(this, SoundSwordClash);
+
+	if (Katana)
+	{
+		Katana->PlaySwordClashFx();
+	}
 }
 
 void ASTBaseCharacter::SwordAttack()
@@ -215,4 +220,9 @@ void ASTBaseCharacter::HandleBeginSlashSound()
 
 void ASTBaseCharacter::HandleDyingAnimationCompleted()
 {
+}
+
+void ASTBaseCharacter::HandleBlockImpactEvent()
+{
+	PlaySoundSwordClash();
 }
