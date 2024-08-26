@@ -95,7 +95,6 @@ protected:
 	UAnimMontage* MontageSwordAttacks;
 
 protected:
-	//APawn* PlayerPawn;
 	ASTPlayerCharacter* PlayerCharacter;
 
 	UPROPERTY(EditAnywhere, Category = "Enemy AI")
@@ -105,6 +104,11 @@ protected:
 	TObjectPtr<ASTEnemyAIController> EnemyAIController;
 
 	TArray<FAttackAndCounterReactionData> SwordAttacks;
+
+protected:
+	// Debugging
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+	bool bDebugCannotAttack = false;
 
 protected:
 	// FX

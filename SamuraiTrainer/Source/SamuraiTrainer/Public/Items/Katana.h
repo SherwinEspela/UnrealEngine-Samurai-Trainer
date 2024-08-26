@@ -8,6 +8,7 @@
 
 class UParticleSystem;
 class UParticleSystemComponent;
+class UNiagaraComponent;
 
 /**
  * 
@@ -21,6 +22,7 @@ public:
 	AKatana();
 
 	virtual void PlaySwordClashFx();
+	virtual void ShouldPlayBloodSpillFx(bool ShouldPlay = true);
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,6 +34,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	UParticleSystemComponent* FXSwordClash2;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	UNiagaraComponent* FXBloodSpill;
 
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	FVector FXSwordClashScale = FVector(0.5f, 0.5f, 0.5f);

@@ -166,12 +166,12 @@ void ASTPlayerCharacter::EnemyInteract(
 	{
 		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
 
-		if (CurrentEnemy->IsHealthCritical())
+		if (CurrentEnemy->WillBeDead(Damage))
 		{
 			CurrentAttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
 			PlayerAnimInstance->Montage_Play(MontageEnder);
 			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageEnder);
-			Damage = FATAL_DAMAGE;
+			//Damage = FATAL_DAMAGE;
 			CurrentEnemy->SetDeathPoseType(CurrentAttackData.OpponentDeathPoseType);
 		}
 		else {
@@ -450,7 +450,6 @@ void ASTPlayerCharacter::QTEResult()
 
 void ASTPlayerCharacter::ExecuteSwordAttack()
 {
-	//if (MovementState != EMovementStates::EPMS_Idle) return;
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
 	if (!bCanSwordAttack) return;
 	if (CurrentEnemy == nullptr) return;

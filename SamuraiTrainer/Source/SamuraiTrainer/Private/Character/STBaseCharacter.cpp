@@ -226,3 +226,13 @@ void ASTBaseCharacter::HandleBlockImpactEvent()
 {
 	PlaySoundSwordClash();
 }
+
+void ASTBaseCharacter::HandleBloodSpillFXNotifyBegin()
+{
+	if (Katana) Katana->ShouldPlayBloodSpillFx();
+}
+
+void ASTBaseCharacter::HandleBloodSpillFXNotifyEnd()
+{
+	if (Katana) Katana->ShouldPlayBloodSpillFx(false);
+}

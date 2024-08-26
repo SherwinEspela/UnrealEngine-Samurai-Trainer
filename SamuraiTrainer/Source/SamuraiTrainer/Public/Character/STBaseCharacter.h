@@ -66,6 +66,7 @@ public:
 	FORCEINLINE bool IsAttacking() const { return MovementState == EMovementStates::EPMS_Attacking; }
 	FORCEINLINE bool DidCounterAttack() const { return bDidCounterAttack; }
 	FORCEINLINE bool IsDead() const { return bIsDead; }
+	FORCEINLINE bool WillBeDead(float Damage) const { return Health <= Damage; }
 	
 public:
 	FOnAttackStartedSignature OnAttackStarted;
@@ -119,6 +120,12 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleBlockImpactEvent();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleBloodSpillFXNotifyBegin();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleBloodSpillFXNotifyEnd();
 
 protected:
 	// Character States

@@ -230,6 +230,7 @@ void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 
 void ASTEnemyCharacter::PlaySwordAttack()
 {
+	if (bDebugCannotAttack) return;
 	SwordAttack();
 }
 
