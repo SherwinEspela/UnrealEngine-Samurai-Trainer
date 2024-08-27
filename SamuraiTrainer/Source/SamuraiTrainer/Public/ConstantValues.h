@@ -10,6 +10,16 @@
 
 #define ATTACK_DOWNSLASH FName("AttackDownSlash")
 #define ATTACK_UPSLASH FName("AttackUpSlash")
+
+#define ATTACK_COMBO1_1 FName("AttackCombo1_1")
+#define ATTACK_COMBO1_2 FName("AttackCombo1_2")
+#define ATTACK_COMBO1_3 FName("AttackCombo1_3")
+#define ATTACK_COMBO1_4 FName("AttackCombo1_4")
+#define ATTACK_COMBO2_1 FName("AttackCombo2_1")
+#define ATTACK_COMBO2_2 FName("AttackCombo2_2")
+#define ATTACK_COMBO2_3 FName("AttackCombo2_3")
+#define ATTACK_COMBO2_4 FName("AttackCombo2_4")
+
 #define KICK1 FName("Kick1")
 #define KICK2 FName("Kick2")
 #define BLOCK_DOWNSLASH FName("BlockDownSlash")
@@ -47,7 +57,7 @@
 #define STAGGER_DOWNSLASH FName("StaggerDownslash")
 #define STAGGER_UPSLASH FName("StaggerUpslash")
 
-#define SWORD_DAMAGE_PLAYER 30.f
+#define SWORD_DAMAGE_PLAYER 10.f
 #define SWORD_DAMAGE_ENEMY 20.f
 #define KICK_DAMAGE 10.f
 #define STAGGER_DAMAGE 5.f

@@ -29,6 +29,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void SwordInteract();
 	void Attack();
+	void AttackCombo2();
 	void Block();
 	void Kick();
 	void Counter();
@@ -49,6 +50,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* InputActionAttackCombo2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionBlock;

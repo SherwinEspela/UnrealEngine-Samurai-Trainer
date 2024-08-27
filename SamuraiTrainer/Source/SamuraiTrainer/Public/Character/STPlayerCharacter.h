@@ -73,6 +73,7 @@ public:
 	// Movmentments
 	void SwordInteract();
 	virtual void SwordAttack() override;
+	virtual void SwordAttackCombo2();
 	void Kick();
 	void Counter();
 	virtual void Block() override;
@@ -122,6 +123,7 @@ protected:
 	UCapsuleComponent* CapsuleEnemyDetector;
 
 	TQueue<FAttackData> FrontAttackQueues;
+	TQueue<FAttackData> AttackCombo2Queues;
 	TQueue<FAttackData> BackAttackQueues;
 	TQueue<FAttackData> KickQueues;
 	TQueue<FAttackData> CounterQueues;
@@ -142,6 +144,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageAttack;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageAttackCombo2;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageFrontComboEnder;
@@ -191,6 +196,7 @@ protected:
 private:
 	// Movement Execution
 	void ExecuteSwordAttack();
+	void ExecuteSwordAttackCombo2();
 	void ExecuteBlock();
 	void ExecuteKick();
 	void ExecuteCounter();
