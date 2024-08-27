@@ -139,6 +139,10 @@ void ASTPlayerCharacter::InitQueues()
 	BackComboEnders.Add(BackCE);
 	KickComboEnders.Add(KickCE);
 	CounterComboEnders.Add(CounterCE);
+
+	BlockSectionNames.Add(BLOCK_1);
+	BlockSectionNames.Add(BLOCK_2);
+	BlockSectionNames.Add(BLOCK_3);
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -506,7 +510,7 @@ void ASTPlayerCharacter::ExecuteSwordAttackCombo2()
 	//TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
 	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
 	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
-	EnemyInteract(AttackCombo2Queues, MontageAttackCombo2, ComboEndersArray, MontageComboEnder, SWORD_DAMAGE_PLAYER, bIsEnemyFrontFacing);
+	EnemyInteract(AttackCombo2Queues, MontageAttackCombo2, ComboEndersArray, MontageComboEnder, DamageSwordAttack, bIsEnemyFrontFacing);
 }
 
 void ASTPlayerCharacter::ExecuteBlock()
@@ -523,7 +527,10 @@ void ASTPlayerCharacter::ExecuteBlock()
 			if (bCanCounterAttack) bDidCounterAttack = true;
 			CurrentMWPSocketName = BLOCK_SOCKET;
 			OnWarpTargetUpdated();
-			PlayerAnimInstance->Montage_JumpToSection(CurrentBlockSectionName, MontageBlock);
+
+			int RandomIndex = FMath::RandRange(0, BlockSectionNames.Num()-1);
+			FName BlockSectionName = BlockSectionNames[RandomIndex];
+			PlayerAnimInstance->Montage_JumpToSection(BlockSectionName, MontageBlock);
 			CurrentEnemy->PlayNextStagger();
 		}
 		else {

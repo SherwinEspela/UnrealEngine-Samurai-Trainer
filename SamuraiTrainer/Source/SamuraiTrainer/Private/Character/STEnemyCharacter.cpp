@@ -53,19 +53,26 @@ void ASTEnemyCharacter::BeginPlay()
 	PlayerCharacter = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	FAttackAndCounterReactionData AttackData1;
-	AttackData1.Attack = ATTACK_DOWNSLASH;
+	AttackData1.Attack = ATTACK_ENEMY_1;
 	AttackData1.CounterBlock = BLOCK_DOWNSLASH;
 	AttackData1.CBStagger = STAGGER_DOWNSLASH;
 	AttackData1.MWPSocketName = ATTACK_SOCKET_FRONT;
 
 	FAttackAndCounterReactionData AttackData2;
-	AttackData2.Attack = ATTACK_UPSLASH;
+	AttackData2.Attack = ATTACK_ENEMY_2;
 	AttackData2.CounterBlock = BLOCK_UPSLASH;
 	AttackData2.CBStagger = STAGGER_UPSLASH;
 	AttackData2.MWPSocketName = ATTACK_SOCKET_FRONT;
 
+	FAttackAndCounterReactionData AttackData3;
+	AttackData3.Attack = ATTACK_ENEMY_3;
+	AttackData3.CounterBlock = BLOCK_UPSLASH;
+	AttackData3.CBStagger = STAGGER_UPSLASH;
+	AttackData3.MWPSocketName = ATTACK_SOCKET_FRONT;
+
 	SwordAttacks.Add(AttackData1);
 	SwordAttacks.Add(AttackData2);
+	SwordAttacks.Add(AttackData3);
 
 	FXAttackIndicator->Deactivate();
 	FXAttackIndicator->SetForceSolo(true);

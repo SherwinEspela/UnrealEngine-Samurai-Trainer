@@ -20,11 +20,18 @@
 #define ATTACK_COMBO2_3 FName("AttackCombo2_3")
 #define ATTACK_COMBO2_4 FName("AttackCombo2_4")
 
+#define ATTACK_ENEMY_1 FName("EnemyAttack1")
+#define ATTACK_ENEMY_2 FName("EnemyAttack2")
+#define ATTACK_ENEMY_3 FName("EnemyAttack3")
+
 #define KICK1 FName("Kick1")
 #define KICK2 FName("Kick2")
 #define BLOCK_DOWNSLASH FName("BlockDownSlash")
 #define BLOCK_UPSLASH FName("BlockUpSlash")
 #define BLOCK_NO_MW FName("BlockNoMW")
+#define BLOCK_1 FName("Block1")
+#define BLOCK_2 FName("Block2")
+#define BLOCK_3 FName("Block3")
 
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")

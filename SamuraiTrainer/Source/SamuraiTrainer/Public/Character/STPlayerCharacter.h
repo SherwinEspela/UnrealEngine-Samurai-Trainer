@@ -177,6 +177,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Block or Evade Chance")
 	int EnemyBlockOrEvadeChance = 50;
 
+	TArray<FName> BlockSectionNames;
+
 protected:
 	UFUNCTION()
 	void OnEnemyDetectorBeginOverlap(

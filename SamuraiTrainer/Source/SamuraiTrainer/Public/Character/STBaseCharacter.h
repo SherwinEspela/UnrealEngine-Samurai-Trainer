@@ -145,6 +145,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float CriticalHealthAmount = 20.f;
 
+	UPROPERTY(EditAnywhere, Category = "Damage Amount")
+	float DamageSwordAttack = 10.f;
+
 protected:
 	// Weapon
 	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
