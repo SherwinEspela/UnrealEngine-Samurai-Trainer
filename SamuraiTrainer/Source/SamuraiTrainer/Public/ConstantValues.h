@@ -52,6 +52,8 @@
 
 #define SWORD_ATTACK_COMBO_END1 FName("ComboEnd1")
 #define SWORD_ATTACK_COMBO_END2 FName("ComboEnd2")
+#define COMBO_ENDER2_1 FName("ComboEnder2_1")
+#define COMBO_ENDER2_2 FName("ComboEnder2_2")
 #define SA_BACK_CE1 FName("BackComboEnd1")
 #define KICK_COMBO_END1 FName("KickComboEnd1")
 #define COUNTER_COMBO_END1 FName("CounterComboEnd1")

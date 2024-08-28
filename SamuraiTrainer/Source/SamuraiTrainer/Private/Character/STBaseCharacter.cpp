@@ -229,7 +229,7 @@ void ASTBaseCharacter::HandleBlockImpactEvent()
 
 void ASTBaseCharacter::HandleBloodSpillFXNotifyBegin()
 {
-	if (Katana) Katana->ShouldPlayBloodSpillFx();
+	
 }
 
 void ASTBaseCharacter::HandleBloodSpillFXNotifyEnd()

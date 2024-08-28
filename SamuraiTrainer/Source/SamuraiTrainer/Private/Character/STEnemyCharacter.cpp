@@ -13,6 +13,7 @@
 #include "Engine/DamageEvents.h"
 #include "NiagaraComponent.h"
 #include "SamuraiTrainer/SamuraiTrainerGameMode.h"
+#include "Items/Katana.h"
 
 #define NV_LINEAR_COLOR FString("SpriteColor")
 #define ATTACK_INDICATOR_COLOR_RED FLinearColor(FColor::Red)
@@ -147,6 +148,12 @@ void ASTEnemyCharacter::HandleDyingAnimationCompleted()
 		DetachFromControllerPendingDestroy();
 		EnemyAnimInstance->SetDead();
 	}
+}
+
+void ASTEnemyCharacter::HandleBloodSpillFXNotifyBegin()
+{
+	Super::HandleBloodSpillFXNotifyBegin();
+	if (Katana) Katana->ShouldPlayBloodSpillFx();
 }
 
 void ASTEnemyCharacter::OnFXAttackIndicatorFinished(UNiagaraComponent* Value)

@@ -105,6 +105,7 @@ protected:
 	virtual void HandleEnemyCanHitReactEvent();
 
 	virtual void HandleBeginSlashSound() override;
+	virtual void HandleBloodSpillFXNotifyBegin() override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
@@ -129,6 +130,7 @@ protected:
 	TQueue<FAttackData> CounterQueues;
 
 	TArray<FAttackData> SwordAttackComboEnders;
+	TArray<FAttackData> SwordAttackComboEnders2;
 	TArray<FAttackData> BackComboEnders;
 	TArray<FAttackData> KickComboEnders;
 	TArray<FAttackData> CounterComboEnders;
@@ -150,6 +152,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageFrontComboEnder;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageComboEnder2;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageBackComboEnder;

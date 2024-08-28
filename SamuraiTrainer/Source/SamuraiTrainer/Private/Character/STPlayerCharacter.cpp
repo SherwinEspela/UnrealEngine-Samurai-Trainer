@@ -11,6 +11,7 @@
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "EnumDeathPoseType.h"
+#include "Items/Katana.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -122,20 +123,26 @@ void ASTPlayerCharacter::InitQueues()
 	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER4, HR_COUNTER_BLANK, ATTACK_SOCKET_FRONT));
 	CounterQueues.Enqueue(FAttackData(ATTACK_COUNTER5, HR_COUNTER_BLANK, ATTACK_SOCKET_FRONT));
 
-	FAttackData SwordAttackCE1 = FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1, ATTACK_SOCKET_FRONT);
-	FAttackData SwordAttackCE2 = FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2, ATTACK_SOCKET_FRONT);
+	FAttackData SwordAttackCE1_1 = FAttackData(SWORD_ATTACK_COMBO_END1, HIT_REACTION_CE1, ATTACK_SOCKET_FRONT);
+	FAttackData SwordAttackCE1_2 = FAttackData(SWORD_ATTACK_COMBO_END2, HIT_REACTION_CE2, ATTACK_SOCKET_FRONT);
+	FAttackData SwordAttackCE2_1 = FAttackData(COMBO_ENDER2_1, HR_COUNTER_CE1, ATTACK_SOCKET_FRONT);
+	FAttackData SwordAttackCE2_2 = FAttackData(COMBO_ENDER2_2, HR_KICK_CE1, ATTACK_SOCKET_FRONT);
 	FAttackData BackCE = FAttackData(SA_BACK_CE1, HR_BACK_CE1, ATTACK_SOCKET_BACK);
 	FAttackData KickCE = FAttackData(KICK_COMBO_END1, HR_KICK_CE1);
 	FAttackData CounterCE = FAttackData(COUNTER_COMBO_END1, HR_COUNTER_CE1, ATTACK_SOCKET_FRONT);
 
-	SwordAttackCE1.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose1;
-	SwordAttackCE2.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose2;
+	SwordAttackCE1_1.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose1;
+	SwordAttackCE1_2.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose2;
+	SwordAttackCE2_1.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose4;
+	SwordAttackCE2_2.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose3;
 	BackCE.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose5;
 	KickCE.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose3;
 	CounterCE.OpponentDeathPoseType = EDeathPoseTypes::EDPT_DeathPose4;
 
-	SwordAttackComboEnders.Add(SwordAttackCE1);
-	SwordAttackComboEnders.Add(SwordAttackCE2);
+	SwordAttackComboEnders.Add(SwordAttackCE1_1);
+	SwordAttackComboEnders.Add(SwordAttackCE1_2);
+	SwordAttackComboEnders2.Add(SwordAttackCE2_1);
+	SwordAttackComboEnders2.Add(SwordAttackCE2_2);
 	BackComboEnders.Add(BackCE);
 	KickComboEnders.Add(KickCE);
 	CounterComboEnders.Add(CounterCE);
@@ -233,7 +240,6 @@ void ASTPlayerCharacter::EnemyInteract(
 void ASTPlayerCharacter::SwordAttack()
 {
 	SetSlowMotion(false);
-	PlaySoundVoiceAttack();
 
 	if (bIsQTEMode)
 	{
@@ -262,7 +268,6 @@ void ASTPlayerCharacter::SwordAttackCombo2()
 void ASTPlayerCharacter::Block()
 {
 	SetSlowMotion(false);
-	PlaySoundVoiceAttack();
 
 	if (bIsQTEMode)
 	{
@@ -277,7 +282,6 @@ void ASTPlayerCharacter::Block()
 void ASTPlayerCharacter::Kick()
 {
 	SetSlowMotion(false);
-	PlaySoundVoiceAttack();
 
 	if (bIsQTEMode)
 	{
@@ -292,7 +296,6 @@ void ASTPlayerCharacter::Kick()
 void ASTPlayerCharacter::Counter()
 {
 	SetSlowMotion(false);
-	PlaySoundVoiceAttack();
 
 	if (bIsQTEMode)
 	{
@@ -359,10 +362,7 @@ void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
 	switch (AttackType)
 	{
 	case EAttackType::EAT_Sword:
-
 		CurrentEnemy->Block();
-		//PlayerAnimInstance->Montage_Play(MontageAttackStagger);
-		//PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.AttackStagger, MontageAttackStagger);
 		break;
 	case EAttackType::EAT_Kick:
 		CurrentEnemy->Counter();
@@ -401,6 +401,12 @@ void ASTPlayerCharacter::HandleBeginSlashSound()
 	else {
 		PlaySoundSlashHit();
 	}
+}
+
+void ASTPlayerCharacter::HandleBloodSpillFXNotifyBegin()
+{
+	Super::HandleBloodSpillFXNotifyBegin();
+	if (!bEnemyCanBlockOrEvade && Katana) Katana->ShouldPlayBloodSpillFx();
 }
 
 void ASTPlayerCharacter::HandleBasicAttackCompleted()
@@ -498,7 +504,7 @@ void ASTPlayerCharacter::ExecuteSwordAttack()
 	TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
 	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
 	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
-	EnemyInteract(AttackQ, MontageAttack, ComboEndersArray, MontageComboEnder, SWORD_DAMAGE_PLAYER, bIsEnemyFrontFacing);
+	EnemyInteract(AttackQ, MontageAttack, ComboEndersArray, MontageComboEnder, DamageSwordAttack, bIsEnemyFrontFacing);
 }
 
 void ASTPlayerCharacter::ExecuteSwordAttackCombo2()
@@ -509,9 +515,9 @@ void ASTPlayerCharacter::ExecuteSwordAttackCombo2()
 
 	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
 	//TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
-	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
-	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
-	EnemyInteract(AttackCombo2Queues, MontageAttackCombo2, ComboEndersArray, MontageComboEnder, DamageSwordAttack, bIsEnemyFrontFacing);
+	//UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
+	//TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
+	EnemyInteract(AttackCombo2Queues, MontageAttackCombo2, SwordAttackComboEnders2, MontageComboEnder2, DamageSwordAttack, bIsEnemyFrontFacing);
 }
 
 void ASTPlayerCharacter::ExecuteBlock()
