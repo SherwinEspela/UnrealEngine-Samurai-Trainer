@@ -59,6 +59,7 @@ public:
 	// Movmentments
 	virtual void SwordAttack() override;
 	virtual void Block(FName SectionName) override;
+	virtual void Block();
 	virtual void Counter();
 
 public:
@@ -104,6 +105,7 @@ protected:
 	TObjectPtr<ASTEnemyAIController> EnemyAIController;
 
 	TArray<FAttackAndCounterReactionData> SwordAttacks;
+	TArray<FName> BlockSectionNames;
 
 protected:
 	// Debugging

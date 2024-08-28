@@ -74,6 +74,11 @@ void ASTEnemyCharacter::BeginPlay()
 	SwordAttacks.Add(AttackData2);
 	SwordAttacks.Add(AttackData3);
 
+	BlockSectionNames.Add(BLOCK_1);
+	BlockSectionNames.Add(BLOCK_2);
+	BlockSectionNames.Add(BLOCK_3);
+	BlockSectionNames.Add(BLOCK_4);
+
 	FXAttackIndicator->Deactivate();
 	FXAttackIndicator->SetForceSolo(true);
 	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
@@ -297,6 +302,15 @@ void ASTEnemyCharacter::Block(FName SectionName)
 	if (!MontageBlock) return;
 	EnemyAnimInstance->Montage_Play(MontageBlock);
 	EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageBlock);
+}
+
+void ASTEnemyCharacter::Block()
+{
+	if (!MontageBlock) return;
+	const int RandomIndex = FMath::RandRange(0, BlockSectionNames.Num() - 1);
+	const FName BlockSectionName = BlockSectionNames[RandomIndex];
+	EnemyAnimInstance->Montage_Play(MontageBlock);
+	EnemyAnimInstance->Montage_JumpToSection(BlockSectionName, MontageBlock);
 }
 
 void ASTEnemyCharacter::Counter()

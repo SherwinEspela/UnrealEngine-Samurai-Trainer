@@ -32,6 +32,7 @@
 #define BLOCK_1 FName("Block1")
 #define BLOCK_2 FName("Block2")
 #define BLOCK_3 FName("Block3")
+#define BLOCK_4 FName("Block4")
 
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")

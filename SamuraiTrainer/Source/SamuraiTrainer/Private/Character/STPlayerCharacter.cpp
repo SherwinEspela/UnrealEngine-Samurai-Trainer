@@ -359,9 +359,10 @@ void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
 	switch (AttackType)
 	{
 	case EAttackType::EAT_Sword:
-		CurrentEnemy->Block(CurrentAttackData.Block);
-		PlayerAnimInstance->Montage_Play(MontageAttackStagger);
-		PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.AttackStagger, MontageAttackStagger);
+
+		CurrentEnemy->Block();
+		//PlayerAnimInstance->Montage_Play(MontageAttackStagger);
+		//PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.AttackStagger, MontageAttackStagger);
 		break;
 	case EAttackType::EAT_Kick:
 		CurrentEnemy->Counter();
