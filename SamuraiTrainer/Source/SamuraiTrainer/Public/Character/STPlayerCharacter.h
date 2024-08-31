@@ -106,6 +106,12 @@ protected:
 
 	virtual void HandleBeginSlashSound() override;
 	virtual void HandleBloodSpillFXNotifyBegin() override;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleWeaponToLeftHand();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleWeaponToRightHand();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")

@@ -409,6 +409,16 @@ void ASTPlayerCharacter::HandleBloodSpillFXNotifyBegin()
 	if (!bEnemyCanBlockOrEvade && Katana) Katana->ShouldPlayBloodSpillFx();
 }
 
+void ASTPlayerCharacter::HandleWeaponToLeftHand()
+{
+	AttachSwordToSocket(FName("WEAPON_L"));
+}
+
+void ASTPlayerCharacter::HandleWeaponToRightHand()
+{
+	AttachSwordToSocket(FName("WEAPON_R"));
+}
+
 void ASTPlayerCharacter::HandleBasicAttackCompleted()
 {
 	bDidCounterAttack = false;
