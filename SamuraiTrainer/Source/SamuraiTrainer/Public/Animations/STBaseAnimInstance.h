@@ -31,6 +31,7 @@ public:
 
 public:
 	FORCEINLINE void SetDead(){ bIsDead = true; }
+	FORCEINLINE void SetIsHealthCritical() { bIsHealthCritical = true; }
 	FORCEINLINE void SetDeathPoseType(EDeathPoseTypes Value) { DeathPoseType = Value; }
 
 public:
@@ -74,6 +75,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsDead = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsHealthCritical = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDeathPoseTypes DeathPoseType;

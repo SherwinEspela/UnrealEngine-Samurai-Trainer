@@ -117,6 +117,11 @@ void ASTEnemyCharacter::HandleHitReactsionAnimCompleted()
 	{
 		EnemyAIController->SetHitReacting(false);
 	}
+
+	if (bIsHealthCritical)
+	{
+		EnemyAnimInstance->SetIsHealthCritical();
+	}
 }
 
 void ASTEnemyCharacter::OnCounterAttackFrameBegan()

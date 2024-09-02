@@ -124,6 +124,7 @@ float ASTBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		DamageApplied = FMath::Min(Health, DamageApplied);
 		Health -= DamageApplied;
 		bIsHealthCritical = Health > 0 && Health <= CriticalHealthAmount;
+		bIsDying = bIsHealthCritical;
 		bIsDead = Health <= 0.f;
 	}
 	
