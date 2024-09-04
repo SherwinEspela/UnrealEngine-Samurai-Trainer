@@ -56,7 +56,7 @@ void ASTEnemyCharacter::BeginPlay()
 	FAttackAndCounterReactionData AttackData1;
 	AttackData1.Attack = ATTACK_ENEMY_1;
 	AttackData1.CounterBlock = BLOCK_DOWNSLASH;
-	AttackData1.CBStagger = STAGGER_DOWNSLASH;
+	AttackData1.CBStagger = BLOCK_1;
 	AttackData1.MWPSocketName = ATTACK_SOCKET_FRONT;
 
 	FAttackAndCounterReactionData AttackData2;
@@ -68,7 +68,7 @@ void ASTEnemyCharacter::BeginPlay()
 	FAttackAndCounterReactionData AttackData3;
 	AttackData3.Attack = ATTACK_ENEMY_3;
 	AttackData3.CounterBlock = BLOCK_UPSLASH;
-	AttackData3.CBStagger = STAGGER_UPSLASH;
+	AttackData3.CBStagger = BLOCK_2;
 	AttackData3.MWPSocketName = ATTACK_SOCKET_FRONT;
 
 	SwordAttacks.Add(AttackData1);
