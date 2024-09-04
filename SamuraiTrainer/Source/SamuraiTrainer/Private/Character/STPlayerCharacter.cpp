@@ -203,6 +203,7 @@ void ASTPlayerCharacter::EnemyInteract(
 			CurrentAttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
 			PlayerAnimInstance->Montage_Play(MontageEnder);
 			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageEnder);
+			CurrentEnemy->SetNextHitReactionSectionName(CurrentAttackData.HitReaction);
 			CurrentEnemy->SetDeathPoseType(CurrentAttackData.OpponentDeathPoseType);
 		}
 		else {
@@ -221,8 +222,6 @@ void ASTPlayerCharacter::EnemyInteract(
 
 		if (!bEnemyCanBlockOrEvade)
 		{
-			// Enemy takes hit
-			CurrentEnemy->SetNextHitReactionSectionName(CurrentAttackData.HitReaction);
 			FDamageEvent DamageEvent;
 			CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
 		}

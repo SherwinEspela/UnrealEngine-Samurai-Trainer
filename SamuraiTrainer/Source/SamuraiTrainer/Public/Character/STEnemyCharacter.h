@@ -107,6 +107,7 @@ protected:
 
 	TArray<FAttackAndCounterReactionData> SwordAttacks;
 	TArray<FName> BlockSectionNames;
+	TArray<FName> HitReactionSectionNames;
 
 protected:
 	// Debugging

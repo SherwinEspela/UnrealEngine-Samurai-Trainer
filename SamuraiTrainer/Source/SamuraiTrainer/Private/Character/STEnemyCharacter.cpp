@@ -80,6 +80,10 @@ void ASTEnemyCharacter::BeginPlay()
 	BlockSectionNames.Add(BLOCK_3);
 	BlockSectionNames.Add(BLOCK_4);
 
+	HitReactionSectionNames.Add(HIT_REACTION_1);
+	HitReactionSectionNames.Add(HIT_REACTION_2);
+	HitReactionSectionNames.Add(HIT_REACTION_3);
+
 	FXAttackIndicator->Deactivate();
 	FXAttackIndicator->SetForceSolo(true);
 	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
@@ -215,8 +219,10 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 				EnemyAIController->SetHitReacting();
 			}
 			
+			const int RandomIndex = FMath::RandRange(0, HitReactionSectionNames.Num() - 1);
+			const FName HRSectionName = HitReactionSectionNames[RandomIndex];
 			EnemyAnimInstance->Montage_Play(MontageHitReaction);
-			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageHitReaction);
+			EnemyAnimInstance->Montage_JumpToSection(HRSectionName, MontageHitReaction);
 		}
 	}
 	

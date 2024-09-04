@@ -128,3 +128,5 @@ SamuraiTrainer/Content/Realistic_Starter_VFX_Pack_Vol2/
 SamuraiTrainer/Content/CR_Player_Take1.uasset
 SamuraiTrainer/Content/Maps/SequencerMap.umap
 SamuraiTrainer/Content/Sequences/CR_Player_Take1.uasset
+SamuraiTrainer/Content/CR_Enemy_Take1.uasset
+SamuraiTrainer/Content/Maps/SequencerEnemyMap.umap

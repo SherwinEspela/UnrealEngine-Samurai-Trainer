@@ -36,6 +36,9 @@
 
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")
+#define HIT_REACTION_1 FName("HitReaction1")
+#define HIT_REACTION_2 FName("HitReaction2")
+#define HIT_REACTION_3 FName("HitReaction3")
 #define HR_BEHIND1 FName("HRBehind1")
 #define HR_BEHIND2 FName("HRBehind2")
 #define HIT_REACTION_KICK1 FName("HRKick1")
