@@ -27,6 +27,7 @@ public:
 	void SetStaggered(bool Staggered = true);
 	void SetBlocking(bool Value = true);
 	void SetRecovering(bool Value = true);
+	void SetDying(bool Value = true);
 
 protected:
 	virtual void BeginPlay() override;

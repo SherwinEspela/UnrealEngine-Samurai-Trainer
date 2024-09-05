@@ -198,7 +198,8 @@ void ASTPlayerCharacter::EnemyInteract(
 	{
 		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
 
-		if (CurrentEnemy->WillBeDead(Damage))
+		const bool WillBeDead = CurrentEnemy->WillBeDead(Damage);
+		if (WillBeDead)
 		{
 			CurrentAttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
 			PlayerAnimInstance->Montage_Play(MontageEnder);
@@ -214,7 +215,7 @@ void ASTPlayerCharacter::EnemyInteract(
 		CurrentMWPSocketName = CurrentAttackData.AttackSocketName;
 		OnWarpTargetUpdated();
 
-		if (!bDebugEnemyCannotCounterAttack)
+		if (!bDebugEnemyCannotCounterAttack && !WillBeDead)
 		{
 			const int Chances = FMath::RandRange(0, 100);
 			bEnemyCanBlockOrEvade = Chances > EnemyBlockOrEvadeChance;
@@ -441,10 +442,19 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 
 float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	SetSlowMotion(false);
 	PlaySoundSlashHit();
 	HitReact();
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	return 0.0f;
+}
+
+void ASTPlayerCharacter::SetCurrentEnemy(ASTEnemyCharacter* Value)
+{
+	if (CurrentEnemy) return;
+	CurrentEnemy = Value;
+	CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+	CurrentTargetPawn = CurrentEnemy;
 }
 
 void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

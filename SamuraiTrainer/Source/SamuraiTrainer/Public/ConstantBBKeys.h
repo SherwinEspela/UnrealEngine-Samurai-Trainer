@@ -8,3 +8,4 @@
 #define BB_KEY_STAGGERED FName("IsStaggered")
 #define BB_KEY_BLOCKING FName("IsBlocking")
 #define BB_KEY_RECOVERING FName("IsRecovering")
+#define BB_KEY_DYING FName("IsDying")

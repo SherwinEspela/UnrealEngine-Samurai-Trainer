@@ -285,7 +285,7 @@ void ASTEnemyCharacter::PlayNextStagger()
 void ASTEnemyCharacter::MakeNextDecision()
 {
 	int RandomValue = FMath::RandRange(0, 100);
-	const bool ShouldAttack = RandomValue > 50;
+	const bool ShouldAttack = RandomValue > 30;
 	if (ShouldAttack)
 	{
 		EnemyAIController->SetAttacking();

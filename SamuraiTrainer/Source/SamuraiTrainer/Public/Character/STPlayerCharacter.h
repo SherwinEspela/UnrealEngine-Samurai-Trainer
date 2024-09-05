@@ -64,6 +64,8 @@ public:
 		AActor* DamageCauser
 	) override;
 
+	void SetCurrentEnemy(ASTEnemyCharacter* Value);
+
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }

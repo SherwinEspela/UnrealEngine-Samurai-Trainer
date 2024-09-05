@@ -64,6 +64,12 @@ void ASTEnemyAIController::SetRecovering(bool Value)
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_RECOVERING, Value);
 }
 
+void ASTEnemyAIController::SetDying(bool Value)
+{
+	ResetAllValues();
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_DYING, Value);
+}
+
 void ASTEnemyAIController::ResetAllValues()
 {
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_ATTACKING, false);
