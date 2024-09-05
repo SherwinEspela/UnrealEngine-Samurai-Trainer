@@ -95,7 +95,7 @@ protected:
 	UFUNCTION()
 	virtual void HandleStaggerAnimCompleted();
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void HandleHitReactsionAnimCompleted();
 
 	UFUNCTION()

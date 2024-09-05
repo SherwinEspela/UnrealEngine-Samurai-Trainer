@@ -97,7 +97,6 @@ void ASTEnemyCharacter::SubscribeToAnimationEvents()
 
 	EnemyAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleAttackAnimCompleted);
 	EnemyAnimInstance->OnStaggeredAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleStaggerAnimCompleted);
-	EnemyAnimInstance->OnHitReactionAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleHitReactsionAnimCompleted);
 }
 
 void ASTEnemyCharacter::HandleAttackAnimCompleted()
@@ -108,23 +107,18 @@ void ASTEnemyCharacter::HandleAttackAnimCompleted()
 void ASTEnemyCharacter::HandleStaggerAnimCompleted()
 {
 	Super::HandleStaggerAnimCompleted();
-	if (EnemyAIController)
-	{
-		EnemyAIController->SetStaggered(false);
-	}
+	EnemyAIController->SetStaggered(false);
 }
 
 void ASTEnemyCharacter::HandleHitReactsionAnimCompleted()
 {
 	Super::HandleHitReactsionAnimCompleted();
-	if (EnemyAIController)
-	{
-		EnemyAIController->SetHitReacting(false);
-	}
-
-	if (bIsHealthCritical)
-	{
+	
+	if (bIsHealthCritical) {
 		EnemyAnimInstance->SetIsHealthCritical();
+	}
+	else {
+		EnemyAIController->SetRecovering();
 	}
 }
 
@@ -163,6 +157,11 @@ void ASTEnemyCharacter::HandleBloodSpillFXNotifyBegin()
 {
 	Super::HandleBloodSpillFXNotifyBegin();
 	if (Katana) Katana->ShouldPlayBloodSpillFx();
+}
+
+void ASTEnemyCharacter::HandleBlockCompleted()
+{
+	EnemyAIController->SetRecovering();
 }
 
 void ASTEnemyCharacter::OnFXAttackIndicatorFinished(UNiagaraComponent* Value)
@@ -214,10 +213,7 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageCEHitReaction);
 		}
 		else {
-			if (EnemyAIController)
-			{
-				EnemyAIController->SetHitReacting();
-			}
+			EnemyAIController->SetHitReacting();
 			
 			const int RandomIndex = FMath::RandRange(0, HitReactionSectionNames.Num() - 1);
 			const FName HRSectionName = HitReactionSectionNames[RandomIndex];
@@ -281,8 +277,21 @@ void ASTEnemyCharacter::PlayNextStagger()
 	MovementState = EMovementStates::EPMS_Staggered;
 	if (EnemyAnimInstance)
 	{
-		EnemyAnimInstance->Montage_Play(MontageAttackStagger);
-		EnemyAnimInstance->Montage_JumpToSection(NextStaggerSectionName, MontageAttackStagger);
+		EnemyAnimInstance->Montage_Play(MontageBlock);
+		EnemyAnimInstance->Montage_JumpToSection(NextStaggerSectionName, MontageBlock);
+	}
+}
+
+void ASTEnemyCharacter::MakeNextDecision()
+{
+	int RandomValue = FMath::RandRange(0, 100);
+	const bool ShouldAttack = RandomValue > 50;
+	if (ShouldAttack)
+	{
+		EnemyAIController->SetAttacking();
+	}
+	else {
+		EnemyAIController->SetIdle();
 	}
 }
 
@@ -318,6 +327,7 @@ void ASTEnemyCharacter::SwordAttack()
 void ASTEnemyCharacter::Block(FName SectionName)
 {
 	if (!MontageBlock) return;
+	EnemyAIController->SetBlocking();
 	EnemyAnimInstance->Montage_Play(MontageBlock);
 	EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageBlock);
 }
@@ -325,6 +335,9 @@ void ASTEnemyCharacter::Block(FName SectionName)
 void ASTEnemyCharacter::Block()
 {
 	if (!MontageBlock) return;
+
+	EnemyAIController->SetBlocking();
+
 	const int RandomIndex = FMath::RandRange(0, BlockSectionNames.Num() - 1);
 	const FName BlockSectionName = BlockSectionNames[RandomIndex];
 	EnemyAnimInstance->Montage_Play(MontageBlock);

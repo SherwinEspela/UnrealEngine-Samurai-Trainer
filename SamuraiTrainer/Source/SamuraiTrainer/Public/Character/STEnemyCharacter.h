@@ -51,6 +51,9 @@ public:
 	void PlayNextStagger();
 
 	UFUNCTION(BlueprintCallable)
+	void MakeNextDecision();
+
+	UFUNCTION(BlueprintCallable)
 	ASTPlayerCharacter* GetPlayerCharacter();
 
 	virtual void SetDeathPoseType(EDeathPoseTypes Value) override;
@@ -73,12 +76,14 @@ protected:
 	// Animations Event Handlers
 	virtual void HandleAttackAnimCompleted() override;
 	virtual void HandleStaggerAnimCompleted() override;
-	virtual void HandleHitReactsionAnimCompleted() override;
-
 	virtual void OnCounterAttackFrameBegan() override;
 	virtual void OnCounterAttackFrameEnded() override;
 	virtual void HandleDyingAnimationCompleted() override;
 	virtual void HandleBloodSpillFXNotifyBegin() override;
+	virtual void HandleHitReactsionAnimCompleted() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleBlockCompleted();
 
 protected:
 	// Niagara FX Event Handler

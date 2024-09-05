@@ -25,16 +25,51 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	RunBehaviorTree(BehaviorTree);
 	GetBlackboardComponent()->SetValueAsObject(BB_KEY_PLAYER_PAWN, PlayerPawn);
+	SetIdle();
+}
+
+void ASTEnemyAIController::SetAttacking(bool Value)
+{
+	ResetAllValues();
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_ATTACKING, Value);
+}
+
+void ASTEnemyAIController::SetIdle(bool Value)
+{
+	ResetAllValues();
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_IDLE, Value);
 }
 
 void ASTEnemyAIController::SetHitReacting(bool HitReacting)
 {
+	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_HIT_REACTING, HitReacting);
-	GetBlackboardComponent()->SetValueAsBool(BB_KEY_STAGGERED, false);
 }
 
 void ASTEnemyAIController::SetStaggered(bool Staggered)
 {
+	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_STAGGERED, Staggered);
+}
+
+void ASTEnemyAIController::SetBlocking(bool Value)
+{
+	ResetAllValues();
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_BLOCKING, Value);
+}
+
+void ASTEnemyAIController::SetRecovering(bool Value)
+{
+	ResetAllValues();
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_RECOVERING, Value);
+}
+
+void ASTEnemyAIController::ResetAllValues()
+{
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_ATTACKING, false);
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_IDLE, false);
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_HIT_REACTING, false);
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_STAGGERED, false);
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_BLOCKING, false);
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_RECOVERING, false);
 }

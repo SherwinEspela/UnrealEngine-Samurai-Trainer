@@ -21,11 +21,17 @@ public:
 	ASTEnemyAIController();
 
 	void Initialize(TObjectPtr<UBehaviorTree> BehaviorTree);
+	void SetAttacking(bool Value = true);
+	void SetIdle(bool Value = true);
 	void SetHitReacting(bool HitReacting = true);
 	void SetStaggered(bool Staggered = true);
+	void SetBlocking(bool Value = true);
+	void SetRecovering(bool Value = true);
 
 protected:
 	virtual void BeginPlay() override;
+
+	void ResetAllValues();
 
 protected:
 	UPROPERTY()
