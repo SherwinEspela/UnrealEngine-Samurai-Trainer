@@ -33,7 +33,8 @@ ASTEnemyCharacter::ASTEnemyCharacter()
 	FXAttackIndicator->SetupAttachment(GetMesh());
 
 	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	FXAttackIndicator->AttachToComponent(GetMesh(), TransformRules, FName("HAIR"));
+	//FXAttackIndicator->AttachToComponent(GetMesh(), TransformRules, FName("HAIR"));
+	FXAttackIndicator->SetupAttachment(GetMesh(), FName("HAIR"));
 }
 
 void ASTEnemyCharacter::BeginPlay()
