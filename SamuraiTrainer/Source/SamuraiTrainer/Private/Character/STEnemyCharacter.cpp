@@ -33,7 +33,6 @@ ASTEnemyCharacter::ASTEnemyCharacter()
 	FXAttackIndicator->SetupAttachment(GetMesh());
 
 	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	//FXAttackIndicator->AttachToComponent(GetMesh(), TransformRules, FName("HAIR"));
 	FXAttackIndicator->SetupAttachment(GetMesh(), FName("HAIR"));
 }
 
@@ -47,7 +46,7 @@ void ASTEnemyCharacter::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 
 	EnemyAIController = Cast<ASTEnemyAIController>(EnemyAnimInstance->TryGetPawnOwner()->GetController());
-	if (EnemyAIController != nullptr)
+	if (EnemyAIController && !bDebugCannotMove)
 	{
 		EnemyAIController->Initialize(BehaviorTree);
 	}

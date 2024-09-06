@@ -19,6 +19,7 @@ enum class EMovementStates : uint8
 	EPMS_Blocking		UMETA(DisplayName = "Blocking"),
 	EPMS_Staggered		UMETA(DisplayName = "Staggered"),
 	EPMS_Walking		UMETA(DisplayName = "Walking"),
+	EPMS_Moving			UMETA(DisplayName = "Moving"),
 	EPMS_HitReacting	UMETA(DisplayName = "Hit Reacting"),
 	EPMS_Default		UMETA(DisplayName = "Default")
 };

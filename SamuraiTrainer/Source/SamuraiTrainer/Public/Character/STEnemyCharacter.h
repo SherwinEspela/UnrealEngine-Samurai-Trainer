@@ -119,6 +119,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Debugging")
 	bool bDebugCannotAttack = false;
 
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+	bool bDebugCannotMove = false;
+
 protected:
 	// FX
 	UPROPERTY(EditDefaultsOnly, Category = "FX")

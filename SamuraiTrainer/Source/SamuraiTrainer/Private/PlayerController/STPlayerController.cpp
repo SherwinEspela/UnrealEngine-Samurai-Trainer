@@ -21,7 +21,7 @@ void ASTPlayerController::BeginPlay()
 void ASTPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-
+	
 	EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASTPlayerController::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASTPlayerController::Look);

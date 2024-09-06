@@ -16,6 +16,8 @@ class USkeletalMeshComponent;
 class ASTEnemyCharacter;
 class UCapsuleComponent;
 class UPlayerAnimInstance;
+class USceneComponent;
+class UTargetLockComponent;
 
 /**
  * 
@@ -28,6 +30,8 @@ public:
 	ASTPlayerCharacter();
 
 public:
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 
 	UFUNCTION(BlueprintCallable)
@@ -65,6 +69,7 @@ public:
 	) override;
 
 	void SetCurrentEnemy(ASTEnemyCharacter* Value);
+	void SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value);
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
@@ -128,8 +133,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Current Enemy")
 	ASTEnemyCharacter* CurrentEnemy;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy Detector")
-	UCapsuleComponent* CapsuleEnemyDetector;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Detector")
+	UCapsuleComponent* CapsuleEnemySensor;*/
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Detector")
+	USceneComponent* EnemySensorTransform;
 
 	TQueue<FAttackData> FrontAttackQueues;
 	TQueue<FAttackData> AttackCombo2Queues;
@@ -215,6 +223,11 @@ private:
 	void ExecuteBlock();
 	void ExecuteKick();
 	void ExecuteCounter();
+
+protected:
+	// Combat
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	UTargetLockComponent* TargetLockComponent;
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;

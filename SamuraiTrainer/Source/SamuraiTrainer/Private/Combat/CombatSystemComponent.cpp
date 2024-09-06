@@ -19,6 +19,6 @@ void ACombatSystemComponent::BeginPlay()
 	Player = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	if (Player && Enemy)
 	{
-		Player->SetCurrentEnemy(Enemy);
+		//Player->SetCurrentEnemy(Enemy);
 	}
 }

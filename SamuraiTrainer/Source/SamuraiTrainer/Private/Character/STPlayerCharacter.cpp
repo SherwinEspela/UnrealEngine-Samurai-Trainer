@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnumDeathPoseType.h"
 #include "Items/Katana.h"
+#include "Combat/TargetLockComponent.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -31,8 +32,13 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = true;
 
-	CapsuleEnemyDetector = CreateDefaultSubobject<UCapsuleComponent>(TEXT("FrontEnemyDetector"));
-	CapsuleEnemyDetector->SetupAttachment(CameraBoom);
+	EnemySensorTransform = CreateDefaultSubobject<USceneComponent>(TEXT("Enemy Sensor Transform"));
+	EnemySensorTransform->SetupAttachment(GetRootComponent());
+
+	/*CapsuleEnemySensor = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Enemy Sensor 1"));
+	CapsuleEnemySensor->SetupAttachment(EnemySensorTransform);*/
+
+	TargetLockComponent = CreateDefaultSubobject<UTargetLockComponent>(TEXT("Target Lock Component"));
 }
 
 void ASTPlayerCharacter::BeginPlay()
@@ -42,11 +48,7 @@ void ASTPlayerCharacter::BeginPlay()
 	bIsSwordArmed = false;
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
-
-	if (CapsuleEnemyDetector)
-	{
-		CapsuleEnemyDetector->OnComponentBeginOverlap.AddDynamic(this, &ASTPlayerCharacter::OnEnemyDetectorBeginOverlap);
-	}
+	TargetLockComponent->SetLineTraceOrigin(EnemySensorTransform);
 
 	InitPlayerAnimInstance();
 	InitQueues();
@@ -150,6 +152,19 @@ void ASTPlayerCharacter::InitQueues()
 	BlockSectionNames.Add(BLOCK_1);
 	BlockSectionNames.Add(BLOCK_2);
 	BlockSectionNames.Add(BLOCK_3);
+}
+
+void ASTPlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	FRotator EnemySensorRotation(0.f, GetViewRotation().Yaw, 0.f);
+	EnemySensorTransform->SetWorldRotation(EnemySensorRotation);
+
+	if (CurrentEnemy)
+	{
+		DrawDebugSphere(GetWorld(), CurrentEnemy->GetActorLocation(), 50.f, 20.f, FColor::Red);
+	}
 }
 
 void ASTPlayerCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
@@ -451,15 +466,37 @@ float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 void ASTPlayerCharacter::SetCurrentEnemy(ASTEnemyCharacter* Value)
 {
-	if (CurrentEnemy) return;
+	/*if (CurrentEnemy) return;
 	CurrentEnemy = Value;
 	CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
-	CurrentTargetPawn = CurrentEnemy;
+	CurrentTargetPawn = CurrentEnemy;*/
+}
+
+void ASTPlayerCharacter::SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value)
+{
+	if (CurrentEnemy && Value->GetName() == CurrentEnemy->GetName()) return;
+
+	if (CurrentEnemy)
+	{
+		CurrentEnemy->OnAttackStartedWith3Params.RemoveDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+	}
+
+	if (Value) {
+		CurrentEnemy = Value;
+		CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+		CurrentTargetPawn = CurrentEnemy;
+	}
 }
 
 void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (CurrentEnemy && OtherActor->GetName() == CurrentEnemy->GetName()) return;
+
+	if (CurrentEnemy)
+	{
+		CurrentEnemy->OnAttackStartedWith3Params.RemoveDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+	}
+	
 	if (OtherActor) {
 		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
 		if (CurrentEnemy)
