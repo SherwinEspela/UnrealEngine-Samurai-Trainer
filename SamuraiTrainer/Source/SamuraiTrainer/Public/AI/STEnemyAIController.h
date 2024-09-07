@@ -40,4 +40,13 @@ protected:
 
 	APawn* PlayerPawn;
 
+protected:
+	UPROPERTY(EditAnywhere, Category = "AI Avoidance")
+	bool CrowdSeparationEnabled = true;
+
+	UPROPERTY(EditAnywhere, Category = "AI Avoidance")
+	float CrowdSeparationWeight = 150.f;
+
+	UPROPERTY(EditAnywhere, Category = "AI Avoidance")
+	float CrowdAvoidanceRangeMultiplier = 1.1f;
 };

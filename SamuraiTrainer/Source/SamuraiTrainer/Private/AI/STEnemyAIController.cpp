@@ -7,6 +7,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Kismet/GameplayStatics.h"
 #include "ConstantBBKeys.h"
+#include "Navigation/CrowdFollowingComponent.h"
 
 ASTEnemyAIController::ASTEnemyAIController()
 {
@@ -26,6 +27,15 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 	RunBehaviorTree(BehaviorTree);
 	GetBlackboardComponent()->SetValueAsObject(BB_KEY_PLAYER_PAWN, PlayerPawn);
 	SetIdle();
+
+	UCrowdFollowingComponent* CrowdFollowingComponent = FindComponentByClass<UCrowdFollowingComponent>();
+	if (CrowdFollowingComponent)
+	{
+		CrowdFollowingComponent->SetCrowdSeparation(CrowdSeparationEnabled);
+		CrowdFollowingComponent->SetCrowdSeparationWeight(CrowdSeparationWeight);
+		CrowdFollowingComponent->SetCrowdAvoidanceRangeMultiplier(CrowdAvoidanceRangeMultiplier);
+		CrowdFollowingComponent->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Good);
+	}
 }
 
 void ASTEnemyAIController::SetAttacking(bool Value)
