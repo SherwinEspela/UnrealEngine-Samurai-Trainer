@@ -70,6 +70,7 @@ public:
 
 	void SetCurrentEnemy(ASTEnemyCharacter* Value);
 	void SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value);
+	void ToggleDebuggerDisplay();
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
@@ -226,11 +227,14 @@ private:
 
 protected:
 	// Combat
+	/*UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	UTargetLockComponent* TargetLockComponent;*/
+
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	UTargetLockComponent* TargetLockComponent;
+	TObjectPtr<UTargetLockComponent> TargetLock;
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;
 	bool bEnemyCanBlockOrEvade;
-
+	bool bIsDebuggerDisplayed = true;
 };

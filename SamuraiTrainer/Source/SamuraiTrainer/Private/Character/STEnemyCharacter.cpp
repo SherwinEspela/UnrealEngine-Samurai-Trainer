@@ -207,6 +207,8 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 	if (EnemyAnimInstance && MontageHitReaction)
 	{
+		OnWarpTargetUpdated();
+
 		if (bIsDead)
 		{
 			EnemyAnimInstance->Montage_Play(MontageCEHitReaction);
@@ -217,6 +219,7 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 			
 			const int RandomIndex = FMath::RandRange(0, HitReactionSectionNames.Num() - 1);
 			const FName HRSectionName = HitReactionSectionNames[RandomIndex];
+			
 			EnemyAnimInstance->Montage_Play(MontageHitReaction);
 			EnemyAnimInstance->Montage_JumpToSection(HRSectionName, MontageHitReaction);
 		}
@@ -249,6 +252,7 @@ void ASTEnemyCharacter::PlayHitReaction(FName SectionName)
 {
 	if (EnemyAnimInstance && MontageHitReaction)
 	{
+		OnWarpTargetUpdated();
 		EnemyAnimInstance->Montage_Play(MontageHitReaction);
 		EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageHitReaction);
 	}
@@ -266,6 +270,7 @@ void ASTEnemyCharacter::PlayAttackStagger(FName SectionName)
 
 	if (EnemyAnimInstance && EnemyAIController)
 	{
+		OnWarpTargetUpdated();
 		EnemyAIController->SetStaggered();
 		EnemyAnimInstance->Montage_Play(MontageAttackStagger);
 		EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageAttackStagger);
@@ -327,6 +332,7 @@ void ASTEnemyCharacter::SwordAttack()
 void ASTEnemyCharacter::Block(FName SectionName)
 {
 	if (!MontageBlock) return;
+	OnWarpTargetUpdated();
 	EnemyAIController->SetBlocking();
 	EnemyAnimInstance->Montage_Play(MontageBlock);
 	EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageBlock);
@@ -336,8 +342,8 @@ void ASTEnemyCharacter::Block()
 {
 	if (!MontageBlock) return;
 
+	OnWarpTargetUpdated();
 	EnemyAIController->SetBlocking();
-
 	const int RandomIndex = FMath::RandRange(0, BlockSectionNames.Num() - 1);
 	const FName BlockSectionName = BlockSectionNames[RandomIndex];
 	EnemyAnimInstance->Montage_Play(MontageBlock);

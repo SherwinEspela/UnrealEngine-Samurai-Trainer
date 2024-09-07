@@ -10,6 +10,7 @@ class ASTPlayerCharacter;
 class UInputMappingContext;
 class UInputAction;
 class UEnhancedInputComponent;
+class ADisplayLabelActor;
 struct FInputActionValue;
 
 /**
@@ -66,11 +67,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionRestartLevel;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* InputActionToggleDebuggerDisplay;
+
 private:
 	void RestartLevel();
+	void ToggleDebuggerDisplay();
 
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;
 	UEnhancedInputComponent* EnhancedInputComponent;
-	
+	ADisplayLabelActor* DisplayLabel;
+	bool bIsDebuggerDisplayed = true;
 };

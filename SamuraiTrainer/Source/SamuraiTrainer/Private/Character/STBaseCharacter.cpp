@@ -152,6 +152,27 @@ FName ASTBaseCharacter::GetAttackSocketName() const
 	return CurrentMWPSocketName;
 }
 
+FVector ASTBaseCharacter::GetAttackPositionByLineTrace(FVector OtherActorLocation)
+{
+	FVector LineTraceStart = GetActorLocation();
+	FVector AttackLocation;
+
+	FHitResult Hit;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+	const bool bHitSuccess = GetWorld()->LineTraceSingleByChannel(
+		Hit, LineTraceStart, OtherActorLocation, ECollisionChannel::ECC_Pawn, CollisionQueryParams
+	);
+
+	if (bHitSuccess)
+	{		
+		AttackLocation = OtherActorLocation + (Hit.ImpactNormal * AttackLocationOffset);
+		//DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 10.f, FColor::Blue, false, 2.f);
+	}
+
+	return AttackLocation;
+}
+
 void ASTBaseCharacter::SetSlowMotion(bool IsSlow)
 {
 	if (IsSlow)

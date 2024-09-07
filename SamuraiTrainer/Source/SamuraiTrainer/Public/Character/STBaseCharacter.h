@@ -48,6 +48,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FName GetAttackSocketName() const;
 
+	UFUNCTION(BlueprintCallable)
+	FVector GetAttackPositionByLineTrace(FVector OtherActorLocation);
+
 	void SetSlowMotion(bool IsSlow = true);
 	virtual void SetDeathPoseType(EDeathPoseTypes Value);
 
@@ -147,6 +150,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Damage Amount")
 	float DamageSwordAttack = 10.f;
+
+	UPROPERTY(EditAnywhere, Category = "Attack Location Offset")
+	float AttackLocationOffset = 150.f;
 
 protected:
 	// Weapon

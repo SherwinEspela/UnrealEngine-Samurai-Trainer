@@ -13,6 +13,7 @@
 #include "EnumDeathPoseType.h"
 #include "Items/Katana.h"
 #include "Combat/TargetLockComponent.h"
+#include "Misc/DisplayLabelActor.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -38,7 +39,7 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 	/*CapsuleEnemySensor = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Enemy Sensor 1"));
 	CapsuleEnemySensor->SetupAttachment(EnemySensorTransform);*/
 
-	TargetLockComponent = CreateDefaultSubobject<UTargetLockComponent>(TEXT("Target Lock Component"));
+	TargetLock = CreateDefaultSubobject<UTargetLockComponent>(TEXT("Target Lock"));
 }
 
 void ASTPlayerCharacter::BeginPlay()
@@ -48,7 +49,10 @@ void ASTPlayerCharacter::BeginPlay()
 	bIsSwordArmed = false;
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
-	TargetLockComponent->SetLineTraceOrigin(EnemySensorTransform);
+	if (TargetLock)
+	{
+		TargetLock->SetLineTraceOrigin(EnemySensorTransform);
+	}
 
 	InitPlayerAnimInstance();
 	InitQueues();
@@ -161,7 +165,7 @@ void ASTPlayerCharacter::Tick(float DeltaTime)
 	FRotator EnemySensorRotation(0.f, GetViewRotation().Yaw, 0.f);
 	EnemySensorTransform->SetWorldRotation(EnemySensorRotation);
 
-	if (CurrentEnemy)
+	if (CurrentEnemy && !CurrentEnemy->IsDead() && bIsDebuggerDisplayed)
 	{
 		DrawDebugSphere(GetWorld(), CurrentEnemy->GetActorLocation(), 50.f, 20.f, FColor::Red);
 	}
@@ -208,7 +212,6 @@ void ASTPlayerCharacter::EnemyInteract(
 	if (PlayerAnimInstance == nullptr) return;
 	if (CurrentEnemy && CurrentEnemy->IsDead()) return;
 
-	MoveQueue.Dequeue(CurrentAttackData);
 	if (CurrentEnemy)
 	{
 		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
@@ -223,8 +226,10 @@ void ASTPlayerCharacter::EnemyInteract(
 			CurrentEnemy->SetDeathPoseType(CurrentAttackData.OpponentDeathPoseType);
 		}
 		else {
+			MoveQueue.Dequeue(CurrentAttackData);
 			PlayerAnimInstance->Montage_Play(MontageToPlay);
 			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageToPlay);
+			MoveQueue.Enqueue(CurrentAttackData);
 		}
 
 		CurrentMWPSocketName = CurrentAttackData.AttackSocketName;
@@ -242,12 +247,12 @@ void ASTPlayerCharacter::EnemyInteract(
 			CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
 		}
 	}
-	else {
+
+	/*else {
 		PlayerAnimInstance->Montage_Play(MontageToPlay);
 		PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageToPlay);
-	}
+	}*/
 
-	MoveQueue.Enqueue(CurrentAttackData);
 	MovementState = EMovementStates::EPMS_Attacking;
 	bCanPerformNextAttack = false;
 }
@@ -488,6 +493,11 @@ void ASTPlayerCharacter::SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value)
 	}
 }
 
+void ASTPlayerCharacter::ToggleDebuggerDisplay()
+{
+	bIsDebuggerDisplayed = !bIsDebuggerDisplayed;
+}
+
 void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (CurrentEnemy && OtherActor->GetName() == CurrentEnemy->GetName()) return;
@@ -553,27 +563,43 @@ void ASTPlayerCharacter::ExecuteSwordAttack()
 {
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
 	if (!bCanSwordAttack) return;
-	if (CurrentEnemy == nullptr) return;
 	Super::SwordAttack();
 
-	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
-	TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
-	UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
-	TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
-	EnemyInteract(AttackQ, MontageAttack, ComboEndersArray, MontageComboEnder, DamageSwordAttack, bIsEnemyFrontFacing);
+	if (CurrentEnemy)
+	{
+	/*	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
+		TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
+		UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
+		TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;*/
+		EnemyInteract(FrontAttackQueues, MontageAttack, SwordAttackComboEnders, MontageFrontComboEnder, DamageSwordAttack, true);
+	}
+	else {
+		FAttackData AttackData;
+		FrontAttackQueues.Dequeue(AttackData);
+		PlayerAnimInstance->Montage_Play(MontageAttack);
+		PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageAttack);
+		FrontAttackQueues.Enqueue(AttackData);
+	}
 }
 
 void ASTPlayerCharacter::ExecuteSwordAttackCombo2()
 {
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
 	if (!bCanSwordAttack) return;
-	if (CurrentEnemy == nullptr) return;
+	Super::SwordAttack();
 
-	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
-	//TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
-	//UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
-	//TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;
-	EnemyInteract(AttackCombo2Queues, MontageAttackCombo2, SwordAttackComboEnders2, MontageComboEnder2, DamageSwordAttack, bIsEnemyFrontFacing);
+	if (CurrentEnemy)
+	{
+		//const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
+		EnemyInteract(AttackCombo2Queues, MontageAttackCombo2, SwordAttackComboEnders2, MontageComboEnder2, DamageSwordAttack, true);
+	}
+	else {
+		FAttackData AttackData;
+		AttackCombo2Queues.Dequeue(AttackData);
+		PlayerAnimInstance->Montage_Play(MontageAttackCombo2);
+		PlayerAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageAttackCombo2);
+		AttackCombo2Queues.Enqueue(AttackData);
+	}
 }
 
 void ASTPlayerCharacter::ExecuteBlock()

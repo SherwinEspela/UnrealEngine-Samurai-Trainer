@@ -26,6 +26,7 @@ void UTargetLockComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UTargetLockComponent::DetectEnemyByLineTrace()
 {
+	//if (!bIsEnabled) return;
 	if (LineTraceOriginTransform == nullptr) return;
 
 	FVector LineTraceStart = LineTraceOriginTransform->GetComponentLocation();
@@ -41,7 +42,7 @@ void UTargetLockComponent::DetectEnemyByLineTrace()
 	if (bHitSuccess)
 	{
 		ASTEnemyCharacter* Enemy = Cast<ASTEnemyCharacter>(Hit.GetActor());
-		if (Player && Enemy)
+		if (Player && Enemy && !Enemy->IsDead())
 		{
 			Player->SetCurrentEnemyByLineTrace(Enemy);
 		}

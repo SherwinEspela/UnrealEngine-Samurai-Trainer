@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/DisplayLabelActor.h"
 
 void ASTPlayerController::BeginPlay()
 {
@@ -16,6 +17,14 @@ void ASTPlayerController::BeginPlay()
 
 	UEnhancedInputLocalPlayerSubsystem* PlayerSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	PlayerSubsystem->AddMappingContext(InputMappingContext, 0);
+
+	TArray<AActor*> DisplayLabelActors;
+	UGameplayStatics::GetAllActorsWithTag(this, FName("DisplayLabel"), DisplayLabelActors);
+
+	if (DisplayLabelActors.Num() > 0)
+	{
+		DisplayLabel = Cast<ADisplayLabelActor>(DisplayLabelActors[0]);
+	}
 }
 
 void ASTPlayerController::SetupInputComponent()
@@ -32,6 +41,7 @@ void ASTPlayerController::SetupInputComponent()
 	//EnhancedInputComponent->BindAction(InputActionKick, ETriggerEvent::Triggered, this, &ASTPlayerController::Kick);
 	EnhancedInputComponent->BindAction(InputActionCounter, ETriggerEvent::Triggered, this, &ASTPlayerController::Counter);
 	EnhancedInputComponent->BindAction(InputActionRestartLevel, ETriggerEvent::Triggered, this, &ASTPlayerController::RestartLevel);
+	EnhancedInputComponent->BindAction(InputActionToggleDebuggerDisplay, ETriggerEvent::Triggered, this, &ASTPlayerController::ToggleDebuggerDisplay);
 }
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
@@ -88,4 +98,15 @@ void ASTPlayerController::Counter()
 void ASTPlayerController::RestartLevel()
 {
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+}
+
+void ASTPlayerController::ToggleDebuggerDisplay()
+{
+	if (DisplayLabel)
+	{
+		DisplayLabel->DisplayLabels(bIsDebuggerDisplayed);
+		bIsDebuggerDisplayed = !bIsDebuggerDisplayed;
+	}
+
+	PlayerCharacter->ToggleDebuggerDisplay();
 }
