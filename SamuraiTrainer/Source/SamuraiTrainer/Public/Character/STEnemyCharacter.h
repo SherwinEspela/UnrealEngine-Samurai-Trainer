@@ -17,6 +17,8 @@ class ASTPlayerCharacter;
 class UNiagaraComponent;
 struct FAttackAndCounterReactionData;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackBeganFromThisEnemySignature, ASTEnemyCharacter*, Enemy,  EPlayerQTEResponseType, PlayerQTEResposeType);
+
 /**
  * 
  */
@@ -67,6 +69,11 @@ public:
 
 public:
 	FORCEINLINE void SetNextHitReactionSectionName(FName Value) { NextHitReactionSectionName = Value; }
+	FORCEINLINE TObjectPtr<ASTEnemyAIController> GetEnemyAIController() const { return EnemyAIController; }
+
+public:
+	// Multicast Delegates
+	FOnAttackBeganFromThisEnemySignature OnAttackBeganFromThisEnemy;
 
 protected:
 	virtual void BeginPlay() override;
@@ -113,6 +120,7 @@ protected:
 	TArray<FAttackAndCounterReactionData> SwordAttacks;
 	TArray<FName> BlockSectionNames;
 	TArray<FName> HitReactionSectionNames;
+	TArray<FName> StaggerSectionNames;
 
 protected:
 	// Debugging

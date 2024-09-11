@@ -23,6 +23,8 @@ protected:
 protected:
 	TObjectPtr<ASTPlayerCharacter> Player;
 
-	UPROPERTY(EditAnywhere, Category = "Enemy Character")
-	TObjectPtr<ASTEnemyCharacter> Enemy;
+	/*UPROPERTY(EditAnywhere, Category = "Enemy Character")
+	TObjectPtr<ASTEnemyCharacter> Enemy;*/
+
+	TArray<ASTEnemyCharacter*> Enemies;
 };

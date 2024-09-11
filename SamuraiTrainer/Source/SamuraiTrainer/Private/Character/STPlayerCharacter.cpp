@@ -457,6 +457,7 @@ void ASTPlayerCharacter::OnCounterAttackFrameBegan()
 
 ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 {
+	if (CurrentAttackingEnemy) return CurrentAttackingEnemy;
 	return CurrentEnemy;
 }
 
@@ -471,14 +472,6 @@ float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 void ASTPlayerCharacter::SetCurrentEnemy(ASTEnemyCharacter* Value)
 {
-	/*if (CurrentEnemy) return;
-	CurrentEnemy = Value;
-	CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
-	CurrentTargetPawn = CurrentEnemy;*/
-}
-
-void ASTPlayerCharacter::SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value)
-{
 	if (CurrentEnemy && Value->GetName() == CurrentEnemy->GetName()) return;
 
 	if (CurrentEnemy)
@@ -491,6 +484,22 @@ void ASTPlayerCharacter::SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value)
 		CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
 		CurrentTargetPawn = CurrentEnemy;
 	}
+}
+
+void ASTPlayerCharacter::SetCurrentAttackingEnemyWithResponseType(ASTEnemyCharacter* Value, EPlayerQTEResponseType ResponseType)
+{
+	ExpectedPlayerQTEResponse = ResponseType;
+	CurrentAttackingEnemy = Value;
+}
+
+void ASTPlayerCharacter::RemoveCurrentAttackingEnemy()
+{
+	if(CurrentAttackingEnemy) CurrentAttackingEnemy = nullptr;
+}
+
+void ASTPlayerCharacter::SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value)
+{
+	SetCurrentEnemy(Value);
 }
 
 void ASTPlayerCharacter::ToggleDebuggerDisplay()
@@ -609,16 +618,36 @@ void ASTPlayerCharacter::ExecuteBlock()
 
 	PlayerAnimInstance->Montage_Play(MontageBlock);
 	bCanSwordAttack = true;
+
+	if (bCanCounterAttack) bDidCounterAttack = true;
+	CurrentMWPSocketName = BLOCK_SOCKET;
+	OnWarpTargetUpdated();
+
+	int RandomIndex = FMath::RandRange(0, BlockSectionNames.Num() - 1);
+	FName BlockSectionName = BlockSectionNames[RandomIndex];
+
+	if (CurrentAttackingEnemy)
+	{
+		/*int RandomIndex = FMath::RandRange(0, BlockSectionNames.Num() - 1);
+		FName BlockSectionName = BlockSectionNames[RandomIndex];*/
+		PlayerAnimInstance->Montage_JumpToSection(BlockSectionName, MontageBlock);
+		CurrentAttackingEnemy->PlayNextStagger();
+		CurrentEnemy = CurrentAttackingEnemy;
+		CurrentAttackingEnemy = nullptr;
+		Super::Block();
+		return;
+	}
+
 	if (CurrentEnemy)
 	{
 		if (CurrentEnemy->IsAttacking())
 		{
-			if (bCanCounterAttack) bDidCounterAttack = true;
+	/*		if (bCanCounterAttack) bDidCounterAttack = true;
 			CurrentMWPSocketName = BLOCK_SOCKET;
-			OnWarpTargetUpdated();
+			OnWarpTargetUpdated();*/
 
-			int RandomIndex = FMath::RandRange(0, BlockSectionNames.Num()-1);
-			FName BlockSectionName = BlockSectionNames[RandomIndex];
+	/*		int RandomIndex = FMath::RandRange(0, BlockSectionNames.Num()-1);
+			FName BlockSectionName = BlockSectionNames[RandomIndex];*/
 			PlayerAnimInstance->Montage_JumpToSection(BlockSectionName, MontageBlock);
 			CurrentEnemy->PlayNextStagger();
 		}

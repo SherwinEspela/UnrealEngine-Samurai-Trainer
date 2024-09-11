@@ -69,6 +69,8 @@ public:
 	) override;
 
 	void SetCurrentEnemy(ASTEnemyCharacter* Value);
+	void SetCurrentAttackingEnemyWithResponseType(ASTEnemyCharacter* Value, EPlayerQTEResponseType ResponseType);
+	void RemoveCurrentAttackingEnemy();
 	void SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value);
 	void ToggleDebuggerDisplay();
 
@@ -133,6 +135,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Current Enemy")
 	ASTEnemyCharacter* CurrentEnemy;
+
+	ASTEnemyCharacter* CurrentAttackingEnemy;
 
 	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Detector")
 	UCapsuleComponent* CapsuleEnemySensor;*/

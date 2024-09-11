@@ -17,8 +17,13 @@ void ACombatSystemComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	Player = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	if (Player && Enemy)
+
+	TSubclassOf<ASTEnemyCharacter> EnemyClass = ASTEnemyCharacter::StaticClass();
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(this, EnemyClass, OutActors);
+
+	if (OutActors.Num() > 0)
 	{
-		//Player->SetCurrentEnemy(Enemy);
+		for (auto FoundActor : OutActors) Enemies.Add(Cast<ASTEnemyCharacter>(FoundActor));
 	}
 }

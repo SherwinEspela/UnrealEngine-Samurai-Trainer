@@ -43,7 +43,7 @@ void ASTEnemyCharacter::BeginPlay()
 	EnemyAnimInstance = CastChecked<USTEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	SubscribeToAnimationEvents();
 	
-	GetCharacterMovement()->MaxWalkSpeed = 200.f;
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
 	EnemyAIController = Cast<ASTEnemyAIController>(EnemyAnimInstance->TryGetPawnOwner()->GetController());
 	if (EnemyAIController && !bDebugCannotMove)
@@ -84,6 +84,9 @@ void ASTEnemyCharacter::BeginPlay()
 	HitReactionSectionNames.Add(HIT_REACTION_2);
 	HitReactionSectionNames.Add(HIT_REACTION_3);
 
+	StaggerSectionNames.Add(BLOCK_1);
+	StaggerSectionNames.Add(BLOCK_2);
+
 	FXAttackIndicator->Deactivate();
 	FXAttackIndicator->SetForceSolo(true);
 	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
@@ -96,18 +99,21 @@ void ASTEnemyCharacter::SubscribeToAnimationEvents()
 	if (EnemyAnimInstance == nullptr) return;
 
 	EnemyAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleAttackAnimCompleted);
-	EnemyAnimInstance->OnStaggeredAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleStaggerAnimCompleted);
+	//EnemyAnimInstance->OnStaggeredAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleStaggerAnimCompleted);
 }
 
 void ASTEnemyCharacter::HandleAttackAnimCompleted()
 {
 	Super::HandleAttackAnimCompleted();
+
+	OnAttackCompleted.Broadcast();
 }
 
 void ASTEnemyCharacter::HandleStaggerAnimCompleted()
 {
 	Super::HandleStaggerAnimCompleted();
 	EnemyAIController->SetStaggered(false);
+	OnBlockCompleted.Broadcast();
 }
 
 void ASTEnemyCharacter::HandleHitReactsionAnimCompleted()
@@ -162,6 +168,7 @@ void ASTEnemyCharacter::HandleBloodSpillFXNotifyBegin()
 void ASTEnemyCharacter::HandleBlockCompleted()
 {
 	EnemyAIController->SetRecovering();
+	OnBlockCompleted.Broadcast();
 }
 
 void ASTEnemyCharacter::OnFXAttackIndicatorFinished(UNiagaraComponent* Value)
@@ -282,18 +289,25 @@ void ASTEnemyCharacter::PlayNextStagger()
 	MovementState = EMovementStates::EPMS_Staggered;
 	if (EnemyAnimInstance)
 	{
+		int RandomIndex = FMath::RandRange(0, StaggerSectionNames.Num() - 1);
+		FName StaggerSectionName = StaggerSectionNames[RandomIndex];
 		EnemyAnimInstance->Montage_Play(MontageBlock);
-		EnemyAnimInstance->Montage_JumpToSection(NextStaggerSectionName, MontageBlock);
+		EnemyAnimInstance->Montage_JumpToSection(StaggerSectionName, MontageBlock);
 	}
 }
 
 void ASTEnemyCharacter::MakeNextDecision()
 {
 	int RandomValue = FMath::RandRange(0, 100);
-	const bool ShouldAttack = RandomValue > 30;
+	const bool ShouldAttack = RandomValue > 40;
+	const bool ShouldCloseEvade = RandomValue > 10 && RandomValue <= 40;
 	if (ShouldAttack)
 	{
 		EnemyAIController->SetAttacking();
+	}
+	else if (ShouldCloseEvade)
+	{
+		EnemyAIController->SetCloseEvading();
 	}
 	else {
 		EnemyAIController->SetIdle();
@@ -320,9 +334,12 @@ void ASTEnemyCharacter::SwordAttack()
 	int MaxIndex = SwordAttacks.Num();
 	FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
 	EPlayerQTEResponseType ResponseType = GenerateRandomQTEResponse();
-	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block); //ResponseType);
+	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block);
+	OnAttackBegan.Broadcast(EPlayerQTEResponseType::EPQTER_Block);
+	OnAttackBeganFromThisEnemy.Broadcast(this, EPlayerQTEResponseType::EPQTER_Block);
+
 	CurrentMWPSocketName = AttackData.MWPSocketName;
-	NextStaggerSectionName = AttackData.CBStagger;
+	//NextStaggerSectionName = AttackData.CBStagger;
 	OnWarpTargetUpdated();
 	EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 	EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);

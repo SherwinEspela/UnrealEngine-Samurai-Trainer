@@ -21,7 +21,11 @@ public:
 	ASTEnemyAIController();
 
 	void Initialize(TObjectPtr<UBehaviorTree> BehaviorTree);
+	void SetChosenToAttack(bool Value = true);
+	void SetToOuterRange(bool Value = true);
+	void SetToMiddleRange(bool Value = true);
 	void SetAttacking(bool Value = true);
+	void SetCloseEvading(bool Value = true);
 	void SetIdle(bool Value = true);
 	void SetHitReacting(bool HitReacting = true);
 	void SetStaggered(bool Staggered = true);

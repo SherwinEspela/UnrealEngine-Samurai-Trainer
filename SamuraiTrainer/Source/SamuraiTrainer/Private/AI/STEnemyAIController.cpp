@@ -26,6 +26,9 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	RunBehaviorTree(BehaviorTree);
 	GetBlackboardComponent()->SetValueAsObject(BB_KEY_PLAYER_PAWN, PlayerPawn);
+	SetChosenToAttack(false);
+	SetToOuterRange();
+	//SetToMiddleRange(false);
 	SetIdle();
 
 	UCrowdFollowingComponent* CrowdFollowingComponent = FindComponentByClass<UCrowdFollowingComponent>();
@@ -38,10 +41,41 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 	}
 }
 
+void ASTEnemyAIController::SetChosenToAttack(bool Value)
+{
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
+
+	bool IsHitReacting = GetBlackboardComponent()->GetValueAsBool(BB_KEY_HIT_REACTING);
+	bool IsStaggered = GetBlackboardComponent()->GetValueAsBool(BB_KEY_STAGGERED);
+	bool IsBlocking = GetBlackboardComponent()->GetValueAsBool(BB_KEY_BLOCKING);
+	bool IsRecovering = GetBlackboardComponent()->GetValueAsBool(BB_KEY_RECOVERING);
+	bool IsDying = GetBlackboardComponent()->GetValueAsBool(BB_KEY_DYING);
+	if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
+	{
+		SetAttacking(true);
+	}
+}
+
+void ASTEnemyAIController::SetToOuterRange(bool Value)
+{
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_AT_OUTER_RANGE, Value);
+}
+
+void ASTEnemyAIController::SetToMiddleRange(bool Value)
+{
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_AT_MIDDLE_RANGE, Value);
+}
+
 void ASTEnemyAIController::SetAttacking(bool Value)
 {
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_ATTACKING, Value);
+}
+
+void ASTEnemyAIController::SetCloseEvading(bool Value)
+{
+	ResetAllValues();
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_CLOSE_EVADING, Value);
 }
 
 void ASTEnemyAIController::SetIdle(bool Value)
@@ -88,4 +122,5 @@ void ASTEnemyAIController::ResetAllValues()
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_STAGGERED, false);
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_BLOCKING, false);
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_RECOVERING, false);
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_CLOSE_EVADING, false);
 }

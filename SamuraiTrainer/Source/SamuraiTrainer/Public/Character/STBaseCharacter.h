@@ -16,6 +16,10 @@ class USoundBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStartedSignature, FName, BlockSectionName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackStartedWithTwoParamsSignature, FName, BlockSectionName, FName, HRSectionName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAttackStartedWith3ParamsSignature, FName, BlockSectionName, FName, HRSectionName, EPlayerQTEResponseType, PlayerQTEResposeType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackBeganSignature, EPlayerQTEResponseType, PlayerQTEResposeType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBlockCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaggerCompletedSignature);
 
 UCLASS()
 class SAMURAITRAINER_API ASTBaseCharacter : public ACharacter
@@ -75,6 +79,10 @@ public:
 	FOnAttackStartedSignature OnAttackStarted;
 	FOnAttackStartedWithTwoParamsSignature OnAttackStartedWithTwoParams;
 	FOnAttackStartedWith3ParamsSignature OnAttackStartedWith3Params;
+	FOnAttackBeganSignature OnAttackBegan;
+	FOnAttackCompletedSignature OnAttackCompleted;
+	FOnBlockCompletedSignature OnBlockCompleted;
+	FOnStaggerCompletedSignature OnStaggerCompleted;
 
 protected:
 	virtual void BeginPlay() override;
@@ -95,7 +103,7 @@ protected:
 	UFUNCTION()
 	virtual void HandleAttackAnimCompleted();
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void HandleStaggerAnimCompleted();
 	
 	UFUNCTION(BlueprintCallable)
