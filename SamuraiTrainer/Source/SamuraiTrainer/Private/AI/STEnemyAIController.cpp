@@ -56,6 +56,11 @@ void ASTEnemyAIController::SetChosenToAttack(bool Value)
 	}
 }
 
+void ASTEnemyAIController::SetPausedToAttack(bool Value)
+{
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_PAUSED_TO_ATTACK, Value);
+}
+
 void ASTEnemyAIController::SetToOuterRange(bool Value)
 {
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_AT_OUTER_RANGE, Value);

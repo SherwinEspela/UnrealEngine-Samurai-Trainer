@@ -3,6 +3,7 @@
 
 #define BB_KEY_PLAYER_PAWN FName("PlayerPawn")
 #define BB_KEY_CHOSEN_TO_ATTACK FName("IsChosenToAttack")
+#define BB_KEY_PAUSED_TO_ATTACK FName("IsPausedToAttack")
 #define BB_KEY_IDLE FName("IsIdle")
 #define BB_KEY_ATTACKING FName("IsAttacking")
 #define BB_KEY_EVADING FName("IsEvading")

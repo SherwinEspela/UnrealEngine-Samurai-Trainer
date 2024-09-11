@@ -22,6 +22,7 @@ public:
 
 	void Initialize(TObjectPtr<UBehaviorTree> BehaviorTree);
 	void SetChosenToAttack(bool Value = true);
+	void SetPausedToAttack(bool Value = true);
 	void SetToOuterRange(bool Value = true);
 	void SetToMiddleRange(bool Value = true);
 	void SetAttacking(bool Value = true);

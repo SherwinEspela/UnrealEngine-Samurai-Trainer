@@ -33,12 +33,20 @@ protected:
 
 	UFUNCTION()
 	void HandleAttackBeganFromEnemy(ASTEnemyCharacter* Enemy, EPlayerQTEResponseType PlayerResponseType);
+
+	UFUNCTION()
+	void HandleAttackCompletedFromEnemy(ASTEnemyCharacter* Enemy);
+
+	UFUNCTION()
+	void HandleBlockCompletedFromEnemy(ASTEnemyCharacter* Enemy);
 	
 	UFUNCTION()
 	void HandleEnemyAttackCompleted();
 
 	UFUNCTION()
 	void HandleEnemyBlockCompleted();
+
+	void SetEnemiesToPauseAttacking(bool Paused = true);
 
 protected:
 	TObjectPtr<ASTPlayerCharacter> Player;
@@ -61,4 +69,7 @@ protected:
 
 	bool bIsAttacking = false;
 	bool bIsSequenceAttacking = true;
+
+private:
+	void HandleEventFromEnemyCompleted(ASTEnemyCharacter* Enemy);
 };

@@ -18,6 +18,8 @@ class UNiagaraComponent;
 struct FAttackAndCounterReactionData;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackBeganFromThisEnemySignature, ASTEnemyCharacter*, Enemy,  EPlayerQTEResponseType, PlayerQTEResposeType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackCompletedFromThisEnemySignature, ASTEnemyCharacter*, Enemy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBlockCompletedFromThisEnemySignature, ASTEnemyCharacter*, Enemy);
 
 /**
  * 
@@ -74,6 +76,8 @@ public:
 public:
 	// Multicast Delegates
 	FOnAttackBeganFromThisEnemySignature OnAttackBeganFromThisEnemy;
+	FOnAttackCompletedFromThisEnemySignature OnAttackCompletedFromThisEnemy;
+	FOnBlockCompletedFromThisEnemySignature OnBlockCompletedFromThisEnemy;
 
 protected:
 	virtual void BeginPlay() override;

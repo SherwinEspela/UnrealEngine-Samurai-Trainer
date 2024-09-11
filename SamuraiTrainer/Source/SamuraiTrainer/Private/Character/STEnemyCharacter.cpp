@@ -107,6 +107,7 @@ void ASTEnemyCharacter::HandleAttackAnimCompleted()
 	Super::HandleAttackAnimCompleted();
 
 	OnAttackCompleted.Broadcast();
+	OnAttackCompletedFromThisEnemy.Broadcast(this);
 }
 
 void ASTEnemyCharacter::HandleStaggerAnimCompleted()
@@ -114,6 +115,7 @@ void ASTEnemyCharacter::HandleStaggerAnimCompleted()
 	Super::HandleStaggerAnimCompleted();
 	EnemyAIController->SetStaggered(false);
 	OnBlockCompleted.Broadcast();
+	OnBlockCompletedFromThisEnemy.Broadcast(this);
 }
 
 void ASTEnemyCharacter::HandleHitReactsionAnimCompleted()
@@ -169,6 +171,7 @@ void ASTEnemyCharacter::HandleBlockCompleted()
 {
 	EnemyAIController->SetRecovering();
 	OnBlockCompleted.Broadcast();
+	OnBlockCompletedFromThisEnemy.Broadcast(this);
 }
 
 void ASTEnemyCharacter::OnFXAttackIndicatorFinished(UNiagaraComponent* Value)
@@ -339,7 +342,6 @@ void ASTEnemyCharacter::SwordAttack()
 	OnAttackBeganFromThisEnemy.Broadcast(this, EPlayerQTEResponseType::EPQTER_Block);
 
 	CurrentMWPSocketName = AttackData.MWPSocketName;
-	//NextStaggerSectionName = AttackData.CBStagger;
 	OnWarpTargetUpdated();
 	EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
 	EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
@@ -349,15 +351,19 @@ void ASTEnemyCharacter::SwordAttack()
 void ASTEnemyCharacter::Block(FName SectionName)
 {
 	if (!MontageBlock) return;
+	Super::Block();
+	
 	OnWarpTargetUpdated();
 	EnemyAIController->SetBlocking();
 	EnemyAnimInstance->Montage_Play(MontageBlock);
 	EnemyAnimInstance->Montage_JumpToSection(SectionName, MontageBlock);
+	OnBlockCompletedFromThisEnemy.Broadcast(this);
 }
 
 void ASTEnemyCharacter::Block()
 {
 	if (!MontageBlock) return;
+	Super::Block();
 
 	OnWarpTargetUpdated();
 	EnemyAIController->SetBlocking();
@@ -365,6 +371,7 @@ void ASTEnemyCharacter::Block()
 	const FName BlockSectionName = BlockSectionNames[RandomIndex];
 	EnemyAnimInstance->Montage_Play(MontageBlock);
 	EnemyAnimInstance->Montage_JumpToSection(BlockSectionName, MontageBlock);
+	OnBlockCompletedFromThisEnemy.Broadcast(this);
 }
 
 void ASTEnemyCharacter::Counter()
