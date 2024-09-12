@@ -31,6 +31,7 @@ class SAMURAITRAINER_API ASTEnemyCharacter : public ASTBaseCharacter
 
 public:
 	ASTEnemyCharacter();
+	virtual void Tick(float DeltaTime) override;
 
 	virtual float TakeDamage
 	(

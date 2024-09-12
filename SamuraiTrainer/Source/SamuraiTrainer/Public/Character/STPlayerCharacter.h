@@ -52,6 +52,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetNextHitReactionSectionName(FName Value);
 
+	UFUNCTION(BlueprintCallable)
+	void SetButtonsDisabled(bool Value);
+
 	UFUNCTION()
 	void HandleBasicAttackCompleted();
 
@@ -241,4 +244,5 @@ private:
 	UPlayerAnimInstance* PlayerAnimInstance;
 	bool bEnemyCanBlockOrEvade;
 	bool bIsDebuggerDisplayed = true;
+	bool bButtonsDisabled = false;
 };

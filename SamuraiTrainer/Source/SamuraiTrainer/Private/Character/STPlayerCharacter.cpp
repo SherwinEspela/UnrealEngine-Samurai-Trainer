@@ -203,6 +203,11 @@ void ASTPlayerCharacter::SetNextHitReactionSectionName(FName Value)
 	NextHitReactionSectionName = Value;
 }
 
+void ASTPlayerCharacter::SetButtonsDisabled(bool Value)
+{
+	bButtonsDisabled = Value;
+}
+
 void ASTPlayerCharacter::EnemyInteract(
 	TQueue<FAttackData> &MoveQueue, UAnimMontage* MontageToPlay, TArray<FAttackData> ComboEnders, 
 	UAnimMontage* MontageEnder, float Damage, bool IsEnemyFacingFront
@@ -259,6 +264,7 @@ void ASTPlayerCharacter::EnemyInteract(
 
 void ASTPlayerCharacter::SwordAttack()
 {
+	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -273,6 +279,7 @@ void ASTPlayerCharacter::SwordAttack()
 
 void ASTPlayerCharacter::SwordAttackCombo2()
 {
+	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -287,6 +294,7 @@ void ASTPlayerCharacter::SwordAttackCombo2()
 
 void ASTPlayerCharacter::Block()
 {
+	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -301,6 +309,7 @@ void ASTPlayerCharacter::Block()
 
 void ASTPlayerCharacter::Kick()
 {
+	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -315,6 +324,7 @@ void ASTPlayerCharacter::Kick()
 
 void ASTPlayerCharacter::Counter()
 {
+	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -613,8 +623,8 @@ void ASTPlayerCharacter::ExecuteSwordAttackCombo2()
 
 void ASTPlayerCharacter::ExecuteBlock()
 {
-	if (MovementState != EMovementStates::EPMS_Idle) return;
-	if (MontageBlock == nullptr) return;
+	//if (MovementState != EMovementStates::EPMS_Idle) return;
+	//if (MontageBlock == nullptr) return;
 
 	PlayerAnimInstance->Montage_Play(MontageBlock);
 	bCanSwordAttack = true;

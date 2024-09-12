@@ -14,6 +14,7 @@
 #include "NiagaraComponent.h"
 #include "SamuraiTrainer/SamuraiTrainerGameMode.h"
 #include "Items/Katana.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #define NV_LINEAR_COLOR FString("SpriteColor")
 #define ATTACK_INDICATOR_COLOR_RED FLinearColor(FColor::Red)
@@ -92,6 +93,17 @@ void ASTEnemyCharacter::BeginPlay()
 	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
 	FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
 	FXAttackIndicator->OnSystemFinished.AddDynamic(this, &ASTEnemyCharacter::OnFXAttackIndicatorFinished);
+}
+
+void ASTEnemyCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (PlayerCharacter)
+	{
+		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCharacter->GetActorLocation());
+		SetActorRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f));
+	}
 }
 
 void ASTEnemyCharacter::SubscribeToAnimationEvents()
