@@ -16,4 +16,6 @@ class SAMURAITRAINER_API USTEnemyAnimInstance : public USTBaseAnimInstance
 {
 	GENERATED_BODY()
 
+public:
+	virtual void NativeUpdateAnimation(float DeltaTime) override;
 };

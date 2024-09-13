@@ -139,6 +139,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Current Enemy")
 	ASTEnemyCharacter* CurrentEnemy;
 
+	UPROPERTY(EditAnywhere, Category = "Current Enemy")
+	float DistanceFromEnemyAllowed = 400.f;
+
 	ASTEnemyCharacter* CurrentAttackingEnemy;
 
 	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Detector")
@@ -234,15 +237,15 @@ private:
 
 protected:
 	// Combat
-	/*UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	UTargetLockComponent* TargetLockComponent;*/
-
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TObjectPtr<UTargetLockComponent> TargetLock;
+	TObjectPtr<UTargetLockComponent> TargetLockComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	bool bIsDebuggerDisplayed = true;
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;
 	bool bEnemyCanBlockOrEvade;
-	bool bIsDebuggerDisplayed = true;
+	
 	bool bButtonsDisabled = false;
 };

@@ -83,7 +83,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDeathPoseTypes DeathPoseType;
 
-private:
 	TObjectPtr<ASTBaseCharacter> BaseCharacter;
 	TObjectPtr<UCharacterMovementComponent> MovementComponent;
+	
 };

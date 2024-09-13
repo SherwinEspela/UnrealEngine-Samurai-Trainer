@@ -44,7 +44,7 @@ void ASTEnemyCharacter::BeginPlay()
 	EnemyAnimInstance = CastChecked<USTEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	SubscribeToAnimationEvents();
 	
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 
 	EnemyAIController = Cast<ASTEnemyAIController>(EnemyAnimInstance->TryGetPawnOwner()->GetController());
 	if (EnemyAIController && !bDebugCannotMove)

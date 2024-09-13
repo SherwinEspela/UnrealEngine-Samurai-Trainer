@@ -34,12 +34,12 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = true;
 
 	EnemySensorTransform = CreateDefaultSubobject<USceneComponent>(TEXT("Enemy Sensor Transform"));
-	EnemySensorTransform->SetupAttachment(GetRootComponent());
+	EnemySensorTransform->SetupAttachment(GetMesh());
 
 	/*CapsuleEnemySensor = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Enemy Sensor 1"));
 	CapsuleEnemySensor->SetupAttachment(EnemySensorTransform);*/
 
-	TargetLock = CreateDefaultSubobject<UTargetLockComponent>(TEXT("Target Lock"));
+	TargetLockComponent = CreateDefaultSubobject<UTargetLockComponent>(TEXT("Target Lock"));
 }
 
 void ASTPlayerCharacter::BeginPlay()
@@ -49,9 +49,9 @@ void ASTPlayerCharacter::BeginPlay()
 	bIsSwordArmed = false;
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
-	if (TargetLock)
+	if (TargetLockComponent)
 	{
-		TargetLock->SetLineTraceOrigin(EnemySensorTransform);
+		TargetLockComponent->SetLineTraceOrigin(EnemySensorTransform);
 	}
 
 	InitPlayerAnimInstance();
@@ -162,12 +162,22 @@ void ASTPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FRotator EnemySensorRotation(0.f, GetViewRotation().Yaw, 0.f);
-	EnemySensorTransform->SetWorldRotation(EnemySensorRotation);
+	/*FRotator EnemySensorRotation(0.f, GetViewRotation().Yaw, 0.f);
+	EnemySensorTransform->SetWorldRotation(EnemySensorRotation);*/
 
-	if (CurrentEnemy && !CurrentEnemy->IsDead() && bIsDebuggerDisplayed)
+	if (CurrentEnemy && !CurrentEnemy->IsDead())
 	{
-		DrawDebugSphere(GetWorld(), CurrentEnemy->GetActorLocation(), 50.f, 20.f, FColor::Red);
+		float DeltaDistance = FVector::Distance(CurrentEnemy->GetActorLocation(), GetActorLocation());
+
+		if (DeltaDistance > DistanceFromEnemyAllowed)
+		{
+			CurrentEnemy = nullptr;
+		}
+
+		if (CurrentEnemy && bIsDebuggerDisplayed)
+		{
+			DrawDebugSphere(GetWorld(), CurrentEnemy->GetActorLocation(), 50.f, 20.f, FColor::Red);
+		}
 	}
 }
 
@@ -387,6 +397,7 @@ void ASTPlayerCharacter::HandleAttackAnimCompleted()
 
 void ASTPlayerCharacter::HandleEnemyCanBlockEvent()
 {
+	if (!CurrentEnemy) return;
 	if (!bEnemyCanBlockOrEvade) return;
 	EAttackType AttackType = CurrentAttackData.AttackType;
 	switch (AttackType)

@@ -30,8 +30,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Debugging")
 	bool bIsEnabled = true;
 
+	UPROPERTY(EditAnywhere, Category = "Trace Distance")
+	float TraceDistance = 500.f;
+
+	UPROPERTY(EditAnywhere, Category = "Collision Shape Radius")
+	float CollisionShapeRadius = 50.f;
+
 private:
 	ASTPlayerCharacter* Player;
 	USceneComponent* LineTraceOriginTransform;
-
+	FCollisionShape CollisionShape;
+	FCollisionQueryParams CollisionQueryParams;
 };
