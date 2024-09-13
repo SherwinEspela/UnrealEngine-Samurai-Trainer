@@ -4,6 +4,7 @@
 #include "Combat/TargetLockComponent.h"
 #include "Character/STEnemyCharacter.h"
 #include "Character/STPlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 UTargetLockComponent::UTargetLockComponent()
 {
@@ -14,7 +15,8 @@ void UTargetLockComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Player = CastChecked<ASTPlayerCharacter>(GetOwner());
+	//Player = CastChecked<ASTPlayerCharacter>(GetOwner());
+	Player = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	CollisionShape = FCollisionShape::MakeSphere(CollisionShapeRadius);
 	CollisionQueryParams.AddIgnoredActor(GetOwner());
@@ -24,7 +26,7 @@ void UTargetLockComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	DetectEnemyByLineTrace();
+	//DetectEnemyByLineTrace();
 }
 
 void UTargetLockComponent::DetectEnemyByLineTrace()
@@ -35,13 +37,10 @@ void UTargetLockComponent::DetectEnemyByLineTrace()
 	FVector LineTraceStart = LineTraceOriginTransform->GetComponentLocation();
 	FVector LineTraceEnd = LineTraceStart + (LineTraceOriginTransform->GetForwardVector() * TraceDistance);
 
-	DrawDebugLine(GetWorld(), LineTraceStart, LineTraceEnd, FColor::Green);
+	//DrawDebugLine(GetWorld(), LineTraceStart, LineTraceEnd, FColor::Green);
 
-	FHitResult Hit;
+	/*FHitResult Hit;
 	FQuat Rot;
-	/*const bool bHitSuccess = GetWorld()->LineTraceSingleByChannel(
-		Hit, LineTraceStart, LineTraceEnd, ECollisionChannel::ECC_Pawn, CollisionQueryParams
-	);*/
 
 	const bool bHitSuccess = GetWorld()->SweepSingleByChannel(
 		Hit, LineTraceStart, LineTraceEnd, Rot, ECollisionChannel::ECC_Pawn, 
@@ -54,5 +53,5 @@ void UTargetLockComponent::DetectEnemyByLineTrace()
 		{
 			Player->SetCurrentEnemyByLineTrace(Enemy);
 		}
-	}
+	}*/
 }

@@ -21,6 +21,7 @@ public:
 public:
 	FORCEINLINE void SetLineTraceOrigin(USceneComponent* Value) { LineTraceOriginTransform = Value; }
 	FORCEINLINE void SetEnabled(bool Value = true) { bIsEnabled = Value; }
+	FORCEINLINE void SetForwardVector(FVector Value) { TargetForwardVector = Value; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,4 +42,5 @@ private:
 	USceneComponent* LineTraceOriginTransform;
 	FCollisionShape CollisionShape;
 	FCollisionQueryParams CollisionQueryParams;
+	FVector TargetForwardVector;
 };

@@ -1,4 +1,4 @@
-// // Copyright 2024 Sherwin Espela. All rights reserved.
+// Copyright 2024 Sherwin Espela. All rights reserved.
 
 #pragma once
 

@@ -1,4 +1,4 @@
-// // Copyright 2024 Sherwin Espela. All rights reserved.
+// Copyright 2024 Sherwin Espela. All rights reserved.
 
 
 #include "PlayerController/STPlayerController.h"
@@ -8,6 +8,7 @@
 #include "InputActionValue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/DisplayLabelActor.h"
+#include "Combat/TargetLockActor.h"
 
 void ASTPlayerController::BeginPlay()
 {
@@ -56,6 +57,7 @@ void ASTPlayerController::Move(const FInputActionValue& Value)
 
 	PlayerCharacter->AddMovementInput(ForwardDirection, MovementVector.Y);
 	PlayerCharacter->AddMovementInput(RightDirection, MovementVector.X);
+	PlayerCharacter->GetTargetLockActor()->SetLineEndVectors(ForwardDirection * MovementVector.Y, RightDirection * MovementVector.X);
 }
 
 void ASTPlayerController::Look(const FInputActionValue& Value)

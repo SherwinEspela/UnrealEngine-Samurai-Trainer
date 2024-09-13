@@ -17,7 +17,7 @@ class ASTEnemyCharacter;
 class UCapsuleComponent;
 class UPlayerAnimInstance;
 class USceneComponent;
-class UTargetLockComponent;
+class ATargetLockActor;
 
 /**
  * 
@@ -81,6 +81,7 @@ public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
 	FORCEINLINE void SetCanPerformNextAttack(bool Value) { bCanPerformNextAttack = Value; }
+	FORCEINLINE TObjectPtr<ATargetLockActor> GetTargetLockActor() const { return TargetLockActor; }
 
 public:
 	// Movmentments
@@ -143,12 +144,6 @@ protected:
 	float DistanceFromEnemyAllowed = 400.f;
 
 	ASTEnemyCharacter* CurrentAttackingEnemy;
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Detector")
-	UCapsuleComponent* CapsuleEnemySensor;*/
-
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy Detector")
-	USceneComponent* EnemySensorTransform;
 
 	TQueue<FAttackData> FrontAttackQueues;
 	TQueue<FAttackData> AttackCombo2Queues;
@@ -238,7 +233,9 @@ private:
 protected:
 	// Combat
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TObjectPtr<UTargetLockComponent> TargetLockComponent;
+	TSubclassOf<ATargetLockActor> TargetLockActorClass;
+
+	TObjectPtr<ATargetLockActor> TargetLockActor;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	bool bIsDebuggerDisplayed = true;

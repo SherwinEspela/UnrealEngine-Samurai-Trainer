@@ -14,6 +14,7 @@
 #include "Items/Katana.h"
 #include "Combat/TargetLockComponent.h"
 #include "Misc/DisplayLabelActor.h"
+#include "Combat/TargetLockActor.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -32,14 +33,6 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = true;
-
-	EnemySensorTransform = CreateDefaultSubobject<USceneComponent>(TEXT("Enemy Sensor Transform"));
-	EnemySensorTransform->SetupAttachment(GetMesh());
-
-	/*CapsuleEnemySensor = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Enemy Sensor 1"));
-	CapsuleEnemySensor->SetupAttachment(EnemySensorTransform);*/
-
-	TargetLockComponent = CreateDefaultSubobject<UTargetLockComponent>(TEXT("Target Lock"));
 }
 
 void ASTPlayerCharacter::BeginPlay()
@@ -49,10 +42,7 @@ void ASTPlayerCharacter::BeginPlay()
 	bIsSwordArmed = false;
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
-	if (TargetLockComponent)
-	{
-		TargetLockComponent->SetLineTraceOrigin(EnemySensorTransform);
-	}
+	TargetLockActor = CastChecked<ATargetLockActor>(GetWorld()->SpawnActor(TargetLockActorClass));
 
 	InitPlayerAnimInstance();
 	InitQueues();
@@ -164,6 +154,11 @@ void ASTPlayerCharacter::Tick(float DeltaTime)
 
 	/*FRotator EnemySensorRotation(0.f, GetViewRotation().Yaw, 0.f);
 	EnemySensorTransform->SetWorldRotation(EnemySensorRotation);*/
+
+	if (TargetLockActor)
+	{
+		TargetLockActor->SetActorLocation(GetActorLocation());
+	}
 
 	if (CurrentEnemy && !CurrentEnemy->IsDead())
 	{
