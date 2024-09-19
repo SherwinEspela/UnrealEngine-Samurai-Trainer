@@ -60,6 +60,78 @@ bool ASTBaseCharacter::DetermineTargetFacingByLineTrace(FVector LineTraceStart, 
 	return isFacingFront;
 }
 
+EHitDirectionType ASTBaseCharacter::DetermineHitDirectionByLineTrace(FVector LineTraceStart, FVector LineTraceEnd)
+{
+	if (CurrentTargetPawn == nullptr) return EHitDirectionType::EHDT_Front;
+
+	FHitResult Hit;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+	const bool bHitSuccess = GetWorld()->LineTraceSingleByChannel(
+		Hit, LineTraceStart, LineTraceEnd, ECollisionChannel::ECC_Pawn, CollisionQueryParams
+	);
+
+	EHitDirectionType HitDirection;
+	if (bHitSuccess)
+	{
+		const FVector EnemyForward = CurrentTargetPawn->GetActorForwardVector();
+		const FVector ToHit = (Hit.ImpactPoint - CurrentTargetPawn->GetActorLocation()).GetSafeNormal();
+		const double CosTheta = FVector::DotProduct(EnemyForward, ToHit);
+		double Theta = FMath::Acos(CosTheta);
+		Theta = FMath::RadiansToDegrees(Theta);
+
+		const FVector CrossProduct = FVector::CrossProduct(EnemyForward, ToHit);
+		if (CrossProduct.Z < 0)
+		{
+			Theta *= -1;
+		}
+
+		if (Theta <= 45.f && Theta >= -45.f)
+		{
+			HitDirection = EHitDirectionType::EHDT_Front;
+		}
+		else if (Theta > 45.f && Theta <= 135.f)
+		{
+			HitDirection = EHitDirectionType::EHDT_Right;
+		}
+		else if (Theta < -45.f && Theta >= -135.f)
+		{
+			HitDirection = EHitDirectionType::EHDT_Left;
+		}
+		else if (Theta > 135.f || Theta < -135.f)
+		{
+			HitDirection = EHitDirectionType::EHDT_Back;
+		}
+	}
+
+	return HitDirection;
+}
+
+FName ASTBaseCharacter::GetHitReactSectionNameByHitDirection()
+{
+	FName SectionName;
+
+	switch (CurrentHitDirection)
+	{
+	case EHitDirectionType::EHDT_Front:
+		SectionName = "HRFront";
+		break;
+	case EHitDirectionType::EHDT_Back:
+		SectionName = "HRBack";
+		break;
+	case EHitDirectionType::EHDT_Left:
+		SectionName = "HRLeft";
+		break;
+	case EHitDirectionType::EHDT_Right:
+		SectionName = "HRRight";
+		break;
+	default:
+		break;
+	}
+
+	return SectionName;
+}
+
 void ASTBaseCharacter::PlaySoundSlashNoHit()
 {
 	if (SoundSlashNoHit == nullptr) return;

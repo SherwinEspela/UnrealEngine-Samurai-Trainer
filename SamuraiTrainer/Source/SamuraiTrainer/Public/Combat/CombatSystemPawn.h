@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "PlayerQTEResponseEnum.h"
+#include "EnumHitDirectionType.h"
 #include "Containers/Queue.h"
 #include "CombatSystemPawn.generated.h"
 

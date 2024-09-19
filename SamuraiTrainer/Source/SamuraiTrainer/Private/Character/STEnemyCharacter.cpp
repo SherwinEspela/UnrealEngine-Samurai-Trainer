@@ -53,6 +53,7 @@ void ASTEnemyCharacter::BeginPlay()
 	}
 
 	PlayerCharacter = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	CurrentTargetPawn = PlayerCharacter;
 
 	FAttackAndCounterReactionData AttackData1;
 	AttackData1.Attack = ATTACK_ENEMY_1;
@@ -99,7 +100,7 @@ void ASTEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PlayerCharacter)
+	if (PlayerCharacter && !bDebugCannotMove)
 	{
 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCharacter->GetActorLocation());
 		SetActorRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f));
@@ -227,7 +228,7 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	}
 
-	if (EnemyAnimInstance && MontageHitReaction)
+	if (EnemyAnimInstance && MontageHitReaction && !bDebugCannotMove)
 	{
 		OnWarpTargetUpdated();
 
@@ -352,6 +353,10 @@ void ASTEnemyCharacter::SwordAttack()
 	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block);
 	OnAttackBegan.Broadcast(EPlayerQTEResponseType::EPQTER_Block);
 	OnAttackBeganFromThisEnemy.Broadcast(this, EPlayerQTEResponseType::EPQTER_Block);
+
+	EHitDirectionType HitDirection = DetermineHitDirectionByLineTrace(GetActorLocation(), PlayerCharacter->GetActorLocation());
+	PlayerCharacter->SetHitDirectionType(HitDirection);
+	//OnAttackHitDirectionDetermined.Broadcast(HitDirection);
 
 	CurrentMWPSocketName = AttackData.MWPSocketName;
 	OnWarpTargetUpdated();

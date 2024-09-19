@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "CustomEnums.h"
 #include "EnumDeathPoseType.h"
+#include "EnumHitDirectionType.h"
 #include "PlayerQTEResponseEnum.h"
 #include "STBaseCharacter.generated.h"
 
@@ -74,6 +75,7 @@ public:
 	FORCEINLINE bool DidCounterAttack() const { return bDidCounterAttack; }
 	FORCEINLINE bool IsDead() const { return bIsDead; }
 	FORCEINLINE bool WillBeDead(float Damage) const { return Health <= Damage; }
+	FORCEINLINE void SetHitDirectionType(EHitDirectionType Value) { CurrentHitDirection = Value; }
 	
 public:
 	FOnAttackStartedSignature OnAttackStarted;
@@ -83,13 +85,15 @@ public:
 	FOnAttackCompletedSignature OnAttackCompleted;
 	FOnBlockCompletedSignature OnBlockCompleted;
 	FOnStaggerCompletedSignature OnStaggerCompleted;
+	//FOnAttackHitDirectionDeterminedSignature OnAttackHitDirectionDetermined;
 
 protected:
 	virtual void BeginPlay() override;
 
 	void AttachSwordToSocket(FName SocketName);
 	bool DetermineTargetFacingByLineTrace(FVector LineTraceStart, FVector LineTraceEnd);
-	
+	EHitDirectionType DetermineHitDirectionByLineTrace(FVector LineTraceStart, FVector LineTraceEnd);
+	FName GetHitReactSectionNameByHitDirection();
 
 protected:
 	// SFX
@@ -209,6 +213,6 @@ protected:
 	bool bDidCounterAttack = false;
 	bool bCanPerformNextAttack = false;
 	bool bCanSwordAttack = true;
-
 	ASamuraiTrainerGameMode* CurrentMode;
+	EHitDirectionType CurrentHitDirection;
 };

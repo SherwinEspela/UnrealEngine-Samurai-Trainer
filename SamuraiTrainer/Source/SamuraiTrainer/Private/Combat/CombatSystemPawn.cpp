@@ -143,11 +143,6 @@ void ACombatSystemPawn::SelectAttacker()
 			CurrentEnemyAttacker->OnAttackBegan.RemoveDynamic(this, &ACombatSystemPawn::HandleEnemyAttackBegan);
 			CurrentEnemyAttacker->OnAttackCompleted.RemoveDynamic(this, &ACombatSystemPawn::HandleEnemyAttackCompleted);
 			CurrentEnemyAttacker->OnBlockCompleted.RemoveDynamic(this, &ACombatSystemPawn::HandleEnemyBlockCompleted);
-
-			/*for (auto Enemy : Enemies)
-			{
-				Enemy->GetEnemyAIController()->SetChosenToAttack(false);
-			}*/
 		}
 
 		if (NewAttacker)

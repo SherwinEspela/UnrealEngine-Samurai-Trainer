@@ -152,15 +152,13 @@ void ASTPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*FRotator EnemySensorRotation(0.f, GetViewRotation().Yaw, 0.f);
-	EnemySensorTransform->SetWorldRotation(EnemySensorRotation);*/
-
 	if (TargetLockActor)
 	{
 		TargetLockActor->SetActorLocation(GetActorLocation());
 	}
 
-	if (CurrentEnemy && !CurrentEnemy->IsDead())
+	if (CurrentEnemy == nullptr) return;
+	if (!CurrentEnemy->IsDead())
 	{
 		float DeltaDistance = FVector::Distance(CurrentEnemy->GetActorLocation(), GetActorLocation());
 
@@ -348,8 +346,9 @@ void ASTPlayerCharacter::HitReact()
 
 	if (PlayerAnimInstance && MontageHitReaction)
 	{
+		FName HRSectionName = GetHitReactSectionNameByHitDirection();
 		PlayerAnimInstance->Montage_Play(MontageHitReaction);
-		PlayerAnimInstance->Montage_JumpToSection(CurrentHRSectionName, MontageHitReaction);
+		PlayerAnimInstance->Montage_JumpToSection(HRSectionName, MontageHitReaction);
 	}
 }
 
@@ -592,8 +591,8 @@ void ASTPlayerCharacter::ExecuteSwordAttack()
 
 	if (CurrentEnemy)
 	{
-	/*	const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
-		TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
+		const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
+		/*TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
 		UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
 		TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;*/
 		EnemyInteract(FrontAttackQueues, MontageAttack, SwordAttackComboEnders, MontageFrontComboEnder, DamageSwordAttack, true);

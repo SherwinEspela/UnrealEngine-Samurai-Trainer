@@ -243,6 +243,5 @@ protected:
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;
 	bool bEnemyCanBlockOrEvade;
-	
 	bool bButtonsDisabled = false;
 };
