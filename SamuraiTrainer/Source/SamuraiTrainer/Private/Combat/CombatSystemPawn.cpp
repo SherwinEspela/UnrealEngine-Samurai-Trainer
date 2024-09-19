@@ -7,6 +7,7 @@
 #include "Combat/CombatSystemAIController.h"
 #include "AI/STEnemyAIController.h"
 #include "Character/STPlayerCharacter.h"
+#include "Combat/TargetLockActor.h"
 
 ACombatSystemPawn::ACombatSystemPawn()
 {
@@ -79,6 +80,9 @@ void ACombatSystemPawn::HandleAttackCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 
 void ACombatSystemPawn::HandleBlockCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 {
+	Player->GetTargetLockActor()->SetLineEndVectors(
+		Enemy->GetActorForwardVector() * -1, Enemy->GetActorRightVector() * 0
+	);
 	HandleEventFromEnemyCompleted(Enemy);
 }
 
