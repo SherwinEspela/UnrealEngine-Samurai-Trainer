@@ -15,6 +15,7 @@
 #include "Combat/TargetLockComponent.h"
 #include "Misc/DisplayLabelActor.h"
 #include "Combat/TargetLockActor.h"
+#include "NiagaraComponent.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -33,6 +34,9 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = true;
+
+	FXTargetBeam = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FX Target Beam"));
+	FXTargetBeam->SetupAttachment(GetRootComponent());
 }
 
 void ASTPlayerCharacter::BeginPlay()
@@ -43,6 +47,9 @@ void ASTPlayerCharacter::BeginPlay()
 	WeaponState = EWeaponStates::EWS_Stored;
 	bCanPerformNextAttack = true;
 	TargetLockActor = CastChecked<ATargetLockActor>(GetWorld()->SpawnActor(TargetLockActorClass));
+
+	FXTargetBeam->SetFloatParameter(FName("Beam Width"), TargetBeamWidth);
+	FXTargetBeam->Deactivate();
 
 	InitPlayerAnimInstance();
 	InitQueues();
@@ -170,6 +177,16 @@ void ASTPlayerCharacter::Tick(float DeltaTime)
 		if (CurrentEnemy && bIsDebuggerDisplayed)
 		{
 			DrawDebugSphere(GetWorld(), CurrentEnemy->GetActorLocation(), 50.f, 20.f, FColor::Red);
+		}
+
+		if (CurrentEnemy && FXTargetBeam && FXTargetBeam->IsActive())
+		{
+			if (FVector::Distance(GetActorLocation(), CurrentEnemy->GetActorLocation()) < TargetBeamActiveDistance)
+			{
+				FXTargetBeam->Deactivate();
+			}
+
+			FXTargetBeam->SetVectorParameter(FName("Beam End"), CurrentEnemy->GetActorLocation());
 		}
 	}
 }
@@ -498,6 +515,11 @@ void ASTPlayerCharacter::SetCurrentEnemy(ASTEnemyCharacter* Value)
 		CurrentEnemy = Value;
 		CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
 		CurrentTargetPawn = CurrentEnemy;
+
+		if (FVector::Distance(GetActorLocation(), CurrentEnemy->GetActorLocation()) > TargetBeamActiveDistance)
+		{
+			FXTargetBeam->Activate();
+		}
 	}
 }
 

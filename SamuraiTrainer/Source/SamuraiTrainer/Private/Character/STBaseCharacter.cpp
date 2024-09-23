@@ -109,7 +109,7 @@ EHitDirectionType ASTBaseCharacter::DetermineHitDirectionByLineTrace(FVector Lin
 
 FName ASTBaseCharacter::GetHitReactSectionNameByHitDirection()
 {
-	FName SectionName;
+	FName SectionName = "HRFront";
 
 	switch (CurrentHitDirection)
 	{

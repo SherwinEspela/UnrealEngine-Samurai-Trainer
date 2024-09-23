@@ -18,6 +18,7 @@ class UCapsuleComponent;
 class UPlayerAnimInstance;
 class USceneComponent;
 class ATargetLockActor;
+class UNiagaraComponent;
 
 /**
  * 
@@ -239,6 +240,17 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	bool bIsDebuggerDisplayed = true;
+
+protected:
+	// FX
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	UNiagaraComponent* FXTargetBeam;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	float TargetBeamWidth = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	float TargetBeamActiveDistance = 500.f;
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;

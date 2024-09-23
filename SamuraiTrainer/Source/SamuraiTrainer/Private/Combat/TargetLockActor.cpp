@@ -42,8 +42,6 @@ void ATargetLockActor::DetectEnemyByLineTrace()
 	FVector LineTraceStart = EnemySensorTransform->GetComponentLocation();
 	FVector LineTraceEnd = LineTraceStart + (LineEndForwardVector * TraceDistance) + (LineEndRightVector * TraceDistance);
 
-	DrawDebugLine(GetWorld(), LineTraceStart, LineTraceEnd, FColor::Green);
-
 	FHitResult Hit;
 	FQuat Rot;
 
