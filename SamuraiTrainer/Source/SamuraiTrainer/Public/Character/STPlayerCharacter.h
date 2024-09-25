@@ -253,6 +253,10 @@ protected:
 	float TargetBeamActiveDistance = 500.f;
 
 private:
+	bool EnemyReachedMaxTargetBeamDistance();
+	void ShouldDisplayTargetBeamAndHideTargetIndicator();
+
+private:
 	UPlayerAnimInstance* PlayerAnimInstance;
 	bool bEnemyCanBlockOrEvade;
 	bool bButtonsDisabled = false;

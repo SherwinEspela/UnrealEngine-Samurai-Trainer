@@ -13,6 +13,7 @@ class ASTEnemyCharacter;
 class UBehaviorTree;
 class ACombatSystemAIController;
 class ASTPlayerCharacter;
+//class ATargetIndicatorActor;
 
 UCLASS()
 class SAMURAITRAINER_API ACombatSystemPawn : public APawn

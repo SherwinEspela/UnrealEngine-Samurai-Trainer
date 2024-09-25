@@ -63,8 +63,10 @@ public:
 
 	virtual void SetDeathPoseType(EDeathPoseTypes Value) override;
 
+	void ShouldDisplayTargetIndicator(bool ShouldDisplay = true);
+
 public:
-	// Movmentments
+	// Movements
 	virtual void SwordAttack() override;
 	virtual void Block(FName SectionName) override;
 	virtual void Block();
@@ -139,6 +141,9 @@ protected:
 	// FX
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	UNiagaraComponent* FXAttackIndicator;
+
+	UPROPERTY(EditAnywhere, Category = "FX")
+	UNiagaraComponent* FXTargetIndicator;
 
 private:
 	USTEnemyAnimInstance* EnemyAnimInstance;

@@ -171,22 +171,18 @@ void ASTPlayerCharacter::Tick(float DeltaTime)
 
 		if (DeltaDistance > DistanceFromEnemyAllowed)
 		{
+			FXTargetBeam->Deactivate();
+			CurrentEnemy->ShouldDisplayTargetIndicator(false);
 			CurrentEnemy = nullptr;
 		}
 
-		if (CurrentEnemy && bIsDebuggerDisplayed)
+		if (CurrentEnemy)
 		{
-			DrawDebugSphere(GetWorld(), CurrentEnemy->GetActorLocation(), 50.f, 20.f, FColor::Red);
-		}
-
-		if (CurrentEnemy && FXTargetBeam && FXTargetBeam->IsActive())
-		{
-			if (FVector::Distance(GetActorLocation(), CurrentEnemy->GetActorLocation()) < TargetBeamActiveDistance)
+			if (EnemyReachedMaxTargetBeamDistance())
 			{
-				FXTargetBeam->Deactivate();
+				FXTargetBeam->SetVectorParameter(FName("Beam End"), CurrentEnemy->GetActorLocation());
 			}
-
-			FXTargetBeam->SetVectorParameter(FName("Beam End"), CurrentEnemy->GetActorLocation());
+			ShouldDisplayTargetBeamAndHideTargetIndicator();
 		}
 	}
 }
@@ -508,18 +504,16 @@ void ASTPlayerCharacter::SetCurrentEnemy(ASTEnemyCharacter* Value)
 
 	if (CurrentEnemy)
 	{
+		CurrentEnemy->ShouldDisplayTargetIndicator(false);
 		CurrentEnemy->OnAttackStartedWith3Params.RemoveDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
 	}
 
 	if (Value) {
+		FXTargetBeam->Deactivate();
 		CurrentEnemy = Value;
 		CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
 		CurrentTargetPawn = CurrentEnemy;
-
-		if (FVector::Distance(GetActorLocation(), CurrentEnemy->GetActorLocation()) > TargetBeamActiveDistance)
-		{
-			FXTargetBeam->Activate();
-		}
+		ShouldDisplayTargetBeamAndHideTargetIndicator();
 	}
 }
 
@@ -730,4 +724,22 @@ void ASTPlayerCharacter::ExecuteCounter()
 	}
 
 	EnemyInteract(CounterQueues, MontageCounter, CounterComboEnders, MontageCounterComboEnder, STAGGER_DAMAGE);
+}
+
+bool ASTPlayerCharacter::EnemyReachedMaxTargetBeamDistance()
+{
+	return FVector::Distance(GetActorLocation(), CurrentEnemy->GetActorLocation()) > TargetBeamActiveDistance;
+}
+
+void ASTPlayerCharacter::ShouldDisplayTargetBeamAndHideTargetIndicator()
+{
+	if (EnemyReachedMaxTargetBeamDistance())
+	{
+		FXTargetBeam->Activate();
+		CurrentEnemy->ShouldDisplayTargetIndicator(false);
+	}
+	else {
+		FXTargetBeam->Deactivate();
+		CurrentEnemy->ShouldDisplayTargetIndicator();
+	}
 }

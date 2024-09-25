@@ -35,6 +35,10 @@ ASTEnemyCharacter::ASTEnemyCharacter()
 
 	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 	FXAttackIndicator->SetupAttachment(GetMesh(), FName("HAIR"));
+
+	FXTargetIndicator = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FX Target Indicator"));
+	FXTargetIndicator->SetupAttachment(GetMesh());
+	FXTargetIndicator->SetupAttachment(GetMesh(), FName("SocketTargetIndicator"));
 }
 
 void ASTEnemyCharacter::BeginPlay()
@@ -94,6 +98,8 @@ void ASTEnemyCharacter::BeginPlay()
 	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
 	FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
 	FXAttackIndicator->OnSystemFinished.AddDynamic(this, &ASTEnemyCharacter::OnFXAttackIndicatorFinished);
+
+	FXTargetIndicator->Deactivate();
 }
 
 void ASTEnemyCharacter::Tick(float DeltaTime)
@@ -339,6 +345,21 @@ void ASTEnemyCharacter::SetDeathPoseType(EDeathPoseTypes Value)
 {
 	Super::SetDeathPoseType(Value);
 	EnemyAnimInstance->SetDeathPoseType(Value);
+}
+
+void ASTEnemyCharacter::ShouldDisplayTargetIndicator(bool ShouldDisplay)
+{
+	if (FXTargetIndicator == nullptr) return;
+
+	if (ShouldDisplay)
+	{
+		FXTargetIndicator->Activate();
+	}
+	else {
+		FXTargetIndicator->Deactivate();
+	}
+
+	FXTargetIndicator->SetVisibility(ShouldDisplay);
 }
 
 void ASTEnemyCharacter::SwordAttack()
