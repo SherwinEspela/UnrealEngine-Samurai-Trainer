@@ -99,7 +99,7 @@ void ASTEnemyCharacter::BeginPlay()
 	FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
 	FXAttackIndicator->OnSystemFinished.AddDynamic(this, &ASTEnemyCharacter::OnFXAttackIndicatorFinished);
 
-	FXTargetIndicator->Deactivate();
+	ShouldDisplayTargetIndicator(false);
 }
 
 void ASTEnemyCharacter::Tick(float DeltaTime)
