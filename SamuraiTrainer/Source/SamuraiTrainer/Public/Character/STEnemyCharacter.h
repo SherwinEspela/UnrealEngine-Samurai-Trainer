@@ -54,6 +54,7 @@ public:
 
 	virtual void PlayAttackStagger(FName SectionName) override;
 	void PlayNextStagger();
+	void PlayNextParryHitReaction();
 
 	UFUNCTION(BlueprintCallable)
 	void MakeNextDecision();
@@ -99,6 +100,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleBlockCompleted();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleParryHRAnimCompleted();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleParryBlockCompleted();
+
 protected:
 	// Niagara FX Event Handler
 	UFUNCTION()
@@ -115,6 +122,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageSwordAttacks;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageParryHitReactions;
+
 protected:
 	ASTPlayerCharacter* PlayerCharacter;
 
@@ -128,6 +138,7 @@ protected:
 	TArray<FName> BlockSectionNames;
 	TArray<FName> HitReactionSectionNames;
 	TArray<FName> StaggerSectionNames;
+	TArray<FName> ParryHRSectionNames;
 
 protected:
 	// Debugging

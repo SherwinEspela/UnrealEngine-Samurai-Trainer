@@ -32,6 +32,7 @@ protected:
 	void Attack();
 	void AttackCombo2();
 	void Block();
+	void ParryOrBlock();
 	void Kick();
 	void Counter();
 

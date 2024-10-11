@@ -93,6 +93,9 @@ void ASTEnemyCharacter::BeginPlay()
 	StaggerSectionNames.Add(BLOCK_1);
 	StaggerSectionNames.Add(BLOCK_2);
 
+	ParryHRSectionNames.Add(PARRY_HR_1);
+	ParryHRSectionNames.Add(PARRY_HR_2);
+
 	FXAttackIndicator->Deactivate();
 	FXAttackIndicator->SetForceSolo(true);
 	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
@@ -189,6 +192,18 @@ void ASTEnemyCharacter::HandleBloodSpillFXNotifyBegin()
 void ASTEnemyCharacter::HandleBlockCompleted()
 {
 	EnemyAIController->SetRecovering();
+	OnBlockCompleted.Broadcast();
+	OnBlockCompletedFromThisEnemy.Broadcast(this);
+}
+
+void ASTEnemyCharacter::HandleParryHRAnimCompleted()
+{
+	ResetCounterAttackStates();
+	EnemyAIController->SetRecovering();
+}
+
+void ASTEnemyCharacter::HandleParryBlockCompleted()
+{
 	OnBlockCompleted.Broadcast();
 	OnBlockCompletedFromThisEnemy.Broadcast(this);
 }
@@ -306,6 +321,7 @@ void ASTEnemyCharacter::PlayAttackStagger(FName SectionName)
 	}
 }
 
+// TODO: remove when no longer needed
 void ASTEnemyCharacter::PlayNextStagger()
 {
 	MovementState = EMovementStates::EPMS_Staggered;
@@ -315,6 +331,17 @@ void ASTEnemyCharacter::PlayNextStagger()
 		FName StaggerSectionName = StaggerSectionNames[RandomIndex];
 		EnemyAnimInstance->Montage_Play(MontageBlock);
 		EnemyAnimInstance->Montage_JumpToSection(StaggerSectionName, MontageBlock);
+	}
+}
+
+void ASTEnemyCharacter::PlayNextParryHitReaction()
+{
+	if (EnemyAnimInstance && MontageParryHitReactions)
+	{
+		int RandomIndex = FMath::RandRange(0, ParryHRSectionNames.Num() - 1);
+		FName ParryHRSectionName = ParryHRSectionNames[RandomIndex];
+		EnemyAnimInstance->Montage_Play(MontageParryHitReactions);
+		EnemyAnimInstance->Montage_JumpToSection(ParryHRSectionName, MontageParryHitReactions);
 	}
 }
 

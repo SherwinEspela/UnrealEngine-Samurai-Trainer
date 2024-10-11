@@ -34,6 +34,12 @@
 #define BLOCK_3 FName("Block3")
 #define BLOCK_4 FName("Block4")
 
+#define PARRY_1 FName("Parry1")
+#define PARRY_2 FName("Parry2")
+
+#define PARRY_HR_1 FName("ParryHR1")
+#define PARRY_HR_2 FName("ParryHR2")
+
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")
 #define HIT_REACTION_1 FName("HitReaction1")

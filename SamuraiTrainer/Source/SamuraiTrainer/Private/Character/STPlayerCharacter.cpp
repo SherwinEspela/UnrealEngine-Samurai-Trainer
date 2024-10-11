@@ -153,6 +153,9 @@ void ASTPlayerCharacter::InitQueues()
 	BlockSectionNames.Add(BLOCK_1);
 	BlockSectionNames.Add(BLOCK_2);
 	BlockSectionNames.Add(BLOCK_3);
+
+	ParrySectionNames.Add(PARRY_1);
+	ParrySectionNames.Add(PARRY_2);
 }
 
 void ASTPlayerCharacter::Tick(float DeltaTime)
@@ -323,6 +326,23 @@ void ASTPlayerCharacter::Block()
 	ExecuteBlock();
 }
 
+void ASTPlayerCharacter::ParryOrBlock()
+{
+	if (bButtonsDisabled) return;
+	SetSlowMotion(false);
+
+	if (bIsQTEMode)
+	{
+		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_Block;
+		QTEResult();
+		return;
+	}
+
+	// TODO: insert conditions if player can
+	// parry or block here. Parry for now.
+	ExecuteParry();
+}
+
 void ASTPlayerCharacter::Kick()
 {
 	if (bButtonsDisabled) return;
@@ -491,6 +511,7 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 
 float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	PlayerAnimInstance->StopAllMontages(0.2f);
 	SetSlowMotion(false);
 	PlaySoundSlashHit();
 	HitReact();
@@ -588,7 +609,7 @@ void ASTPlayerCharacter::QTEResult()
 		ExecuteKick();
 		break;
 	case EPlayerQTEResponseType::EPQTER_Block:
-		ExecuteBlock();
+		ExecuteParry();
 		break;
 	case EPlayerQTEResponseType::EPQTER_Counter:
 		PlaySoundSlashNoHit();
@@ -647,6 +668,7 @@ void ASTPlayerCharacter::ExecuteBlock()
 	//if (MovementState != EMovementStates::EPMS_Idle) return;
 	//if (MontageBlock == nullptr) return;
 
+	PlayerAnimInstance->StopAllMontages(0.2f);
 	PlayerAnimInstance->Montage_Play(MontageBlock);
 	bCanSwordAttack = true;
 
@@ -693,8 +715,50 @@ void ASTPlayerCharacter::ExecuteBlock()
 	Super::Block();
 }
 
+void ASTPlayerCharacter::ExecuteParry()
+{
+	PlayerAnimInstance->StopAllMontages(0.2f);
+	bCanSwordAttack = true;
+
+	if (bCanCounterAttack) bDidCounterAttack = true;
+	CurrentMWPSocketName = BLOCK_SOCKET;
+	OnWarpTargetUpdated();
+
+	int RandomIndex = FMath::RandRange(0, ParrySectionNames.Num() - 1);
+	FName ParrySectionName = ParrySectionNames[RandomIndex];
+
+	if (CurrentAttackingEnemy)
+	{
+		PlayerAnimInstance->Montage_Play(MontageParry);
+		PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
+		CurrentAttackingEnemy->PlayNextParryHitReaction();
+		CurrentEnemy = CurrentAttackingEnemy;
+		CurrentAttackingEnemy = nullptr;
+		return;
+	}
+
+	if (CurrentEnemy)
+	{
+		if (CurrentEnemy->IsAttacking())
+		{
+			PlayerAnimInstance->Montage_Play(MontageParry);
+			PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
+			CurrentEnemy->PlayNextParryHitReaction();
+		}
+		else {
+			PlayerAnimInstance->Montage_Play(MontageBlock);
+			PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
+		}
+	}
+	else {
+		PlayerAnimInstance->Montage_Play(MontageBlock);
+		PlayerAnimInstance->Montage_JumpToSection(BLOCK_NO_MW, MontageBlock);
+	}
+}
+
 void ASTPlayerCharacter::ExecuteKick()
 {
+	PlayerAnimInstance->StopAllMontages(0.2f);
 	if (MontageKick == nullptr) return;
 	if (CurrentEnemy && CurrentEnemy->IsAttacking())
 	{

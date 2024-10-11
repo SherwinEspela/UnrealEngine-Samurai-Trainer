@@ -92,6 +92,7 @@ public:
 	void Kick();
 	void Counter();
 	virtual void Block() override;
+	virtual void ParryOrBlock();
 	virtual void HitReact() override;
 	virtual void PlayAttackStagger(FName SectionName) override;
 
@@ -191,6 +192,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageKick;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageParry;
+
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
 	FName NextHitReactionSectionName = HIT_REACTION_DOWNSLASH;
 
@@ -206,6 +210,7 @@ protected:
 	int EnemyBlockOrEvadeChance = 50;
 
 	TArray<FName> BlockSectionNames;
+	TArray<FName> ParrySectionNames;
 
 protected:
 	UFUNCTION()
@@ -228,6 +233,7 @@ private:
 	void ExecuteSwordAttack();
 	void ExecuteSwordAttackCombo2();
 	void ExecuteBlock();
+	void ExecuteParry();
 	void ExecuteKick();
 	void ExecuteCounter();
 

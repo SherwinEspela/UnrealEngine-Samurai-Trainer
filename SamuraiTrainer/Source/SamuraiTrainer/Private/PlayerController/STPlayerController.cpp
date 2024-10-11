@@ -38,7 +38,7 @@ void ASTPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(InputActionSwordInteract, ETriggerEvent::Triggered, this, &ASTPlayerController::SwordInteract);
 	EnhancedInputComponent->BindAction(InputActionAttack, ETriggerEvent::Triggered, this, &ASTPlayerController::Attack);
 	EnhancedInputComponent->BindAction(InputActionAttackCombo2, ETriggerEvent::Triggered, this, &ASTPlayerController::AttackCombo2);
-	EnhancedInputComponent->BindAction(InputActionBlock, ETriggerEvent::Triggered, this, &ASTPlayerController::Block);
+	EnhancedInputComponent->BindAction(InputActionBlock, ETriggerEvent::Triggered, this, &ASTPlayerController::ParryOrBlock);
 	//EnhancedInputComponent->BindAction(InputActionKick, ETriggerEvent::Triggered, this, &ASTPlayerController::Kick);
 	EnhancedInputComponent->BindAction(InputActionCounter, ETriggerEvent::Triggered, this, &ASTPlayerController::Counter);
 	EnhancedInputComponent->BindAction(InputActionRestartLevel, ETriggerEvent::Triggered, this, &ASTPlayerController::RestartLevel);
@@ -85,6 +85,11 @@ void ASTPlayerController::AttackCombo2()
 void ASTPlayerController::Block()
 {
 	PlayerCharacter->Block();
+}
+
+void ASTPlayerController::ParryOrBlock()
+{
+	PlayerCharacter->ParryOrBlock();
 }
 
 void ASTPlayerController::Kick()
