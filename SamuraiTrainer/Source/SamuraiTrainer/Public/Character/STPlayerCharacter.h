@@ -74,6 +74,11 @@ public:
 
 	void SetCurrentEnemy(ASTEnemyCharacter* Value);
 	void SetCurrentAttackingEnemyWithResponseType(ASTEnemyCharacter* Value, EPlayerQTEResponseType ResponseType);
+
+
+
+
+
 	void RemoveCurrentAttackingEnemy();
 	void SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value);
 	void ToggleDebuggerDisplay();
@@ -83,9 +88,10 @@ public:
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
 	FORCEINLINE void SetCanPerformNextAttack(bool Value) { bCanPerformNextAttack = Value; }
 	FORCEINLINE TObjectPtr<ATargetLockActor> GetTargetLockActor() const { return TargetLockActor; }
+	//FORCEINLINE void SetParryFatalSectionName(FName Value) { CurrentParryFatalSectionName = Value; }
 
 public:
-	// Movmentments
+	// Movementments
 	void SwordInteract();
 	virtual void SwordAttack() override;
 	virtual void SwordAttackCombo2();
@@ -195,6 +201,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageParry;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageParryFatal;
+
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
 	FName NextHitReactionSectionName = HIT_REACTION_DOWNSLASH;
 
@@ -212,13 +221,15 @@ protected:
 	TArray<FName> BlockSectionNames;
 	TArray<FName> ParrySectionNames;
 
+	//FName CurrentParryFatalSectionName;
+
 protected:
-	UFUNCTION()
+	/*UFUNCTION()
 	void OnEnemyDetectorBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult
-	);
+	);*/
 
 	virtual void HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType) override;
 

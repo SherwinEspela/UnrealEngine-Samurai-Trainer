@@ -265,7 +265,7 @@ void ASTPlayerCharacter::EnemyInteract(
 			bEnemyCanBlockOrEvade = Chances > EnemyBlockOrEvadeChance;
 		}
 
-		if (!bEnemyCanBlockOrEvade)
+		if (WillBeDead || !bEnemyCanBlockOrEvade)
 		{
 			FDamageEvent DamageEvent;
 			CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
@@ -559,27 +559,29 @@ void ASTPlayerCharacter::ToggleDebuggerDisplay()
 	bIsDebuggerDisplayed = !bIsDebuggerDisplayed;
 }
 
-void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (CurrentEnemy && OtherActor->GetName() == CurrentEnemy->GetName()) return;
-
-	if (CurrentEnemy)
-	{
-		CurrentEnemy->OnAttackStartedWith3Params.RemoveDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
-	}
-	
-	if (OtherActor) {
-		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
-		if (CurrentEnemy)
-		{
-			CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
-			CurrentTargetPawn = CurrentEnemy;
-		}
-	}
-}
+//void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//	if (CurrentEnemy && OtherActor->GetName() == CurrentEnemy->GetName()) return;
+//
+//	if (CurrentEnemy)
+//	{
+//		CurrentEnemy->OnAttackStartedWith3Params.RemoveDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+//	}
+//	
+//	if (OtherActor) {
+//		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
+//		if (CurrentEnemy)
+//		{
+//			CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+//			CurrentTargetPawn = CurrentEnemy;
+//		}
+//	}
+//}
 
 void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::HandleOpponentAttackStarted"));
+	//UE_LOG(LogTemp, Warning, TEXT("BlockSectionName ==== %s"), *BlockSectionName.ToString());
 	CurrentBlockSectionName = BlockSectionName;
 	CurrentHRSectionName = HRSectionName;
 	ExpectedPlayerQTEResponse = ResponseType;
@@ -724,26 +726,65 @@ void ASTPlayerCharacter::ExecuteParry()
 	CurrentMWPSocketName = BLOCK_SOCKET;
 	OnWarpTargetUpdated();
 
-	int RandomIndex = FMath::RandRange(0, ParrySectionNames.Num() - 1);
-	FName ParrySectionName = ParrySectionNames[RandomIndex];
-
 	if (CurrentAttackingEnemy)
 	{
-		PlayerAnimInstance->Montage_Play(MontageParry);
-		PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
-		CurrentAttackingEnemy->PlayNextParryHitReaction();
+		CurrentEnemy = CurrentAttackingEnemy;
+		CurrentAttackingEnemy = nullptr;
+	}
+
+	/*if (CurrentAttackingEnemy)
+	{
+		const bool WillBeDead = CurrentAttackingEnemy->WillBeDead(DamageSwordAttack);
+		if (WillBeDead)
+		{
+			PlayerAnimInstance->Montage_Play(MontageParryFatal);
+			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackingEnemy->GetParryFatalSectionName(), MontageParryFatal);
+		}
+		else {
+			int RandomIndex = FMath::RandRange(0, ParrySectionNames.Num() - 1);
+			FName ParrySectionName = ParrySectionNames[RandomIndex];
+
+			PlayerAnimInstance->Montage_Play(MontageParry);
+			PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
+			CurrentAttackingEnemy->PlayNextParryHitReaction();		
+		}
+
 		CurrentEnemy = CurrentAttackingEnemy;
 		CurrentAttackingEnemy = nullptr;
 		return;
-	}
+	}*/
 
 	if (CurrentEnemy)
 	{
 		if (CurrentEnemy->IsAttacking())
 		{
+			const bool WillBeDead = CurrentEnemy->WillBeDead(DamageSwordAttack);
+			if (WillBeDead)
+			{
+				PlayerAnimInstance->Montage_Play(MontageParryFatal);
+				FName ParryFatalSectionName = CurrentEnemy->GetParryFatalSectionName();
+				UE_LOG(LogTemp, Warning, TEXT("ParryFatalSectionName === %s"), *ParryFatalSectionName.ToString());
+				PlayerAnimInstance->Montage_JumpToSection(ParryFatalSectionName, MontageParryFatal);
+				CurrentEnemy->SetKilledByParry();
+
+				FDamageEvent DamageEvent;
+				CurrentEnemy->TakeDamage(DamageSwordAttack, DamageEvent, GetController(), this);
+			}
+			else {
+				int RandomIndex = FMath::RandRange(0, ParrySectionNames.Num() - 1);
+				FName ParrySectionName = ParrySectionNames[RandomIndex];
+
+				PlayerAnimInstance->Montage_Play(MontageParry);
+				PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
+				CurrentEnemy->PlayNextParryHitReaction();
+			}
+
+			/*int RandomIndex = FMath::RandRange(0, ParrySectionNames.Num() - 1);
+			FName ParrySectionName = ParrySectionNames[RandomIndex];
+
 			PlayerAnimInstance->Montage_Play(MontageParry);
 			PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
-			CurrentEnemy->PlayNextParryHitReaction();
+			CurrentEnemy->PlayNextParryHitReaction();*/
 		}
 		else {
 			PlayerAnimInstance->Montage_Play(MontageBlock);

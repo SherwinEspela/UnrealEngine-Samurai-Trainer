@@ -67,6 +67,7 @@ void ACombatSystemPawn::HandleAttackBeganFromEnemy(ASTEnemyCharacter* Enemy, EPl
 	if (Player)
 	{
 		Player->SetCurrentAttackingEnemyWithResponseType(Enemy, PlayerResponseType);
+		//Player->SetParryFatalSectionName(Enemy->GetParryFatalSectionName());
 	}
 
 	SetEnemiesToPauseAttacking();

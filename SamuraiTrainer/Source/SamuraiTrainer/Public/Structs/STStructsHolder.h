@@ -79,6 +79,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName MWPSocketName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName ParryFatal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName ParryHitReaction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName ParryFatalReaction;
 };
 
 // This class does not need to be modified.

@@ -55,6 +55,7 @@ public:
 	virtual void PlayAttackStagger(FName SectionName) override;
 	void PlayNextStagger();
 	void PlayNextParryHitReaction();
+	void SetKilledByParry();
 
 	UFUNCTION(BlueprintCallable)
 	void MakeNextDecision();
@@ -76,6 +77,7 @@ public:
 public:
 	FORCEINLINE void SetNextHitReactionSectionName(FName Value) { NextHitReactionSectionName = Value; }
 	FORCEINLINE TObjectPtr<ASTEnemyAIController> GetEnemyAIController() const { return EnemyAIController; }
+	FORCEINLINE FName GetParryFatalSectionName() const { return CurrentAttackData.ParryFatal; }
 
 public:
 	// Multicast Delegates
@@ -125,6 +127,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageParryHitReactions;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageParryFatalReactions;
+
 protected:
 	ASTPlayerCharacter* PlayerCharacter;
 
@@ -138,7 +143,7 @@ protected:
 	TArray<FName> BlockSectionNames;
 	TArray<FName> HitReactionSectionNames;
 	TArray<FName> StaggerSectionNames;
-	TArray<FName> ParryHRSectionNames;
+	//TArray<FName> ParryHRSectionNames;
 
 protected:
 	// Debugging
@@ -160,5 +165,6 @@ private:
 	USTEnemyAnimInstance* EnemyAnimInstance;
 	FName NextHitReactionSectionName;
 	FName NextStaggerSectionName;
-	
+	FAttackAndCounterReactionData CurrentAttackData;
+	bool IsKilledByParry = false;
 };

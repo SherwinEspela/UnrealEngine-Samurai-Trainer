@@ -36,9 +36,12 @@
 
 #define PARRY_1 FName("Parry1")
 #define PARRY_2 FName("Parry2")
-
 #define PARRY_HR_1 FName("ParryHR1")
 #define PARRY_HR_2 FName("ParryHR2")
+#define PARRY_FATAL_1 FName("ParryFatal1")
+#define PARRY_FATAL_2 FName("ParryFatal2")
+#define PARRY_FATAL_R_1 FName("ParryFR1")
+#define PARRY_FATAL_R_2 FName("ParryFR2")
 
 #define HIT_REACTION_DOWNSLASH FName("HitReaction1")
 #define HIT_REACTION_UPSLASH FName("HitReaction2")

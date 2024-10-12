@@ -64,18 +64,27 @@ void ASTEnemyCharacter::BeginPlay()
 	AttackData1.CounterBlock = BLOCK_DOWNSLASH;
 	AttackData1.CBStagger = BLOCK_1;
 	AttackData1.MWPSocketName = ATTACK_SOCKET_FRONT;
+	AttackData1.ParryFatal = PARRY_FATAL_1;
+	AttackData1.ParryFatalReaction = PARRY_FATAL_R_1;
+	AttackData1.ParryHitReaction = PARRY_HR_1;
 
 	FAttackAndCounterReactionData AttackData2;
 	AttackData2.Attack = ATTACK_ENEMY_2;
 	AttackData2.CounterBlock = BLOCK_UPSLASH;
 	AttackData2.CBStagger = STAGGER_UPSLASH;
 	AttackData2.MWPSocketName = ATTACK_SOCKET_FRONT;
+	AttackData2.ParryFatal = PARRY_FATAL_2;
+	AttackData2.ParryFatalReaction = PARRY_FATAL_R_2;
+	AttackData2.ParryHitReaction = PARRY_HR_2;
 
 	FAttackAndCounterReactionData AttackData3;
 	AttackData3.Attack = ATTACK_ENEMY_3;
 	AttackData3.CounterBlock = BLOCK_UPSLASH;
 	AttackData3.CBStagger = BLOCK_2;
 	AttackData3.MWPSocketName = ATTACK_SOCKET_FRONT;
+	AttackData3.ParryFatal = PARRY_FATAL_2;
+	AttackData3.ParryFatalReaction = PARRY_FATAL_R_2;
+	AttackData3.ParryHitReaction = PARRY_HR_2;
 
 	SwordAttacks.Add(AttackData1);
 	SwordAttacks.Add(AttackData2);
@@ -93,8 +102,8 @@ void ASTEnemyCharacter::BeginPlay()
 	StaggerSectionNames.Add(BLOCK_1);
 	StaggerSectionNames.Add(BLOCK_2);
 
-	ParryHRSectionNames.Add(PARRY_HR_1);
-	ParryHRSectionNames.Add(PARRY_HR_2);
+	/*ParryHRSectionNames.Add(PARRY_HR_1);
+	ParryHRSectionNames.Add(PARRY_HR_2);*/
 
 	FXAttackIndicator->Deactivate();
 	FXAttackIndicator->SetForceSolo(true);
@@ -249,16 +258,30 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	}
 
-	if (EnemyAnimInstance && MontageHitReaction && !bDebugCannotMove)
+	if (EnemyAnimInstance && !bDebugCannotMove)
 	{
 		OnWarpTargetUpdated();
 
 		if (bIsDead)
 		{
-			EnemyAnimInstance->Montage_Play(MontageCEHitReaction);
-			EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageCEHitReaction);
+			UE_LOG(LogTemp, Warning, TEXT("Is dead!!!!"));
+
+			if (IsKilledByParry)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("parry death...."));
+				EnemyAnimInstance->Montage_Play(MontageParryFatalReactions);
+				EnemyAnimInstance->Montage_JumpToSection(CurrentAttackData.ParryFatalReaction, MontageParryFatalReactions);
+				IsKilledByParry = false;
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("combo ender death...."));
+				EnemyAnimInstance->Montage_Play(MontageCEHitReaction);
+				EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageCEHitReaction);
+			}
 		}
 		else {
+			UE_LOG(LogTemp, Warning, TEXT("Is NOT dead..."));
+
 			EnemyAIController->SetHitReacting();
 			
 			const int RandomIndex = FMath::RandRange(0, HitReactionSectionNames.Num() - 1);
@@ -338,11 +361,14 @@ void ASTEnemyCharacter::PlayNextParryHitReaction()
 {
 	if (EnemyAnimInstance && MontageParryHitReactions)
 	{
-		int RandomIndex = FMath::RandRange(0, ParryHRSectionNames.Num() - 1);
-		FName ParryHRSectionName = ParryHRSectionNames[RandomIndex];
 		EnemyAnimInstance->Montage_Play(MontageParryHitReactions);
-		EnemyAnimInstance->Montage_JumpToSection(ParryHRSectionName, MontageParryHitReactions);
+		EnemyAnimInstance->Montage_JumpToSection(CurrentAttackData.ParryHitReaction, MontageParryHitReactions);
 	}
+}
+
+void ASTEnemyCharacter::SetKilledByParry()
+{
+	IsKilledByParry = true;
 }
 
 void ASTEnemyCharacter::MakeNextDecision()
@@ -396,9 +422,9 @@ void ASTEnemyCharacter::SwordAttack()
 	PlaySoundVoiceAttack();
 	MovementState = EMovementStates::EPMS_Attacking;
 	int MaxIndex = SwordAttacks.Num();
-	FAttackAndCounterReactionData AttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
+	CurrentAttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
 	EPlayerQTEResponseType ResponseType = GenerateRandomQTEResponse();
-	OnAttackStartedWith3Params.Broadcast(AttackData.CounterBlock, AttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block);
+	OnAttackStartedWith3Params.Broadcast(CurrentAttackData.CounterBlock, CurrentAttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block);
 	OnAttackBegan.Broadcast(EPlayerQTEResponseType::EPQTER_Block);
 	OnAttackBeganFromThisEnemy.Broadcast(this, EPlayerQTEResponseType::EPQTER_Block);
 
@@ -406,10 +432,10 @@ void ASTEnemyCharacter::SwordAttack()
 	PlayerCharacter->SetHitDirectionType(HitDirection);
 	//OnAttackHitDirectionDetermined.Broadcast(HitDirection);
 
-	CurrentMWPSocketName = AttackData.MWPSocketName;
+	CurrentMWPSocketName = CurrentAttackData.MWPSocketName;
 	OnWarpTargetUpdated();
 	EnemyAnimInstance->Montage_Play(MontageSwordAttacks);
-	EnemyAnimInstance->Montage_JumpToSection(AttackData.Attack, MontageSwordAttacks);
+	EnemyAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageSwordAttacks);
 	FXAttackIndicator->Activate();
 }
 
