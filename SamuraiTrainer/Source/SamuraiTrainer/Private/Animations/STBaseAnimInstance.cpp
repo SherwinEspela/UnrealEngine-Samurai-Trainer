@@ -35,10 +35,10 @@ void USTBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	}
 }
 
-void USTBaseAnimInstance::HandleAttackCompleted()
-{
-	OnAttackAnimCompleted.Broadcast();
-}
+//void USTBaseAnimInstance::HandleAttackCompleted()
+//{
+//	//OnAttackAnimCompleted.Broadcast();
+//}
 
 void USTBaseAnimInstance::HandleStaggerCompleted()
 {

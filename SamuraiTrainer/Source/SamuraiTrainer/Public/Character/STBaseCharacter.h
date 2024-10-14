@@ -59,6 +59,9 @@ public:
 	void SetSlowMotion(bool IsSlow = true);
 	virtual void SetDeathPoseType(EDeathPoseTypes Value);
 
+	UFUNCTION(BlueprintCallable)
+	void SetAttackLocationOffset(float Value);
+
 public:
 	// Movementments
 	virtual void SwordAttack();
@@ -104,7 +107,7 @@ protected:
 
 protected:
 	// Animation Event Handlers
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void HandleAttackAnimCompleted();
 	
 	UFUNCTION(BlueprintCallable)
@@ -163,14 +166,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Damage Amount")
 	float DamageSwordAttack = 10.f;
 
-	UPROPERTY(EditAnywhere, Category = "Attack Location Offset")
+	UPROPERTY(BlueprintReadWrite, Category = "Attack Location Offset")
 	float AttackLocationOffset = 150.f;
+
+	UPROPERTY(EditAnywhere, Category = "Attack Location Offset")
+	float AttackLocationOffsetDefault = 150.f;
 
 protected:
 	// Weapon
 	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AKatana> KatanaClass;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Katana")
 	AKatana* Katana;
 
 protected:

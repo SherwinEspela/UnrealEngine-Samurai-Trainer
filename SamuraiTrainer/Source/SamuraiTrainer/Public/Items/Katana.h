@@ -9,6 +9,7 @@
 class UParticleSystem;
 class UParticleSystemComponent;
 class UNiagaraComponent;
+class UAnimMontage;
 
 /**
  * 
@@ -23,6 +24,9 @@ public:
 
 	virtual void PlaySwordClashFx();
 	virtual void ShouldPlayBloodSpillFx(bool ShouldPlay = true);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void PlayParryFatal();
 
 protected:
 	virtual void BeginPlay() override;
@@ -42,4 +46,9 @@ protected:
 	FVector FXSwordClashScale = FVector(0.5f, 0.5f, 0.5f);
 
 	TArray<UParticleSystemComponent*> FXSwordClashList;
+
+protected:
+	// Animations
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageKatana;
 };

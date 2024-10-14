@@ -18,6 +18,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetLineEndVectors(FVector Forward, FVector Right);
+	void SetEnabled(bool Value = true);
 
 protected:
 	virtual void BeginPlay() override;
@@ -39,5 +40,8 @@ protected:
 	ASTPlayerCharacter* Player;
 	FVector LineEndForwardVector;
 	FVector LineEndRightVector;
+
+private:
+	bool bIsEnabled = true;
 
 };

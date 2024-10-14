@@ -41,6 +41,9 @@ protected:
 
 	UFUNCTION()
 	void HandleBlockCompletedFromEnemy(ASTEnemyCharacter* Enemy);
+
+	UFUNCTION()
+	void HandleDeathCompletedFromEnemy(ASTEnemyCharacter* Enemy);
 	
 	UFUNCTION()
 	void HandleEnemyAttackCompleted();

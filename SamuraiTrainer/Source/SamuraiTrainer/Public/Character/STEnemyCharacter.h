@@ -20,6 +20,7 @@ struct FAttackAndCounterReactionData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackBeganFromThisEnemySignature, ASTEnemyCharacter*, Enemy,  EPlayerQTEResponseType, PlayerQTEResposeType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackCompletedFromThisEnemySignature, ASTEnemyCharacter*, Enemy);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBlockCompletedFromThisEnemySignature, ASTEnemyCharacter*, Enemy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathCompletedFromThisEnemySignature, ASTEnemyCharacter*, Enemy);
 
 /**
  * 
@@ -84,12 +85,13 @@ public:
 	FOnAttackBeganFromThisEnemySignature OnAttackBeganFromThisEnemy;
 	FOnAttackCompletedFromThisEnemySignature OnAttackCompletedFromThisEnemy;
 	FOnBlockCompletedFromThisEnemySignature OnBlockCompletedFromThisEnemy;
+	FOnDeathCompletedFromThisEnemySignature OnDeathCompletedFromThisEnemy;
 
 protected:
 	virtual void BeginPlay() override;
 	void SubscribeToAnimationEvents();
 
-protected:
+public:
 	// Animations Event Handlers
 	virtual void HandleAttackAnimCompleted() override;
 	virtual void HandleStaggerAnimCompleted() override;

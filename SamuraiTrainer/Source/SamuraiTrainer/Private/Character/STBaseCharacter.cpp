@@ -239,7 +239,6 @@ FVector ASTBaseCharacter::GetAttackPositionByLineTrace(FVector OtherActorLocatio
 	if (bHitSuccess)
 	{		
 		AttackLocation = OtherActorLocation + (Hit.ImpactNormal * AttackLocationOffset);
-		//DrawDebugSphere(GetWorld(), AttackLocation, 30.f, 10.f, FColor::Blue, false, 2.f);
 	}
 
 	return AttackLocation;
@@ -265,6 +264,12 @@ void ASTBaseCharacter::SetSlowMotion(bool IsSlow)
 
 void ASTBaseCharacter::SetDeathPoseType(EDeathPoseTypes Value)
 {
+}
+
+void ASTBaseCharacter::SetAttackLocationOffset(float Value)
+{
+	AttackLocationOffset = Value;
+	OnWarpTargetUpdated();
 }
 
 void ASTBaseCharacter::HandleAttackAnimCompleted()
@@ -306,6 +311,7 @@ void ASTBaseCharacter::ResetCounterAttackStates()
 	bCanCounterAttack = false;
 	bCanPerformNextAttack = true;
 	bCanSwordAttack = true;
+	AttackLocationOffset = AttackLocationOffsetDefault;
 }
 
 void ASTBaseCharacter::HandleBeginSlashSound()

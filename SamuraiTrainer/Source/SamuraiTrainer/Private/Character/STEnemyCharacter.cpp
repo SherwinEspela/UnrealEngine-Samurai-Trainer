@@ -67,6 +67,7 @@ void ASTEnemyCharacter::BeginPlay()
 	AttackData1.ParryFatal = PARRY_FATAL_1;
 	AttackData1.ParryFatalReaction = PARRY_FATAL_R_1;
 	AttackData1.ParryHitReaction = PARRY_HR_1;
+	AttackData1.DeathPoseType = EDeathPoseTypes::EDPT_DeathPoseParryFatal1;
 
 	FAttackAndCounterReactionData AttackData2;
 	AttackData2.Attack = ATTACK_ENEMY_2;
@@ -76,6 +77,7 @@ void ASTEnemyCharacter::BeginPlay()
 	AttackData2.ParryFatal = PARRY_FATAL_2;
 	AttackData2.ParryFatalReaction = PARRY_FATAL_R_2;
 	AttackData2.ParryHitReaction = PARRY_HR_2;
+	AttackData2.DeathPoseType = EDeathPoseTypes::EDPT_DeathPoseParryFatal2;
 
 	FAttackAndCounterReactionData AttackData3;
 	AttackData3.Attack = ATTACK_ENEMY_3;
@@ -85,8 +87,9 @@ void ASTEnemyCharacter::BeginPlay()
 	AttackData3.ParryFatal = PARRY_FATAL_2;
 	AttackData3.ParryFatalReaction = PARRY_FATAL_R_2;
 	AttackData3.ParryHitReaction = PARRY_HR_2;
+	AttackData3.DeathPoseType = EDeathPoseTypes::EDPT_DeathPoseParryFatal2;
 
-	SwordAttacks.Add(AttackData1);
+	//SwordAttacks.Add(AttackData1);
 	SwordAttacks.Add(AttackData2);
 	SwordAttacks.Add(AttackData3);
 
@@ -118,7 +121,7 @@ void ASTEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PlayerCharacter && !bDebugCannotMove)
+	if (PlayerCharacter && !bDebugCannotMove && !bIsDead)
 	{
 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerCharacter->GetActorLocation());
 		SetActorRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f));
@@ -129,7 +132,7 @@ void ASTEnemyCharacter::SubscribeToAnimationEvents()
 {
 	if (EnemyAnimInstance == nullptr) return;
 
-	EnemyAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleAttackAnimCompleted);
+	//EnemyAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleAttackAnimCompleted);
 	//EnemyAnimInstance->OnStaggeredAnimCompleted.AddDynamic(this, &ASTEnemyCharacter::HandleStaggerAnimCompleted);
 }
 
@@ -184,12 +187,9 @@ void ASTEnemyCharacter::OnCounterAttackFrameEnded()
 void ASTEnemyCharacter::HandleDyingAnimationCompleted()
 {
 	Super::HandleDyingAnimationCompleted();
-
-	if (bIsDead)
-	{
-		DetachFromControllerPendingDestroy();
-		EnemyAnimInstance->SetDead();
-	}
+	DetachFromControllerPendingDestroy();
+	EnemyAnimInstance->SetDead();
+	OnDeathCompletedFromThisEnemy.Broadcast(this);
 }
 
 void ASTEnemyCharacter::HandleBloodSpillFXNotifyBegin()
@@ -264,29 +264,25 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 		if (bIsDead)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Is dead!!!!"));
+			FXTargetIndicator->Deactivate();
+			FXTargetIndicator->SetActive(false);
 
 			if (IsKilledByParry)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("parry death...."));
 				EnemyAnimInstance->Montage_Play(MontageParryFatalReactions);
 				EnemyAnimInstance->Montage_JumpToSection(CurrentAttackData.ParryFatalReaction, MontageParryFatalReactions);
 				IsKilledByParry = false;
+				SetDeathPoseType(CurrentAttackData.DeathPoseType);
 			}
 			else {
-				UE_LOG(LogTemp, Warning, TEXT("combo ender death...."));
 				EnemyAnimInstance->Montage_Play(MontageCEHitReaction);
 				EnemyAnimInstance->Montage_JumpToSection(NextHitReactionSectionName, MontageCEHitReaction);
 			}
 		}
 		else {
-			UE_LOG(LogTemp, Warning, TEXT("Is NOT dead..."));
-
 			EnemyAIController->SetHitReacting();
-			
 			const int RandomIndex = FMath::RandRange(0, HitReactionSectionNames.Num() - 1);
 			const FName HRSectionName = HitReactionSectionNames[RandomIndex];
-			
 			EnemyAnimInstance->Montage_Play(MontageHitReaction);
 			EnemyAnimInstance->Montage_JumpToSection(HRSectionName, MontageHitReaction);
 		}

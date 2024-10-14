@@ -88,6 +88,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName ParryFatalReaction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EDeathPoseTypes DeathPoseType;
 };
 
 // This class does not need to be modified.

@@ -38,15 +38,15 @@ public:
 public:
 	// MULTICAST DELEGATES
 	FHitReactionAnimCompletedSignature OnHitReactionAnimCompleted;
-	FAttackAnimCompletedSignature OnAttackAnimCompleted;
+	//FAttackAnimCompletedSignature OnAttackAnimCompleted;
 	FStaggeredAnimCompletedSignature OnStaggeredAnimCompleted;
 	FBlockAnimCompletedSignature OnBlockAnimCompleted;
 	FEnemyCanBlockEventSignature OnEnemyCanBlockEvent;
 	FOpponentCanHitReactEventSignature OnOpponentCanHitReactEvent;
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	virtual void HandleAttackCompleted();
+	/*UFUNCTION(BlueprintCallable)
+	virtual void HandleAttackCompleted();*/
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleStaggerCompleted();

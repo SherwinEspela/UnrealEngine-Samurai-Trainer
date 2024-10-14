@@ -87,6 +87,15 @@ void ACombatSystemPawn::HandleBlockCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 	HandleEventFromEnemyCompleted(Enemy);
 }
 
+void ACombatSystemPawn::HandleDeathCompletedFromEnemy(ASTEnemyCharacter* Enemy)
+{
+	Enemy->GetEnemyAIController()->SetChosenToAttack(false);
+	Enemy->OnAttackCompletedFromThisEnemy.RemoveDynamic(this, &ACombatSystemPawn::HandleAttackCompletedFromEnemy);
+	Enemy->OnBlockCompletedFromThisEnemy.RemoveDynamic(this, &ACombatSystemPawn::HandleBlockCompletedFromEnemy);
+	Enemy->OnDeathCompletedFromThisEnemy.RemoveDynamic(this, &ACombatSystemPawn::HandleDeathCompletedFromEnemy);
+	SetEnemiesToPauseAttacking(false);
+}
+
 void ACombatSystemPawn::HandleEnemyAttackCompleted()
 {
 	bIsAttacking = false;
@@ -133,6 +142,7 @@ void ACombatSystemPawn::SelectAttacker()
 			NewAttacker->OnAttackBeganFromThisEnemy.AddDynamic(this, &ACombatSystemPawn::HandleAttackBeganFromEnemy);
 			NewAttacker->OnAttackCompletedFromThisEnemy.AddDynamic(this, &ACombatSystemPawn::HandleAttackCompletedFromEnemy);
 			NewAttacker->OnBlockCompletedFromThisEnemy.AddDynamic(this, &ACombatSystemPawn::HandleBlockCompletedFromEnemy);
+			NewAttacker->OnDeathCompletedFromThisEnemy.AddDynamic(this, &ACombatSystemPawn::HandleDeathCompletedFromEnemy);
 		}
 	}
 	else {

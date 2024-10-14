@@ -60,7 +60,7 @@ void ASTPlayerCharacter::InitPlayerAnimInstance()
 	PlayerAnimInstance = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	if (PlayerAnimInstance)
 	{
-		PlayerAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleAttackAnimCompleted);
+		//PlayerAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleAttackAnimCompleted);
 		PlayerAnimInstance->OnBlockAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleBlockAnimCompleted);
 		PlayerAnimInstance->OnHitReactionAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleHitReactsionAnimCompleted);
 		PlayerAnimInstance->OnEnemyCanBlockEvent.AddDynamic(this, &ASTPlayerCharacter::HandleEnemyCanBlockEvent);
@@ -409,10 +409,12 @@ void ASTPlayerCharacter::OnComboFrameEnded()
 
 void ASTPlayerCharacter::OnComboEnderStarted()
 {
+	TargetLockActor->SetEnabled(false);
 }
 
 void ASTPlayerCharacter::OnComboEnderCompleted()
 {
+	TargetLockActor->SetEnabled();
 	HandleBasicAttackCompleted();
 }
 
@@ -580,8 +582,6 @@ void ASTPlayerCharacter::ToggleDebuggerDisplay()
 
 void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::HandleOpponentAttackStarted"));
-	//UE_LOG(LogTemp, Warning, TEXT("BlockSectionName ==== %s"), *BlockSectionName.ToString());
 	CurrentBlockSectionName = BlockSectionName;
 	CurrentHRSectionName = HRSectionName;
 	ExpectedPlayerQTEResponse = ResponseType;
@@ -724,38 +724,17 @@ void ASTPlayerCharacter::ExecuteParry()
 
 	if (bCanCounterAttack) bDidCounterAttack = true;
 	CurrentMWPSocketName = BLOCK_SOCKET;
-	OnWarpTargetUpdated();
-
+	
 	if (CurrentAttackingEnemy)
 	{
 		CurrentEnemy = CurrentAttackingEnemy;
 		CurrentAttackingEnemy = nullptr;
 	}
 
-	/*if (CurrentAttackingEnemy)
-	{
-		const bool WillBeDead = CurrentAttackingEnemy->WillBeDead(DamageSwordAttack);
-		if (WillBeDead)
-		{
-			PlayerAnimInstance->Montage_Play(MontageParryFatal);
-			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackingEnemy->GetParryFatalSectionName(), MontageParryFatal);
-		}
-		else {
-			int RandomIndex = FMath::RandRange(0, ParrySectionNames.Num() - 1);
-			FName ParrySectionName = ParrySectionNames[RandomIndex];
-
-			PlayerAnimInstance->Montage_Play(MontageParry);
-			PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
-			CurrentAttackingEnemy->PlayNextParryHitReaction();		
-		}
-
-		CurrentEnemy = CurrentAttackingEnemy;
-		CurrentAttackingEnemy = nullptr;
-		return;
-	}*/
-
 	if (CurrentEnemy)
 	{
+		OnWarpTargetUpdated();
+
 		if (CurrentEnemy->IsAttacking())
 		{
 			const bool WillBeDead = CurrentEnemy->WillBeDead(DamageSwordAttack);
@@ -763,7 +742,6 @@ void ASTPlayerCharacter::ExecuteParry()
 			{
 				PlayerAnimInstance->Montage_Play(MontageParryFatal);
 				FName ParryFatalSectionName = CurrentEnemy->GetParryFatalSectionName();
-				UE_LOG(LogTemp, Warning, TEXT("ParryFatalSectionName === %s"), *ParryFatalSectionName.ToString());
 				PlayerAnimInstance->Montage_JumpToSection(ParryFatalSectionName, MontageParryFatal);
 				CurrentEnemy->SetKilledByParry();
 
@@ -778,13 +756,6 @@ void ASTPlayerCharacter::ExecuteParry()
 				PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
 				CurrentEnemy->PlayNextParryHitReaction();
 			}
-
-			/*int RandomIndex = FMath::RandRange(0, ParrySectionNames.Num() - 1);
-			FName ParrySectionName = ParrySectionNames[RandomIndex];
-
-			PlayerAnimInstance->Montage_Play(MontageParry);
-			PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
-			CurrentEnemy->PlayNextParryHitReaction();*/
 		}
 		else {
 			PlayerAnimInstance->Montage_Play(MontageBlock);

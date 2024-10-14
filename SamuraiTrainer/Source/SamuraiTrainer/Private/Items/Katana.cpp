@@ -73,3 +73,11 @@ void AKatana::ShouldPlayBloodSpillFx(bool ShouldPlay)
 		FXBloodSpill->Deactivate();
 	}
 }
+
+void AKatana::PlayParryFatal()
+{
+	if (MontageKatana)
+	{
+		Mesh->GetAnimInstance()->Montage_Play(MontageKatana);
+	}
+}

@@ -37,8 +37,15 @@ void ATargetLockActor::SetLineEndVectors(FVector Forward, FVector Right)
 	LineEndRightVector = Right;
 }
 
+void ATargetLockActor::SetEnabled(bool Value)
+{
+	bIsEnabled = Value;
+}
+
 void ATargetLockActor::DetectEnemyByLineTrace()
 {
+	if (!bIsEnabled) return;
+
 	FVector LineTraceStart = EnemySensorTransform->GetComponentLocation();
 	FVector LineTraceEnd = LineTraceStart + (LineEndForwardVector * TraceDistance) + (LineEndRightVector * TraceDistance);
 
