@@ -51,6 +51,9 @@ protected:
 	UFUNCTION()
 	void HandleEnemyBlockCompleted();
 
+	UFUNCTION()
+	void HandleEnemyWillBeDead();
+
 	void SetEnemiesToPauseAttacking(bool Paused = true);
 
 protected:

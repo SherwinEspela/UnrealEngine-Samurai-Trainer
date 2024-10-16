@@ -93,6 +93,7 @@ void ASTEnemyCharacter::BeginPlay()
 	AttackData3.DeathPoseType = EDeathPoseTypes::EDPT_DeathPoseParryFatal2;
 
 	SwordAttacks.Add(AttackData1);
+	SwordAttacks.Add(AttackData1);
 	SwordAttacks.Add(AttackData2);
 	SwordAttacks.Add(AttackData3);
 
@@ -159,12 +160,14 @@ void ASTEnemyCharacter::HandleHitReactsionAnimCompleted()
 {
 	Super::HandleHitReactsionAnimCompleted();
 	
-	if (bIsHealthCritical) {
-		EnemyAnimInstance->SetIsHealthCritical();
-	}
-	else {
-		EnemyAIController->SetRecovering();
-	}
+	//if (bIsHealthCritical) {
+	//	EnemyAnimInstance->SetIsHealthCritical();
+	//}
+	//else {
+	//	EnemyAIController->SetRecovering();
+	//}
+
+	EnemyAIController->SetRecovering();
 }
 
 void ASTEnemyCharacter::OnCounterAttackFrameBegan()
@@ -284,10 +287,23 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 		}
 		else {
 			EnemyAIController->SetHitReacting();
-			const int RandomIndex = FMath::RandRange(0, HitReactionSectionNames.Num() - 1);
-			const FName HRSectionName = HitReactionSectionNames[RandomIndex];
-			EnemyAnimInstance->Montage_Play(MontageHitReaction);
-			EnemyAnimInstance->Montage_JumpToSection(HRSectionName, MontageHitReaction);
+
+			if (IsHitByParry)
+			{
+				if (MontageParryHitReactions)
+				{
+					EnemyAnimInstance->Montage_Play(MontageParryHitReactions);
+					EnemyAnimInstance->Montage_JumpToSection(CurrentAttackData.ParryHitReaction, MontageParryHitReactions);
+				}
+
+				IsHitByParry = false;
+			}
+			else {
+				const int RandomIndex = FMath::RandRange(0, HitReactionSectionNames.Num() - 1);
+				const FName HRSectionName = HitReactionSectionNames[RandomIndex];
+				EnemyAnimInstance->Montage_Play(MontageHitReaction);
+				EnemyAnimInstance->Montage_JumpToSection(HRSectionName, MontageHitReaction);
+			}
 		}
 	}
 	
@@ -356,18 +372,19 @@ void ASTEnemyCharacter::PlayNextStagger()
 	}
 }
 
-void ASTEnemyCharacter::PlayNextParryHitReaction()
-{
-	if (EnemyAnimInstance && MontageParryHitReactions)
-	{
-		EnemyAnimInstance->Montage_Play(MontageParryHitReactions);
-		EnemyAnimInstance->Montage_JumpToSection(CurrentAttackData.ParryHitReaction, MontageParryHitReactions);
-	}
-}
+//void ASTEnemyCharacter::PlayNextParryHitReaction()
+//{
+//	
+//}
 
 void ASTEnemyCharacter::SetKilledByParry()
 {
 	IsKilledByParry = true;
+}
+
+void ASTEnemyCharacter::SetHitByParry()
+{
+	IsHitByParry = true;
 }
 
 void ASTEnemyCharacter::MakeNextDecision()

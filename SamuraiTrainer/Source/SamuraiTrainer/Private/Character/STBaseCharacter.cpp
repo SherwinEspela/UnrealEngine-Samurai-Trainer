@@ -25,6 +25,7 @@ void ASTBaseCharacter::BeginPlay()
 	}
 
 	CurrentMode = Cast<ASamuraiTrainerGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	AttackLocationOffset = AttackLocationOffsetDefault;
 }
 
 void ASTBaseCharacter::AttachSwordToSocket(FName SocketName)
@@ -46,7 +47,7 @@ bool ASTBaseCharacter::DetermineTargetFacingByLineTrace(FVector LineTraceStart, 
 	);
 
 	bool isFacingFront = false;
-	if (bHitSuccess)
+	if (bHitSuccess && CurrentTargetPawn)
 	{
 		const FVector EnemyForward = CurrentTargetPawn->GetActorForwardVector();
 		const FVector ToHit = (Hit.ImpactPoint - CurrentTargetPawn->GetActorLocation()).GetSafeNormal();
@@ -269,6 +270,13 @@ void ASTBaseCharacter::SetAttackLocationOffset(float Value)
 {
 	AttackLocationOffset = Value;
 	OnWarpTargetUpdated();
+}
+
+bool ASTBaseCharacter::WillBeDead(float Damage) const
+{
+	bool WillDie = Health <= Damage;
+	if (WillDie) OnOpponentWillBeDead.Broadcast();
+	return WillDie;
 }
 
 void ASTBaseCharacter::HandleAttackAnimCompleted()

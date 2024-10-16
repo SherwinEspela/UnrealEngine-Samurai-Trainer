@@ -21,6 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackBeganSignature, EPlayerQTER
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBlockCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaggerCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpponentWillBeDeadSignature);
 
 UCLASS()
 class SAMURAITRAINER_API ASTBaseCharacter : public ACharacter
@@ -62,6 +63,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAttackLocationOffset(float Value);
 
+	bool WillBeDead(float Damage) const;
+
 public:
 	// Movementments
 	virtual void SwordAttack();
@@ -77,7 +80,6 @@ public:
 	FORCEINLINE bool IsAttacking() const { return MovementState == EMovementStates::EPMS_Attacking; }
 	FORCEINLINE bool DidCounterAttack() const { return bDidCounterAttack; }
 	FORCEINLINE bool IsDead() const { return bIsDead; }
-	FORCEINLINE bool WillBeDead(float Damage) const { return Health <= Damage; }
 	FORCEINLINE void SetHitDirectionType(EHitDirectionType Value) { CurrentHitDirection = Value; }
 	
 public:
@@ -88,6 +90,7 @@ public:
 	FOnAttackCompletedSignature OnAttackCompleted;
 	FOnBlockCompletedSignature OnBlockCompleted;
 	FOnStaggerCompletedSignature OnStaggerCompleted;
+	FOnOpponentWillBeDeadSignature OnOpponentWillBeDead;
 	//FOnAttackHitDirectionDeterminedSignature OnAttackHitDirectionDetermined;
 
 protected:
@@ -167,10 +170,10 @@ protected:
 	float DamageSwordAttack = 10.f;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Attack Location Offset")
-	float AttackLocationOffset = 150.f;
+	float AttackLocationOffset = 120.f;
 
 	UPROPERTY(EditAnywhere, Category = "Attack Location Offset")
-	float AttackLocationOffsetDefault = 150.f;
+	float AttackLocationOffsetDefault = 120.f;
 
 protected:
 	// Weapon

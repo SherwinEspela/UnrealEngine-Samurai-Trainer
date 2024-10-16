@@ -240,6 +240,7 @@ void ASTPlayerCharacter::EnemyInteract(
 
 	if (CurrentEnemy)
 	{
+		TargetLockActor->SetEnabled(false);
 		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
 
 		const bool WillBeDead = CurrentEnemy->WillBeDead(Damage);
@@ -273,11 +274,6 @@ void ASTPlayerCharacter::EnemyInteract(
 			CurrentEnemy->TakeDamage(Damage, DamageEvent, GetController(), this);
 		}
 	}
-
-	/*else {
-		PlayerAnimInstance->Montage_Play(MontageToPlay);
-		PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageToPlay);
-	}*/
 
 	MovementState = EMovementStates::EPMS_Attacking;
 	bCanPerformNextAttack = false;
@@ -406,12 +402,20 @@ void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)
 
 void ASTPlayerCharacter::OnComboFrameEnded()
 {
+	if (TargetLockActor)
+	{
+		TargetLockActor->SetEnabled();
+	}
+	
 	bCanPerformNextAttack = false;
 }
 
 void ASTPlayerCharacter::OnComboEnderStarted()
 {
-	TargetLockActor->SetEnabled(false);
+	if (TargetLockActor)
+	{
+		TargetLockActor->SetEnabled(false);
+	}
 }
 
 void ASTPlayerCharacter::OnComboEnderCompleted()
@@ -525,18 +529,19 @@ float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 void ASTPlayerCharacter::SetCurrentEnemy(ASTEnemyCharacter* Value)
 {
+	if (Value == nullptr) return;
 	if (CurrentEnemy && Value->GetName() == CurrentEnemy->GetName()) return;
 
 	if (CurrentEnemy)
 	{
 		CurrentEnemy->ShouldDisplayTargetIndicator(false);
-		CurrentEnemy->OnAttackStartedWith3Params.RemoveDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+		//CurrentEnemy->OnAttackStartedWith3Params.RemoveDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
 	}
 
 	if (Value) {
 		FXTargetBeam->Deactivate();
 		CurrentEnemy = Value;
-		CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
+		//CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
 		CurrentTargetPawn = CurrentEnemy;
 		ShouldDisplayTargetBeamAndHideTargetIndicator();
 	}
@@ -549,6 +554,7 @@ void ASTPlayerCharacter::SetCurrentAttackingEnemyWithResponseType(ASTEnemyCharac
 	ExpectedPlayerQTEResponse = ResponseType;
 	CurrentAttackingEnemy = Value;
 	CurrentEnemy = Value;
+	SetCurrentEnemy(CurrentEnemy);
 }
 
 void ASTPlayerCharacter::RemoveCurrentAttackingEnemy()
@@ -739,6 +745,7 @@ void ASTPlayerCharacter::ExecuteParry()
 
 	if (CurrentEnemy)
 	{
+		TargetLockActor->SetEnabled(false);
 		OnWarpTargetUpdated();
 
 		if (CurrentEnemy->IsAttacking())
@@ -750,18 +757,17 @@ void ASTPlayerCharacter::ExecuteParry()
 				FName ParryFatalSectionName = CurrentEnemy->GetParryFatalSectionName();
 				PlayerAnimInstance->Montage_JumpToSection(ParryFatalSectionName, MontageParryFatal);
 				CurrentEnemy->SetKilledByParry();
-
-				FDamageEvent DamageEvent;
-				CurrentEnemy->TakeDamage(DamageSwordAttack, DamageEvent, GetController(), this);
 			}
 			else {
 				int RandomIndex = FMath::RandRange(0, ParrySectionNames.Num() - 1);
 				FName ParrySectionName = ParrySectionNames[RandomIndex];
-
 				PlayerAnimInstance->Montage_Play(MontageParry);
 				PlayerAnimInstance->Montage_JumpToSection(ParrySectionName, MontageParry);
-				CurrentEnemy->PlayNextParryHitReaction();
+				CurrentEnemy->SetHitByParry();
 			}
+
+			FDamageEvent DamageEvent;
+			CurrentEnemy->TakeDamage(DamageSwordAttack, DamageEvent, GetController(), this);
 		}
 		else {
 			PlayerAnimInstance->Montage_Play(MontageBlock);

@@ -55,8 +55,9 @@ public:
 
 	virtual void PlayAttackStagger(FName SectionName) override;
 	void PlayNextStagger();
-	void PlayNextParryHitReaction();
+	//void PlayNextParryHitReaction();
 	void SetKilledByParry();
+	void SetHitByParry();
 
 	UFUNCTION(BlueprintCallable)
 	void MakeNextDecision();
@@ -169,4 +170,5 @@ private:
 	FName NextStaggerSectionName;
 	FAttackAndCounterReactionData CurrentAttackData;
 	bool IsKilledByParry = false;
+	bool IsHitByParry = false;
 };
