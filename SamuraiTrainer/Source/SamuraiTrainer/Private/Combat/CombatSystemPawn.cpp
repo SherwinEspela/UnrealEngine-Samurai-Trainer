@@ -8,6 +8,7 @@
 #include "AI/STEnemyAIController.h"
 #include "Character/STPlayerCharacter.h"
 #include "Combat/TargetLockActor.h"
+#include "Components/CapsuleComponent.h"
 
 ACombatSystemPawn::ACombatSystemPawn()
 {
@@ -62,16 +63,20 @@ void ACombatSystemPawn::HandleEnemyAttackBegan(EPlayerQTEResponseType PlayerResp
 
 void ACombatSystemPawn::HandleAttackBeganFromEnemy(ASTEnemyCharacter* Enemy, EPlayerQTEResponseType PlayerResponseType)
 {
-	PrintPlayerQTEResponse(PlayerResponseType);
+	//PrintPlayerQTEResponse(PlayerResponseType);
+
+	for(auto AnEnemy : Enemies)
+	{
+		AnEnemy->ShouldDisplayTargetIndicator(false);
+	}
 
 	if (Player)
 	{
 		Player->SetCurrentAttackingEnemyWithResponseType(Enemy, PlayerResponseType);
-		//Player->SetParryFatalSectionName(Enemy->GetParryFatalSectionName());
 	}
 
 	SetEnemiesToPauseAttacking();
-	Enemy->OnAttackBeganFromThisEnemy.RemoveDynamic(this, &ACombatSystemPawn::HandleAttackBeganFromEnemy);
+	//Enemy->OnAttackBeganFromThisEnemy.RemoveDynamic(this, &ACombatSystemPawn::HandleAttackBeganFromEnemy);
 }
 
 void ACombatSystemPawn::HandleAttackCompletedFromEnemy(ASTEnemyCharacter* Enemy)
@@ -93,6 +98,9 @@ void ACombatSystemPawn::HandleDeathCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 	Enemy->OnAttackCompletedFromThisEnemy.RemoveDynamic(this, &ACombatSystemPawn::HandleAttackCompletedFromEnemy);
 	Enemy->OnBlockCompletedFromThisEnemy.RemoveDynamic(this, &ACombatSystemPawn::HandleBlockCompletedFromEnemy);
 	Enemy->OnDeathCompletedFromThisEnemy.RemoveDynamic(this, &ACombatSystemPawn::HandleDeathCompletedFromEnemy);
+	Enemies.Remove(Enemy);
+
+	SelectAttacker();
 	SetEnemiesToPauseAttacking(false);
 }
 
@@ -133,11 +141,26 @@ void ACombatSystemPawn::SelectAttacker()
 	ASTEnemyCharacter* NewAttacker;
 	Player->RemoveCurrentAttackingEnemy();
 
+	if (Enemies.Num() == 1)
+	{
+		NewAttacker = Enemies[0];
+		NewAttacker->GetEnemyAIController()->SetChosenToAttack();
+		NewAttacker->OnAttackBegan.AddDynamic(this, &ACombatSystemPawn::HandleEnemyAttackBegan);
+		NewAttacker->OnAttackCompleted.AddDynamic(this, &ACombatSystemPawn::HandleEnemyAttackCompleted);
+		NewAttacker->OnBlockCompleted.AddDynamic(this, &ACombatSystemPawn::HandleEnemyBlockCompleted);
+		return;
+	}
+
 	if (bIsSequenceAttacking)
 	{
 		if (!EnemiesQ.IsEmpty())
 		{
-			EnemiesQ.Dequeue(NewAttacker);
+			do
+			{
+				EnemiesQ.Dequeue(NewAttacker);
+			} while (NewAttacker->IsDead());
+
+			
 			NewAttacker->GetEnemyAIController()->SetChosenToAttack();
 			NewAttacker->OnAttackBeganFromThisEnemy.AddDynamic(this, &ACombatSystemPawn::HandleAttackBeganFromEnemy);
 			NewAttacker->OnAttackCompletedFromThisEnemy.AddDynamic(this, &ACombatSystemPawn::HandleAttackCompletedFromEnemy);
@@ -148,9 +171,6 @@ void ACombatSystemPawn::SelectAttacker()
 	else {
 		if (bIsAttacking) return;
 
-		int RandomIndex = FMath::RandRange(0, Enemies.Num() - 1);
-		NewAttacker = Enemies[RandomIndex];
-
 		if (CurrentEnemyAttacker)
 		{
 			CurrentEnemyAttacker->GetEnemyAIController()->SetChosenToAttack(false);
@@ -159,6 +179,12 @@ void ACombatSystemPawn::SelectAttacker()
 			CurrentEnemyAttacker->OnAttackCompleted.RemoveDynamic(this, &ACombatSystemPawn::HandleEnemyAttackCompleted);
 			CurrentEnemyAttacker->OnBlockCompleted.RemoveDynamic(this, &ACombatSystemPawn::HandleEnemyBlockCompleted);
 		}
+
+		do
+		{
+			int RandomIndex = FMath::RandRange(0, Enemies.Num() - 1);
+			NewAttacker = Enemies[RandomIndex];
+		} while (NewAttacker->IsDead());
 
 		if (NewAttacker)
 		{

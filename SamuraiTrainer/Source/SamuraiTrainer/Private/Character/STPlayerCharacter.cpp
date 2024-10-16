@@ -51,6 +51,8 @@ void ASTPlayerCharacter::BeginPlay()
 	FXTargetBeam->SetFloatParameter(FName("Beam Width"), TargetBeamWidth);
 	FXTargetBeam->Deactivate();
 
+	AttachSwordToSocket(FName("WEAPON_R"));
+
 	InitPlayerAnimInstance();
 	InitQueues();
 }
@@ -542,13 +544,17 @@ void ASTPlayerCharacter::SetCurrentEnemy(ASTEnemyCharacter* Value)
 
 void ASTPlayerCharacter::SetCurrentAttackingEnemyWithResponseType(ASTEnemyCharacter* Value, EPlayerQTEResponseType ResponseType)
 {
+	TargetLockActor->SetEnabled(false);
+	if (CurrentEnemy) CurrentEnemy->ShouldDisplayTargetIndicator(false);
 	ExpectedPlayerQTEResponse = ResponseType;
 	CurrentAttackingEnemy = Value;
+	CurrentEnemy = Value;
 }
 
 void ASTPlayerCharacter::RemoveCurrentAttackingEnemy()
 {
 	if(CurrentAttackingEnemy) CurrentAttackingEnemy = nullptr;
+	if (CurrentEnemy) CurrentEnemy = nullptr;
 }
 
 void ASTPlayerCharacter::SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value)

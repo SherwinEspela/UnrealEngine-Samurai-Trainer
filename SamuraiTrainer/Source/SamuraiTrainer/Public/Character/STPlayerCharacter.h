@@ -145,7 +145,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon States")
 	EWeaponStates WeaponState = EWeaponStates::EWS_Stored;
 
-	UPROPERTY(EditAnywhere, Category = "Current Enemy")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Current Enemy")
 	ASTEnemyCharacter* CurrentEnemy;
 
 	UPROPERTY(EditAnywhere, Category = "Current Enemy")

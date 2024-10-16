@@ -15,6 +15,7 @@
 #include "SamuraiTrainer/SamuraiTrainerGameMode.h"
 #include "Items/Katana.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/CapsuleComponent.h"
 
 #define NV_LINEAR_COLOR FString("SpriteColor")
 #define ATTACK_INDICATOR_COLOR_RED FLinearColor(FColor::Red)
@@ -59,6 +60,8 @@ void ASTEnemyCharacter::BeginPlay()
 	PlayerCharacter = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	CurrentTargetPawn = PlayerCharacter;
 
+	AttachSwordToSocket(FName("WEAPON_R_Socket"));
+
 	FAttackAndCounterReactionData AttackData1;
 	AttackData1.Attack = ATTACK_ENEMY_1;
 	AttackData1.CounterBlock = BLOCK_DOWNSLASH;
@@ -89,7 +92,7 @@ void ASTEnemyCharacter::BeginPlay()
 	AttackData3.ParryHitReaction = PARRY_HR_2;
 	AttackData3.DeathPoseType = EDeathPoseTypes::EDPT_DeathPoseParryFatal2;
 
-	//SwordAttacks.Add(AttackData1);
+	SwordAttacks.Add(AttackData1);
 	SwordAttacks.Add(AttackData2);
 	SwordAttacks.Add(AttackData3);
 

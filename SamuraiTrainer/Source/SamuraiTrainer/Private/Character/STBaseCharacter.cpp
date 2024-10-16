@@ -22,7 +22,6 @@ void ASTBaseCharacter::BeginPlay()
 	if (KatanaClass)
 	{
 		Katana = GetWorld()->SpawnActor<AKatana>(KatanaClass);
-		AttachSwordToSocket(FName("WEAPON_R"));
 	}
 
 	CurrentMode = Cast<ASamuraiTrainerGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
