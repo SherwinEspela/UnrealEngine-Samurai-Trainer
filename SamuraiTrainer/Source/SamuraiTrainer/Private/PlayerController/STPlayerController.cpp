@@ -40,7 +40,7 @@ void ASTPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(InputActionAttackCombo2, ETriggerEvent::Triggered, this, &ASTPlayerController::AttackCombo2);
 	EnhancedInputComponent->BindAction(InputActionBlock, ETriggerEvent::Triggered, this, &ASTPlayerController::ParryOrBlock);
 	//EnhancedInputComponent->BindAction(InputActionKick, ETriggerEvent::Triggered, this, &ASTPlayerController::Kick);
-	EnhancedInputComponent->BindAction(InputActionCounter, ETriggerEvent::Triggered, this, &ASTPlayerController::Counter);
+	//EnhancedInputComponent->BindAction(InputActionCounter, ETriggerEvent::Triggered, this, &ASTPlayerController::Counter);
 	EnhancedInputComponent->BindAction(InputActionRestartLevel, ETriggerEvent::Triggered, this, &ASTPlayerController::RestartLevel);
 	EnhancedInputComponent->BindAction(InputActionToggleDebuggerDisplay, ETriggerEvent::Triggered, this, &ASTPlayerController::ToggleDebuggerDisplay);
 }
@@ -97,10 +97,10 @@ void ASTPlayerController::Kick()
 	PlayerCharacter->Kick();
 }
 
-void ASTPlayerController::Counter()
-{
-	PlayerCharacter->Counter();
-}
+//void ASTPlayerController::Counter()
+//{
+//	PlayerCharacter->Counter();
+//}
 
 void ASTPlayerController::RestartLevel()
 {

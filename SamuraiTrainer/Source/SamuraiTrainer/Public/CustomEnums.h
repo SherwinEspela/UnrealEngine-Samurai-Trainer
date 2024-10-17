@@ -21,6 +21,7 @@ enum class EMovementStates : uint8
 	EPMS_Walking		UMETA(DisplayName = "Walking"),
 	EPMS_Moving			UMETA(DisplayName = "Moving"),
 	EPMS_HitReacting	UMETA(DisplayName = "Hit Reacting"),
+	EPMS_ComboEnding	UMETA(DisplayName = "Combo Ending"),
 	EPMS_Default		UMETA(DisplayName = "Default")
 };
 

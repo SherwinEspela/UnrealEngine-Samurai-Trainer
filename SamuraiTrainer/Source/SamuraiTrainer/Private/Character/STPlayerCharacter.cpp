@@ -62,7 +62,6 @@ void ASTPlayerCharacter::InitPlayerAnimInstance()
 	PlayerAnimInstance = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	if (PlayerAnimInstance)
 	{
-		//PlayerAnimInstance->OnAttackAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleAttackAnimCompleted);
 		PlayerAnimInstance->OnBlockAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleBlockAnimCompleted);
 		PlayerAnimInstance->OnHitReactionAnimCompleted.AddDynamic(this, &ASTPlayerCharacter::HandleHitReactsionAnimCompleted);
 		PlayerAnimInstance->OnEnemyCanBlockEvent.AddDynamic(this, &ASTPlayerCharacter::HandleEnemyCanBlockEvent);
@@ -246,6 +245,7 @@ void ASTPlayerCharacter::EnemyInteract(
 		const bool WillBeDead = CurrentEnemy->WillBeDead(Damage);
 		if (WillBeDead)
 		{
+			MovementState = EMovementStates::EPMS_ComboEnding;
 			CurrentAttackData = ComboEnders[FMath::RandRange(0, ComboEnders.Num() - 1)];
 			PlayerAnimInstance->Montage_Play(MontageEnder);
 			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageEnder);
@@ -253,6 +253,7 @@ void ASTPlayerCharacter::EnemyInteract(
 			CurrentEnemy->SetDeathPoseType(CurrentAttackData.OpponentDeathPoseType);
 		}
 		else {
+			MovementState = EMovementStates::EPMS_Attacking;
 			MoveQueue.Dequeue(CurrentAttackData);
 			PlayerAnimInstance->Montage_Play(MontageToPlay);
 			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageToPlay);
@@ -275,13 +276,14 @@ void ASTPlayerCharacter::EnemyInteract(
 		}
 	}
 
-	MovementState = EMovementStates::EPMS_Attacking;
 	bCanPerformNextAttack = false;
 }
 
 void ASTPlayerCharacter::SwordAttack()
 {
+	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
+
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -296,6 +298,7 @@ void ASTPlayerCharacter::SwordAttack()
 
 void ASTPlayerCharacter::SwordAttackCombo2()
 {
+	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
@@ -311,6 +314,7 @@ void ASTPlayerCharacter::SwordAttackCombo2()
 
 void ASTPlayerCharacter::Block()
 {
+	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
@@ -326,7 +330,9 @@ void ASTPlayerCharacter::Block()
 
 void ASTPlayerCharacter::ParryOrBlock()
 {
+	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
+
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -343,6 +349,7 @@ void ASTPlayerCharacter::ParryOrBlock()
 
 void ASTPlayerCharacter::Kick()
 {
+	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
@@ -358,6 +365,7 @@ void ASTPlayerCharacter::Kick()
 
 void ASTPlayerCharacter::Counter()
 {
+	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
 	SetSlowMotion(false);
 
@@ -424,6 +432,7 @@ void ASTPlayerCharacter::OnComboEnderCompleted()
 	HandleBasicAttackCompleted();
 }
 
+// Called in Anim Blueprint
 void ASTPlayerCharacter::HandleAttackAnimCompleted()
 {
 	Super::HandleAttackAnimCompleted();
@@ -573,25 +582,6 @@ void ASTPlayerCharacter::ToggleDebuggerDisplay()
 	bIsDebuggerDisplayed = !bIsDebuggerDisplayed;
 }
 
-//void ASTPlayerCharacter::OnEnemyDetectorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-//{
-//	if (CurrentEnemy && OtherActor->GetName() == CurrentEnemy->GetName()) return;
-//
-//	if (CurrentEnemy)
-//	{
-//		CurrentEnemy->OnAttackStartedWith3Params.RemoveDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
-//	}
-//	
-//	if (OtherActor) {
-//		CurrentEnemy = Cast<ASTEnemyCharacter>(OtherActor);
-//		if (CurrentEnemy)
-//		{
-//			CurrentEnemy->OnAttackStartedWith3Params.AddDynamic(this, &ASTPlayerCharacter::HandleOpponentAttackStarted);
-//			CurrentTargetPawn = CurrentEnemy;
-//		}
-//	}
-//}
-
 void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType)
 {
 	CurrentBlockSectionName = BlockSectionName;
@@ -640,12 +630,17 @@ void ASTPlayerCharacter::ExecuteSwordAttack()
 	if (!bCanSwordAttack) return;
 	Super::SwordAttack();
 
+	MovementState = EMovementStates::EPMS_Attacking;
+
 	if (CurrentEnemy)
 	{
-		const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
+		// TODO: re-add when determining direction is needed. Commented out for now.
+		//const bool bIsEnemyFrontFacing = DetermineTargetFa
+		// cingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
 		/*TQueue<FAttackData>& AttackQ = bIsEnemyFrontFacing ? FrontAttackQueues : BackAttackQueues;
 		UAnimMontage* MontageComboEnder = bIsEnemyFrontFacing ? MontageFrontComboEnder : MontageBackComboEnder;
 		TArray<FAttackData> ComboEndersArray = bIsEnemyFrontFacing ? SwordAttackComboEnders : BackComboEnders;*/
+
 		EnemyInteract(FrontAttackQueues, MontageAttack, SwordAttackComboEnders, MontageFrontComboEnder, DamageSwordAttack, true);
 	}
 	else {
@@ -663,6 +658,8 @@ void ASTPlayerCharacter::ExecuteSwordAttackCombo2()
 	if (!bCanSwordAttack) return;
 	Super::SwordAttack();
 
+	MovementState = EMovementStates::EPMS_Attacking;
+
 	if (CurrentEnemy)
 	{
 		//const bool bIsEnemyFrontFacing = DetermineTargetFacingByLineTrace(GetActorLocation(), CurrentEnemy->GetActorLocation());
@@ -679,9 +676,6 @@ void ASTPlayerCharacter::ExecuteSwordAttackCombo2()
 
 void ASTPlayerCharacter::ExecuteBlock()
 {
-	//if (MovementState != EMovementStates::EPMS_Idle) return;
-	//if (MontageBlock == nullptr) return;
-
 	PlayerAnimInstance->StopAllMontages(0.2f);
 	PlayerAnimInstance->Montage_Play(MontageBlock);
 	bCanSwordAttack = true;
@@ -753,6 +747,7 @@ void ASTPlayerCharacter::ExecuteParry()
 			const bool WillBeDead = CurrentEnemy->WillBeDead(DamageSwordAttack);
 			if (WillBeDead)
 			{
+				MovementState = EMovementStates::EPMS_ComboEnding;
 				PlayerAnimInstance->Montage_Play(MontageParryFatal);
 				FName ParryFatalSectionName = CurrentEnemy->GetParryFatalSectionName();
 				PlayerAnimInstance->Montage_JumpToSection(ParryFatalSectionName, MontageParryFatal);

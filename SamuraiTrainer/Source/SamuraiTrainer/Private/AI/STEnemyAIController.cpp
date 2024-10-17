@@ -43,13 +43,15 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 
 void ASTEnemyAIController::SetChosenToAttack(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
+	
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
-
 	bool IsHitReacting = GetBlackboardComponent()->GetValueAsBool(BB_KEY_HIT_REACTING);
 	bool IsStaggered = GetBlackboardComponent()->GetValueAsBool(BB_KEY_STAGGERED);
 	bool IsBlocking = GetBlackboardComponent()->GetValueAsBool(BB_KEY_BLOCKING);
 	bool IsRecovering = GetBlackboardComponent()->GetValueAsBool(BB_KEY_RECOVERING);
 	bool IsDying = GetBlackboardComponent()->GetValueAsBool(BB_KEY_DYING);
+	
 	if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
 	{
 		SetAttacking(true);
@@ -58,69 +60,81 @@ void ASTEnemyAIController::SetChosenToAttack(bool Value)
 
 void ASTEnemyAIController::SetPausedToAttack(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_PAUSED_TO_ATTACK, Value);
 }
 
 void ASTEnemyAIController::SetToOuterRange(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_AT_OUTER_RANGE, Value);
 }
 
 void ASTEnemyAIController::SetToMiddleRange(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_AT_MIDDLE_RANGE, Value);
 }
 
 void ASTEnemyAIController::SetAttacking(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_ATTACKING, Value);
 }
 
 void ASTEnemyAIController::SetCloseEvading(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_CLOSE_EVADING, Value);
 }
 
 void ASTEnemyAIController::SetIdle(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_IDLE, Value);
 }
 
 void ASTEnemyAIController::SetHitReacting(bool HitReacting)
 {
+	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_HIT_REACTING, HitReacting);
 }
 
 void ASTEnemyAIController::SetStaggered(bool Staggered)
 {
+	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_STAGGERED, Staggered);
 }
 
 void ASTEnemyAIController::SetBlocking(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_BLOCKING, Value);
 }
 
 void ASTEnemyAIController::SetRecovering(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_RECOVERING, Value);
 }
 
 void ASTEnemyAIController::SetDying(bool Value)
 {
+	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_DYING, Value);
 }
 
 void ASTEnemyAIController::ResetAllValues()
 {
+	if (!GetBlackboardComponent()) return;
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_ATTACKING, false);
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_IDLE, false);
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_HIT_REACTING, false);

@@ -179,7 +179,10 @@ void ACombatSystemPawn::SelectAttacker()
 		if (NewAttacker)
 		{
 			CurrentEnemyAttacker = NewAttacker;
-			CurrentEnemyAttacker->GetEnemyAIController()->SetChosenToAttack();
+			if (CurrentEnemyAttacker->GetEnemyAIController())
+			{
+				CurrentEnemyAttacker->GetEnemyAIController()->SetChosenToAttack();
+			}
 		}
 	}
 }

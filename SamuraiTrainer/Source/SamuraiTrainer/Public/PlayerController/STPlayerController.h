@@ -34,7 +34,7 @@ protected:
 	void Block();
 	void ParryOrBlock();
 	void Kick();
-	void Counter();
+	//void Counter();
 
 protected:
 	// Player Inputs

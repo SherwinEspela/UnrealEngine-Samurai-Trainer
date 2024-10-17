@@ -279,6 +279,7 @@ bool ASTBaseCharacter::WillBeDead(float Damage) const
 	return WillDie;
 }
 
+// Called in Anim Blueprint
 void ASTBaseCharacter::HandleAttackAnimCompleted()
 {
 	ResetCounterAttackStates();
