@@ -12,17 +12,20 @@ enum class EPlayerStates : uint8
 UENUM(BlueprintType)
 enum class EMovementStates : uint8
 {
-	EPMS_Attacking		UMETA(DisplayName = "Attacking"),
-	EPMS_SwordAttacking	UMETA(DisplayName = "Sword Attacking"),
-	EPMS_Interacting	UMETA(DisplayName = "Interacting"),
-	EPMS_Idle			UMETA(DisplayName = "Idle"),
-	EPMS_Blocking		UMETA(DisplayName = "Blocking"),
-	EPMS_Staggered		UMETA(DisplayName = "Staggered"),
-	EPMS_Walking		UMETA(DisplayName = "Walking"),
-	EPMS_Moving			UMETA(DisplayName = "Moving"),
-	EPMS_HitReacting	UMETA(DisplayName = "Hit Reacting"),
-	EPMS_ComboEnding	UMETA(DisplayName = "Combo Ending"),
-	EPMS_Default		UMETA(DisplayName = "Default")
+	EPMS_Attacking			UMETA(DisplayName = "Attacking"),
+	EPMS_PreAttacking		UMETA(DisplayName = "Pre Attacking"),
+	EPMS_SwordAttacking		UMETA(DisplayName = "Sword Attacking"),
+	EPMS_Interacting		UMETA(DisplayName = "Interacting"),
+	EPMS_Idle				UMETA(DisplayName = "Idle"),
+	EPMS_Blocking			UMETA(DisplayName = "Blocking"),
+	EPMS_Staggered			UMETA(DisplayName = "Staggered"),
+	EPMS_Walking			UMETA(DisplayName = "Walking"),
+	EPMS_Moving				UMETA(DisplayName = "Moving"),
+	EPMS_HitReacting		UMETA(DisplayName = "Hit Reacting"),
+	EPMS_ComboEnding		UMETA(DisplayName = "Combo Ending"),
+	EPMS_Parrying			UMETA(DisplayName = "Parrying"),
+	EPMS_ParryAttacking		UMETA(DisplayName = "Parry Attacking"),
+	EPMS_Default			UMETA(DisplayName = "Default")
 };
 
 UENUM(BlueprintType)

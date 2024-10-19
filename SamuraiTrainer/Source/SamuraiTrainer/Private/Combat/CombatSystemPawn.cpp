@@ -15,21 +15,15 @@ ACombatSystemPawn::ACombatSystemPawn()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ACombatSystemPawn::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if (bIsDebugging && CurrentEnemyAttacker)
-	{
-		DrawDebugSphere(GetWorld(), CurrentEnemyAttacker->GetActorLocation(), 70.f, 20.f, FColor::Green);
-	}
-}
-
 void ACombatSystemPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
 	Player = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	Player->OnAttackStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerAttackStarted);
+	Player->OnEnemiesCanAttack.AddDynamic(this, &ACombatSystemPawn::HandleEnemisCanAttack);
+	Player->OnStaggerStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerStaggerStarted);
+
 	bIsSequenceAttacking = true;
 
 	TSubclassOf<ASTEnemyCharacter> EnemyClass = ASTEnemyCharacter::StaticClass();
@@ -59,6 +53,31 @@ void ACombatSystemPawn::BeginPlay()
 	if (CombatSystemAIController)
 	{
 		CombatSystemAIController->Initialize(BehaviorTree);
+	}
+}
+
+void ACombatSystemPawn::HandlePlayerAttackStarted()
+{
+	SetEnemiesToPauseAttacking();
+}
+
+void ACombatSystemPawn::HandlePlayerStaggerStarted()
+{
+	SetEnemiesToPauseAttacking();
+}
+
+void ACombatSystemPawn::HandleEnemisCanAttack()
+{
+	SetEnemiesToPauseAttacking(false);
+}
+
+void ACombatSystemPawn::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bIsDebugging && CurrentEnemyAttacker)
+	{
+		DrawDebugSphere(GetWorld(), CurrentEnemyAttacker->GetActorLocation(), 70.f, 20.f, FColor::Green);
 	}
 }
 
@@ -129,7 +148,7 @@ void ACombatSystemPawn::SetEnemiesToPauseAttacking(bool Paused)
 {
 	for (auto AnEnemy : Enemies)
 	{
-		if (!AnEnemy->IsAttacking())
+		if (!AnEnemy->IsDead() && !AnEnemy->IsAttacking())
 		{
 			AnEnemy->GetEnemyAIController()->SetPausedToAttack(Paused);
 		}

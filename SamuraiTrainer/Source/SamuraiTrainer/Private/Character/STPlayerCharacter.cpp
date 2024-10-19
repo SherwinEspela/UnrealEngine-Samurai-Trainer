@@ -237,9 +237,10 @@ void ASTPlayerCharacter::EnemyInteract(
 	if (PlayerAnimInstance == nullptr) return;
 	if (CurrentEnemy && CurrentEnemy->IsDead()) return;
 
+	TargetLockActor->SetEnabled(false);
+
 	if (CurrentEnemy)
 	{
-		TargetLockActor->SetEnabled(false);
 		if (CurrentEnemy->IsAttacking() && bCanCounterAttack) bDidCounterAttack = true;
 
 		const bool WillBeDead = CurrentEnemy->WillBeDead(Damage);
@@ -253,7 +254,7 @@ void ASTPlayerCharacter::EnemyInteract(
 			CurrentEnemy->SetDeathPoseType(CurrentAttackData.OpponentDeathPoseType);
 		}
 		else {
-			MovementState = EMovementStates::EPMS_Attacking;
+			MovementState = EMovementStates::EPMS_PreAttacking;
 			MoveQueue.Dequeue(CurrentAttackData);
 			PlayerAnimInstance->Montage_Play(MontageToPlay);
 			PlayerAnimInstance->Montage_JumpToSection(CurrentAttackData.Attack, MontageToPlay);
@@ -281,9 +282,12 @@ void ASTPlayerCharacter::EnemyInteract(
 
 void ASTPlayerCharacter::SwordAttack()
 {
+	if (MovementState == EMovementStates::EPMS_PreAttacking) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
+	if (MovementState == EMovementStates::EPMS_Parrying) return;
 	if (bButtonsDisabled) return;
 
+	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -298,8 +302,12 @@ void ASTPlayerCharacter::SwordAttack()
 
 void ASTPlayerCharacter::SwordAttackCombo2()
 {
+	if (MovementState == EMovementStates::EPMS_PreAttacking) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
+	if (MovementState == EMovementStates::EPMS_Parrying) return;
 	if (bButtonsDisabled) return;
+	
+	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -316,6 +324,8 @@ void ASTPlayerCharacter::Block()
 {
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
+
+	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -331,8 +341,11 @@ void ASTPlayerCharacter::Block()
 void ASTPlayerCharacter::ParryOrBlock()
 {
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
+	if (MovementState == EMovementStates::EPMS_Parrying) return;
+	if (MovementState == EMovementStates::EPMS_ParryAttacking) return;
 	if (bButtonsDisabled) return;
 
+	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -351,6 +364,8 @@ void ASTPlayerCharacter::Kick()
 {
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
+
+	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -367,6 +382,8 @@ void ASTPlayerCharacter::Counter()
 {
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (bButtonsDisabled) return;
+
+	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
 
 	if (bIsQTEMode)
@@ -404,6 +421,7 @@ void ASTPlayerCharacter::PlayAttackStagger(FName SectionName)
 
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)
 {
+	MovementState = EMovementStates::EPMS_Attacking;
 	bIsLastBasicAttack = IsLastBasicAttack;
 	bCanPerformNextAttack = true;
 }
@@ -415,6 +433,24 @@ void ASTPlayerCharacter::OnComboFrameEnded()
 		TargetLockActor->SetEnabled();
 	}
 	
+	MovementState = EMovementStates::EPMS_Idle;
+	bCanPerformNextAttack = false;
+}
+
+void ASTPlayerCharacter::OnParryAttackFrameBegan()
+{
+	MovementState = EMovementStates::EPMS_ParryAttacking;
+	bCanPerformNextAttack = true;
+}
+
+void ASTPlayerCharacter::OnParryAttackFrameEnded()
+{
+	if (TargetLockActor)
+	{
+		TargetLockActor->SetEnabled();
+	}
+
+	MovementState = EMovementStates::EPMS_Idle;
 	bCanPerformNextAttack = false;
 }
 
@@ -504,6 +540,11 @@ void ASTPlayerCharacter::HandleWeaponToRightHand()
 	AttachSwordToSocket(FName("WEAPON_R"));
 }
 
+void ASTPlayerCharacter::HandleEnemiesCanAttackMarker()
+{
+	OnEnemiesCanAttack.Broadcast();
+}
+
 void ASTPlayerCharacter::HandleBasicAttackCompleted()
 {
 	bDidCounterAttack = false;
@@ -528,6 +569,7 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 
 float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	OnStaggerStarted.Broadcast();
 	PlayerAnimInstance->StopAllMontages(0.2f);
 	SetSlowMotion(false);
 	PlaySoundSlashHit();
@@ -630,8 +672,6 @@ void ASTPlayerCharacter::ExecuteSwordAttack()
 	if (!bCanSwordAttack) return;
 	Super::SwordAttack();
 
-	MovementState = EMovementStates::EPMS_Attacking;
-
 	if (CurrentEnemy)
 	{
 		// TODO: re-add when determining direction is needed. Commented out for now.
@@ -657,8 +697,6 @@ void ASTPlayerCharacter::ExecuteSwordAttackCombo2()
 	if (MontageAttack == nullptr && MontageFrontComboEnder == nullptr) return;
 	if (!bCanSwordAttack) return;
 	Super::SwordAttack();
-
-	MovementState = EMovementStates::EPMS_Attacking;
 
 	if (CurrentEnemy)
 	{
@@ -725,6 +763,7 @@ void ASTPlayerCharacter::ExecuteBlock()
 
 void ASTPlayerCharacter::ExecuteParry()
 {
+	MovementState = EMovementStates::EPMS_Parrying;
 	PlayerAnimInstance->StopAllMontages(0.2f);
 	bCanSwordAttack = true;
 
@@ -737,9 +776,10 @@ void ASTPlayerCharacter::ExecuteParry()
 		CurrentAttackingEnemy = nullptr;
 	}
 
+	TargetLockActor->SetEnabled(false);
+
 	if (CurrentEnemy)
 	{
-		TargetLockActor->SetEnabled(false);
 		OnWarpTargetUpdated();
 
 		if (CurrentEnemy->IsAttacking())

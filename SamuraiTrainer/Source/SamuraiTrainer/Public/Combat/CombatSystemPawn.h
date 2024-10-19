@@ -31,6 +31,15 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
+	void HandlePlayerAttackStarted();
+
+	UFUNCTION()
+	void HandlePlayerStaggerStarted();
+
+	UFUNCTION()
+	void HandleEnemisCanAttack();
+
+	UFUNCTION()
 	void HandleEnemyAttackBegan(EPlayerQTEResponseType PlayerResponseType);
 
 	UFUNCTION()

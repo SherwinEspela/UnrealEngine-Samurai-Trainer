@@ -20,6 +20,8 @@ class USceneComponent;
 class ATargetLockActor;
 class UNiagaraComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemiesCanAttackSignature);
+
 /**
  * 
  */
@@ -40,6 +42,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnComboFrameEnded();
+
+	UFUNCTION(BlueprintCallable)
+	void OnParryAttackFrameBegan();
+
+	UFUNCTION(BlueprintCallable)
+	void OnParryAttackFrameEnded();
 
 	UFUNCTION(BlueprintCallable)
 	void OnComboEnderStarted();
@@ -74,21 +82,18 @@ public:
 
 	void SetCurrentEnemy(ASTEnemyCharacter* Value);
 	void SetCurrentAttackingEnemyWithResponseType(ASTEnemyCharacter* Value, EPlayerQTEResponseType ResponseType);
-
-
-
-
-
 	void RemoveCurrentAttackingEnemy();
 	void SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value);
 	void ToggleDebuggerDisplay();
+
+public:
+	FOnEnemiesCanAttackSignature OnEnemiesCanAttack;
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
 	FORCEINLINE EWeaponStates GetWeaponState() const { return WeaponState; }
 	FORCEINLINE void SetCanPerformNextAttack(bool Value) { bCanPerformNextAttack = Value; }
 	FORCEINLINE TObjectPtr<ATargetLockActor> GetTargetLockActor() const { return TargetLockActor; }
-	//FORCEINLINE void SetParryFatalSectionName(FName Value) { CurrentParryFatalSectionName = Value; }
 
 public:
 	// Movementments
@@ -134,6 +139,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleWeaponToRightHand();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleEnemiesCanAttackMarker();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")

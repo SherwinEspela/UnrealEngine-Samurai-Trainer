@@ -14,12 +14,13 @@ class AKatana;
 class ASamuraiTrainerGameMode;
 class USoundBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStartedSignature, FName, BlockSectionName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackStartedWithTwoParamsSignature, FName, BlockSectionName, FName, HRSectionName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAttackStartedWith3ParamsSignature, FName, BlockSectionName, FName, HRSectionName, EPlayerQTEResponseType, PlayerQTEResposeType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackBeganSignature, EPlayerQTEResponseType, PlayerQTEResposeType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackStartedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBlockCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaggerStartedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaggerCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpponentWillBeDeadSignature);
 
@@ -83,12 +84,13 @@ public:
 	FORCEINLINE void SetHitDirectionType(EHitDirectionType Value) { CurrentHitDirection = Value; }
 	
 public:
-	FOnAttackStartedSignature OnAttackStarted;
 	FOnAttackStartedWithTwoParamsSignature OnAttackStartedWithTwoParams;
 	FOnAttackStartedWith3ParamsSignature OnAttackStartedWith3Params;
 	FOnAttackBeganSignature OnAttackBegan;
+	FOnAttackStartedSignature OnAttackStarted;
 	FOnAttackCompletedSignature OnAttackCompleted;
 	FOnBlockCompletedSignature OnBlockCompleted;
+	FOnStaggerStartedSignature OnStaggerStarted;
 	FOnStaggerCompletedSignature OnStaggerCompleted;
 	FOnOpponentWillBeDeadSignature OnOpponentWillBeDead;
 	//FOnAttackHitDirectionDeterminedSignature OnAttackHitDirectionDetermined;
