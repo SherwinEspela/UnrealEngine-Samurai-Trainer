@@ -126,7 +126,7 @@ void ACombatSystemPawn::HandleDeathCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 	Enemies.Remove(Enemy);
 
 	SelectAttacker();
-	SetEnemiesToPauseAttacking(false);
+	//SetEnemiesToPauseAttacking(false);
 }
 
 void ACombatSystemPawn::HandleEnemyAttackCompleted()
@@ -158,7 +158,7 @@ void ACombatSystemPawn::SetEnemiesToPauseAttacking(bool Paused)
 void ACombatSystemPawn::HandleEventFromEnemyCompleted(ASTEnemyCharacter* Enemy)
 {
 	Enemy->GetEnemyAIController()->SetChosenToAttack(false);
-	SetEnemiesToPauseAttacking(false);
+	//SetEnemiesToPauseAttacking(false);
 	EnemiesQ.Enqueue(Enemy);
 }
 
@@ -198,9 +198,10 @@ void ACombatSystemPawn::SelectAttacker()
 		if (NewAttacker)
 		{
 			CurrentEnemyAttacker = NewAttacker;
-			if (CurrentEnemyAttacker->GetEnemyAIController())
+			auto EnemyAIC = CurrentEnemyAttacker->GetEnemyAIController();
+			if (CurrentEnemyAttacker && EnemyAIC)
 			{
-				CurrentEnemyAttacker->GetEnemyAIController()->SetChosenToAttack();
+				EnemyAIC->SetChosenToAttack();
 			}
 		}
 	}

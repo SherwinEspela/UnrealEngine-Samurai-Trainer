@@ -285,10 +285,11 @@ void ASTPlayerCharacter::SwordAttack()
 	if (MovementState == EMovementStates::EPMS_PreAttacking) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
+	if (MovementState == EMovementStates::EPMS_HitReacting) return;
 	if (bButtonsDisabled) return;
 
-	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
+	OnAttackStarted.Broadcast();
 
 	if (bIsQTEMode)
 	{
@@ -305,10 +306,11 @@ void ASTPlayerCharacter::SwordAttackCombo2()
 	if (MovementState == EMovementStates::EPMS_PreAttacking) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
+	if (MovementState == EMovementStates::EPMS_HitReacting) return;
 	if (bButtonsDisabled) return;
 	
-	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
+	OnAttackStarted.Broadcast();
 
 	if (bIsQTEMode)
 	{
@@ -343,10 +345,11 @@ void ASTPlayerCharacter::ParryOrBlock()
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
 	if (MovementState == EMovementStates::EPMS_ParryAttacking) return;
+	if (MovementState == EMovementStates::EPMS_HitReacting) return;
 	if (bButtonsDisabled) return;
 
-	OnAttackStarted.Broadcast();
 	SetSlowMotion(false);
+	OnAttackStarted.Broadcast();
 
 	if (bIsQTEMode)
 	{
@@ -569,9 +572,9 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 
 float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	SetSlowMotion(false);
 	OnStaggerStarted.Broadcast();
 	PlayerAnimInstance->StopAllMontages(0.2f);
-	SetSlowMotion(false);
 	PlaySoundSlashHit();
 	HitReact();
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -611,7 +614,7 @@ void ASTPlayerCharacter::SetCurrentAttackingEnemyWithResponseType(ASTEnemyCharac
 void ASTPlayerCharacter::RemoveCurrentAttackingEnemy()
 {
 	if(CurrentAttackingEnemy) CurrentAttackingEnemy = nullptr;
-	if (CurrentEnemy) CurrentEnemy = nullptr;
+	//if (CurrentEnemy) CurrentEnemy = nullptr;
 }
 
 void ASTPlayerCharacter::SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value)
