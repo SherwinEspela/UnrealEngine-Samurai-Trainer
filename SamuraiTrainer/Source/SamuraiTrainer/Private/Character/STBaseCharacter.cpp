@@ -163,6 +163,7 @@ void ASTBaseCharacter::PlaySoundSwordClash()
 
 void ASTBaseCharacter::SwordAttack()
 {
+	AttackLocationOffset = AttackLocationOffsetDefault;
 	MovementState = EMovementStates::EPMS_SwordAttacking;
 }
 

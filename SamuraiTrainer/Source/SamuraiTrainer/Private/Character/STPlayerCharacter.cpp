@@ -859,10 +859,13 @@ bool ASTPlayerCharacter::EnemyReachedMaxTargetBeamDistance()
 
 void ASTPlayerCharacter::ShouldDisplayTargetBeamAndHideTargetIndicator()
 {
+	if (!CurrentEnemy) return;
+
 	if (EnemyReachedMaxTargetBeamDistance())
 	{
 		FXTargetBeam->Activate();
 		CurrentEnemy->ShouldDisplayTargetIndicator(false);
+		if (CurrentEnemy->IsDead()) FXTargetBeam->Deactivate();
 	}
 	else {
 		FXTargetBeam->Deactivate();
