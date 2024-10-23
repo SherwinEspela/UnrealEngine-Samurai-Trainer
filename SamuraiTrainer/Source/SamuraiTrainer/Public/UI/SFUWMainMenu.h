@@ -6,7 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include "SFUWMainMenu.generated.h"
 
+class UUWButtonMainMenu;
+class UUWButtonNavigation;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLogoIntroAnimFinishedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMainMenuEntryAnimFinishedSignature);
 
 /**
  * 
@@ -19,6 +23,8 @@ class SAMURAITRAINER_API USFUWMainMenu : public UUserWidget
 public:
 	void PlayLogoExit();
 	void PlayEnterMainMenu();
+	void SelectTopButton();
+	void SelectBottomButton();
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)
@@ -29,11 +35,39 @@ public:
 
 public:
 	FLogoIntroAnimFinishedSignature OnLogoIntroAnimFinished;
+	FMainMenuEntryAnimFinishedSignature OnMainMenuEntryAnimFinished;
+
+protected:
+	virtual void NativeConstruct() override;
 
 protected:
 	// Anim Events
-
 	UFUNCTION(BlueprintCallable)
 	void HandleLogoIntroAnimFinished();
+
+	UFUNCTION(BlueprintCallable)
+	void HandleMainMenuEntryAnimFinished();
+
+protected:
+	// Buttons
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UUWButtonMainMenu* BMMPlay;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UUWButtonMainMenu* BMMModes;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UUWButtonMainMenu* BMMSettings;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UUWButtonMainMenu* BMMDevBio;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UUWButtonMainMenu* BMMTutorial;
+
+	UUWButtonMainMenu* CurrentMMButton;
+
+private:
+	void NavigateToNextButton(UUWButtonNavigation* Value);
 
 };

@@ -3,3 +3,12 @@
 
 #include "UI/Buttons/UWButtonMainMenu.h"
 
+void UUWButtonMainMenu::PlaySelect()
+{
+	OnPlaySelectAnimation();
+}
+
+void UUWButtonMainMenu::PlayUnselect()
+{
+	OnPlayUnselectAnimation();
+}

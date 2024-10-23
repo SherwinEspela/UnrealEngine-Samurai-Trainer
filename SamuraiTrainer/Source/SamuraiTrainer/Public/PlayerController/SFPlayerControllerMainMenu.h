@@ -39,14 +39,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* IARestartLevel;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* IASelectTopButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* IASelectBottomButton;
+
 protected:
 	void EnterMainMenu();
 	void RestartLevel();
+	void SelectTopButton();
+	void SelectBottomButton();
 
 private:
 	// UI Animation Events
 	UFUNCTION()
 	void HandleLogoIntroAnimFinished();
+
+	UFUNCTION()
+	void HandleMainMenuEntryAnimFinished();
 
 private:
 	UEnhancedInputComponent* EnhancedInputComponent;

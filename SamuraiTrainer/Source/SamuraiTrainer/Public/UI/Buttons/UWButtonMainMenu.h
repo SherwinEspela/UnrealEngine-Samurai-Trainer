@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UI/Buttons/UWButtonNavigation.h"
 #include "Blueprint/UserWidget.h"
 #include "UWButtonMainMenu.generated.h"
 
@@ -13,9 +14,20 @@ class UImage;
  * 
  */
 UCLASS()
-class SAMURAITRAINER_API UUWButtonMainMenu : public UUserWidget
+class SAMURAITRAINER_API UUWButtonMainMenu : public UUWButtonNavigation
 {
 	GENERATED_BODY()
+
+public:
+	void PlaySelect();
+	void PlayUnselect();
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlaySelectAnimation();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlayUnselectAnimation();
 	
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
