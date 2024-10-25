@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomEnums.h"
 #include "GameFramework/PlayerController.h"
 #include "SFPlayerControllerMainMenu.generated.h"
 
@@ -17,6 +18,25 @@ UCLASS()
 class SAMURAITRAINER_API ASFPlayerControllerMainMenu : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlaySequenceWhenMainMenuEntered();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlaySequenceAtPlayButtonSelected();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlaySequenceAtModesButtonSelected();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlaySequenceAtSettingsButtonSelected();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlaySequenceAtDevBioButtonSelected();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlaySequenceAtTutorialsButtonSelected();
 
 protected:
 	virtual void BeginPlay() override;
@@ -52,12 +72,15 @@ protected:
 	void SelectBottomButton();
 
 private:
-	// UI Animation Events
+	// Event Handlers
 	UFUNCTION()
 	void HandleLogoIntroAnimFinished();
 
 	UFUNCTION()
 	void HandleMainMenuEntryAnimFinished();
+
+	UFUNCTION()
+	void HandleButtonSelected(EMainMenuButtonTypes ButtonType);
 
 private:
 	UEnhancedInputComponent* EnhancedInputComponent;

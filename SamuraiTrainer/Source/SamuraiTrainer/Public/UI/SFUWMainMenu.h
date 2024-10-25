@@ -3,14 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomEnums.h"
 #include "Blueprint/UserWidget.h"
 #include "SFUWMainMenu.generated.h"
 
 class UUWButtonMainMenu;
 class UUWButtonNavigation;
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLogoIntroAnimFinishedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMainMenuEntryAnimFinishedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FButtonSelectedSignature, EMainMenuButtonTypes, ButtonType);
 
 /**
  * 
@@ -36,6 +39,7 @@ public:
 public:
 	FLogoIntroAnimFinishedSignature OnLogoIntroAnimFinished;
 	FMainMenuEntryAnimFinishedSignature OnMainMenuEntryAnimFinished;
+	FButtonSelectedSignature OnButtonSelected;
 
 protected:
 	virtual void NativeConstruct() override;

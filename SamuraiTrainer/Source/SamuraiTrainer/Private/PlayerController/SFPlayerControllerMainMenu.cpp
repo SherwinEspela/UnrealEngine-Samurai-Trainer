@@ -24,6 +24,7 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 		UWMainMenu->AddToViewport();
 		UWMainMenu->OnLogoIntroAnimFinished.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleLogoIntroAnimFinished);
 		UWMainMenu->OnMainMenuEntryAnimFinished.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleMainMenuEntryAnimFinished);
+		UWMainMenu->OnButtonSelected.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleButtonSelected);
 	}
 }
 
@@ -44,6 +45,7 @@ void ASFPlayerControllerMainMenu::EnterMainMenu()
 	if (!bLogoTitleEntered) return;
 	if (!UWMainMenu) return;
 	UWMainMenu->PlayLogoExit();
+	OnPlaySequenceWhenMainMenuEntered();
 }
 
 void ASFPlayerControllerMainMenu::RestartLevel()
@@ -72,4 +74,28 @@ void ASFPlayerControllerMainMenu::HandleLogoIntroAnimFinished()
 void ASFPlayerControllerMainMenu::HandleMainMenuEntryAnimFinished()
 {
 	bMainMenuEntered = true;
+}
+
+void ASFPlayerControllerMainMenu::HandleButtonSelected(EMainMenuButtonTypes ButtonType)
+{
+	switch (ButtonType)
+	{
+	case EMainMenuButtonTypes::EMMBT_Play:
+		OnPlaySequenceAtPlayButtonSelected();
+		break;
+	case EMainMenuButtonTypes::EMMBT_Modes:
+		OnPlaySequenceAtModesButtonSelected();
+		break;
+	case EMainMenuButtonTypes::EMMBT_Settings:
+		OnPlaySequenceAtSettingsButtonSelected();
+		break;
+	case EMainMenuButtonTypes::EMMBT_DevBio:
+		OnPlaySequenceAtDevBioButtonSelected();
+		break;
+	case EMainMenuButtonTypes::EMMBT_Tutorials:
+		OnPlaySequenceAtTutorialsButtonSelected();
+		break;
+	default:
+		break;
+	}
 }

@@ -36,6 +36,16 @@ enum class EWeaponStates : uint8
 	EWS_Default			UMETA(DisplayName = "Default")
 };
 
+UENUM(BlueprintType)
+enum class EMainMenuButtonTypes : uint8
+{
+	EMMBT_Play			UMETA(DisplayName = "Play"),
+	EMMBT_Modes			UMETA(DisplayName = "Modes"),
+	EMMBT_Settings		UMETA(DisplayName = "Settings"),
+	EMMBT_DevBio		UMETA(DisplayName = "DevBio"),
+	EMMBT_Tutorials		UMETA(DisplayName = "Tutorials")
+};
+
 FORCEINLINE void PrintMovementState(EMovementStates MovementState) {
 	UE_LOG(LogTemp, Log, TEXT("Movement State is : %s"), *UEnum::GetValueAsName(MovementState).ToString());
 }

@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UI/Buttons/UWButtonNavigation.h"
+#include "CustomEnums.h"
 #include "Blueprint/UserWidget.h"
 #include "UWButtonMainMenu.generated.h"
 
 class UTextBlock;
 class UImage;
+
 
 /**
  * 
@@ -21,6 +23,9 @@ class SAMURAITRAINER_API UUWButtonMainMenu : public UUWButtonNavigation
 public:
 	void PlaySelect();
 	void PlayUnselect();
+
+public:
+	FORCEINLINE EMainMenuButtonTypes GetButtonType() const { return MainMenuButtonType; }
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)
@@ -38,4 +43,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText TitleValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Menu Button Type")
+	EMainMenuButtonTypes MainMenuButtonType;
 };

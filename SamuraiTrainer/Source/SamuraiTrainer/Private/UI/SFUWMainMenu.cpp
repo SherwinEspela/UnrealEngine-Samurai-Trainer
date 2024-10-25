@@ -50,6 +50,7 @@ void USFUWMainMenu::NavigateToNextButton(UUWButtonNavigation* Value)
 		auto NextButton = Cast<UUWButtonMainMenu>(Value);
 		NextButton->PlaySelect();
 		CurrentMMButton = NextButton;
+		OnButtonSelected.Broadcast(CurrentMMButton->GetButtonType());
 	}
 }
 
