@@ -9,6 +9,7 @@
 
 class UUWButtonMainMenu;
 class UUWButtonNavigation;
+class UTextBlock;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLogoIntroAnimFinishedSignature);
@@ -69,9 +70,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UUWButtonMainMenu* BMMTutorial;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UTextBlock* TextDescription;
+
 	UUWButtonMainMenu* CurrentMMButton;
 
 private:
 	void NavigateToNextButton(UUWButtonNavigation* Value);
+	void SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value);
 
 };
