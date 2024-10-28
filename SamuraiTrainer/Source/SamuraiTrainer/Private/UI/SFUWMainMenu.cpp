@@ -30,6 +30,14 @@ void USFUWMainMenu::NativeConstruct()
 	CurrentMMButton = BMMPlay;
 }
 
+void USFUWMainMenu::SetupButtonNavigationMapping()
+{
+}
+
+void USFUWMainMenu::SubscribeToButtonEvents()
+{
+}
+
 void USFUWMainMenu::PlayLogoExit()
 {
 	OnPlayLogoExit();

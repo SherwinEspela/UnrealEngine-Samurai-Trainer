@@ -78,5 +78,7 @@ protected:
 private:
 	void NavigateToNextButton(UUWButtonNavigation* Value);
 	void SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value);
+	void SetupButtonNavigationMapping();
+	void SubscribeToButtonEvents();
 
 };

@@ -5,10 +5,16 @@
 
 void UUWButtonMainMenu::PlaySelect()
 {
+	OnButtonSelectStarted.Broadcast();
 	OnPlaySelectAnimation();
 }
 
 void UUWButtonMainMenu::PlayUnselect()
 {
 	OnPlayUnselectAnimation();
+}
+
+void UUWButtonMainMenu::HandleSelectAnimFinished()
+{
+	OnButtonSelectAnimFinished.Broadcast();
 }

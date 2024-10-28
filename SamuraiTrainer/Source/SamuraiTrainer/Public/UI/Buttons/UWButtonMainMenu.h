@@ -11,6 +11,8 @@
 class UTextBlock;
 class UImage;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FButtonSelectStartedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FButtonSelectAnimFinishedSignature);
 
 /**
  * 
@@ -25,6 +27,10 @@ public:
 	void PlayUnselect();
 
 public:
+	FButtonSelectStartedSignature OnButtonSelectStarted;
+	FButtonSelectAnimFinishedSignature OnButtonSelectAnimFinished;
+
+public:
 	FORCEINLINE EMainMenuButtonTypes GetButtonType() const { return MainMenuButtonType; }
 
 public:
@@ -33,6 +39,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPlayUnselectAnimation();
+
+	UFUNCTION(BlueprintCallable)
+	void HandleSelectAnimFinished();
 	
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
