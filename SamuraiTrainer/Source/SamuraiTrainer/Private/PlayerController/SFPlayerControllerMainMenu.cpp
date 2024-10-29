@@ -17,6 +17,7 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 
 	bLogoTitleEntered = false;
 	bMainMenuEntered = false;
+	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_Default;
 
 	if (SFUWMainMenuClass)
 	{
@@ -37,6 +38,7 @@ void ASFPlayerControllerMainMenu::SetupInputComponent()
 	EnhancedInputComponent->BindAction(IARestartLevel, ETriggerEvent::Triggered, this, &ASFPlayerControllerMainMenu::RestartLevel);
 	EnhancedInputComponent->BindAction(IASelectTopButton, ETriggerEvent::Triggered, this, &ASFPlayerControllerMainMenu::SelectTopButton);
 	EnhancedInputComponent->BindAction(IASelectBottomButton, ETriggerEvent::Triggered, this, &ASFPlayerControllerMainMenu::SelectBottomButton);
+	EnhancedInputComponent->BindAction(IAPlayButton, ETriggerEvent::Triggered, this, &ASFPlayerControllerMainMenu::PlayButtonClicked);
 }
 
 void ASFPlayerControllerMainMenu::EnterMainMenu()
@@ -44,6 +46,8 @@ void ASFPlayerControllerMainMenu::EnterMainMenu()
 	if (bMainMenuEntered) return;
 	if (!bLogoTitleEntered) return;
 	if (!UWMainMenu) return;
+
+	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_Play;
 	UWMainMenu->PlayLogoExit();
 	OnPlaySequenceWhenMainMenuEntered();
 }
@@ -66,6 +70,16 @@ void ASFPlayerControllerMainMenu::SelectBottomButton()
 	UWMainMenu->SelectBottomButton();
 }
 
+void ASFPlayerControllerMainMenu::PlayButtonClicked()
+{
+	if (CurrentSelectedButtonType != EMainMenuButtonTypes::EMMBT_Play) return;
+	//if (bIsPlayButtonClicked) return;
+	if (!bMainMenuEntered) return;
+
+	bIsPlayButtonClicked = true;
+	OnPlayButtonClicked();
+}
+
 void ASFPlayerControllerMainMenu::HandleLogoIntroAnimFinished()
 {
 	bLogoTitleEntered = true;
@@ -78,6 +92,8 @@ void ASFPlayerControllerMainMenu::HandleMainMenuEntryAnimFinished()
 
 void ASFPlayerControllerMainMenu::HandleButtonSelected(EMainMenuButtonTypes ButtonType)
 {
+	CurrentSelectedButtonType = ButtonType;
+
 	switch (ButtonType)
 	{
 	case EMainMenuButtonTypes::EMMBT_Play:

@@ -43,7 +43,8 @@ enum class EMainMenuButtonTypes : uint8
 	EMMBT_Modes			UMETA(DisplayName = "Modes"),
 	EMMBT_Settings		UMETA(DisplayName = "Settings"),
 	EMMBT_DevBio		UMETA(DisplayName = "DevBio"),
-	EMMBT_Tutorials		UMETA(DisplayName = "Tutorials")
+	EMMBT_Tutorials		UMETA(DisplayName = "Tutorials"),
+	EMMBT_Default		UMETA(DisplayName = "Default")
 };
 
 FORCEINLINE void PrintMovementState(EMovementStates MovementState) {

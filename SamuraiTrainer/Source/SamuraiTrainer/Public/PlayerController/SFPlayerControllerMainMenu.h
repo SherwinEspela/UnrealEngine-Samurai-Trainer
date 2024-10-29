@@ -38,6 +38,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPlaySequenceAtTutorialsButtonSelected();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlayButtonClicked();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -46,6 +49,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<USFUWMainMenu> SFUWMainMenuClass;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Main Menu UI")
 	USFUWMainMenu* UWMainMenu;
 
 protected:
@@ -65,11 +69,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* IASelectBottomButton;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* IAPlayButton;
+
 protected:
 	void EnterMainMenu();
 	void RestartLevel();
 	void SelectTopButton();
 	void SelectBottomButton();
+	void PlayButtonClicked();
 
 private:
 	// Event Handlers
@@ -86,4 +94,6 @@ private:
 	UEnhancedInputComponent* EnhancedInputComponent;
 	bool bLogoTitleEntered = false;
 	bool bMainMenuEntered = false;
+	bool bIsPlayButtonClicked = false;
+	EMainMenuButtonTypes CurrentSelectedButtonType;
 };
