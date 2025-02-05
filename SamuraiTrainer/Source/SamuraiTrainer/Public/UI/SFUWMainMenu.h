@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CustomEnums.h"
+#include "UI/SFUWMenuBase.h"
 #include "Blueprint/UserWidget.h"
 #include "SFUWMainMenu.generated.h"
 
@@ -11,24 +12,22 @@ class UUWButtonMainMenu;
 class UUWButtonNavigation;
 class UTextBlock;
 
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLogoIntroAnimFinishedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMainMenuEntryAnimFinishedSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FButtonSelectedSignature, EMainMenuButtonTypes, ButtonType);
 
 /**
  * 
  */
 UCLASS()
-class SAMURAITRAINER_API USFUWMainMenu : public UUserWidget
+class SAMURAITRAINER_API USFUWMainMenu : public USFUWMenuBase
 {
 	GENERATED_BODY()
 	
 public:
 	void PlayLogoExit();
 	void PlayEnterMainMenu();
-	void SelectTopButton();
-	void SelectBottomButton();
+	/*void SelectTopButton();
+	void SelectBottomButton();*/
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)
@@ -40,7 +39,6 @@ public:
 public:
 	FLogoIntroAnimFinishedSignature OnLogoIntroAnimFinished;
 	FMainMenuEntryAnimFinishedSignature OnMainMenuEntryAnimFinished;
-	FButtonSelectedSignature OnButtonSelected;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -70,14 +68,14 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UUWButtonMainMenu* BMMTutorial;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	/*UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UTextBlock* TextDescription;
 
-	UUWButtonMainMenu* CurrentMMButton;
+	UUWButtonMainMenu* CurrentMMButton;*/
 
 private:
-	void NavigateToNextButton(UUWButtonNavigation* Value);
-	void SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value);
+	//void NavigateToNextButton(UUWButtonNavigation* Value);
+	//void SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value);
 	void SetupButtonNavigationMapping();
 	void SubscribeToButtonEvents();
 
