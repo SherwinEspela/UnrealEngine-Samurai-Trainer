@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Misc/DisplayLabelActor.h"
 #include "Combat/TargetLockActor.h"
+#include "UI/SFUWLevelMenu.h"
 
 void ASTPlayerController::BeginPlay()
 {
@@ -25,6 +26,15 @@ void ASTPlayerController::BeginPlay()
 	if (DisplayLabelActors.Num() > 0)
 	{
 		DisplayLabel = Cast<ADisplayLabelActor>(DisplayLabelActors[0]);
+	}
+
+	if (SFUWLevelMenuClass)
+	{
+		LevelMenu = CreateWidget<USFUWLevelMenu>(GetWorld(), SFUWLevelMenuClass);
+		LevelMenu->AddToViewport();
+		//UWMainMenu->OnLogoIntroAnimFinished.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleLogoIntroAnimFinished);
+		//UWMainMenu->OnMainMenuEntryAnimFinished.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleMainMenuEntryAnimFinished);
+		//UWMainMenu->OnButtonSelected.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleButtonSelected);
 	}
 }
 
@@ -43,6 +53,8 @@ void ASTPlayerController::SetupInputComponent()
 	//EnhancedInputComponent->BindAction(InputActionCounter, ETriggerEvent::Triggered, this, &ASTPlayerController::Counter);
 	EnhancedInputComponent->BindAction(InputActionRestartLevel, ETriggerEvent::Triggered, this, &ASTPlayerController::RestartLevel);
 	EnhancedInputComponent->BindAction(InputActionToggleDebuggerDisplay, ETriggerEvent::Triggered, this, &ASTPlayerController::ToggleDebuggerDisplay);
+	EnhancedInputComponent->BindAction(IASelectTopButton, ETriggerEvent::Triggered, this, &ASFPlayerControllerMainMenu::SelectTopButton);
+	EnhancedInputComponent->BindAction(IASelectBottomButton, ETriggerEvent::Triggered, this, &ASFPlayerControllerMainMenu::SelectBottomButton);
 }
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
@@ -105,6 +117,22 @@ void ASTPlayerController::Kick()
 void ASTPlayerController::RestartLevel()
 {
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+}
+
+void ASTPlayerController::ToggleLevelMenuDisplay()
+{
+
+}
+
+void ASTPlayerController::SelectTopButton()
+{
+	//if (!bMainMenuEntered) return;
+	LevelMenu->SelectTopButton();
+}
+
+void ASTPlayerController::SelectBottomButton()
+{
+	LevelMenu->SelectBottomButton();
 }
 
 void ASTPlayerController::ToggleDebuggerDisplay()

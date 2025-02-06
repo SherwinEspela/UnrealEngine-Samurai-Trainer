@@ -11,6 +11,7 @@ class UInputMappingContext;
 class UInputAction;
 class UEnhancedInputComponent;
 class ADisplayLabelActor;
+class USFUWLevelMenu;
 struct FInputActionValue;
 
 /**
@@ -71,8 +72,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionToggleDebuggerDisplay;
 
-private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* IASelectTopButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* IASelectBottomButton;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<USFUWLevelMenu> SFUWLevelMenuClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Level Menu UI")
+	USFUWLevelMenu* LevelMenu;
+
+protected:
 	void RestartLevel();
+	void ToggleLevelMenuDisplay();
+	void SelectTopButton();
+	void SelectBottomButton();
+	void ButtonClicked();
 	void ToggleDebuggerDisplay();
 
 private:
