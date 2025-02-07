@@ -20,3 +20,13 @@ void USFUWLevelMenu::NativeConstruct()
 
 	CurrentButton = BMMResume;
 }
+
+void USFUWLevelMenu::HandleDisplayLevelMenuCompleted()
+{
+	OnDisplayLevelMenuCompleted.Broadcast();
+}
+
+void USFUWLevelMenu::HandleHideLevelMenuCompleted()
+{
+	OnHideLevelMenuCompleted.Broadcast();
+}

@@ -33,6 +33,8 @@ void ASTPlayerController::BeginPlay()
 		LevelMenu = CreateWidget<USFUWLevelMenu>(GetWorld(), SFUWLevelMenuClass);
 		LevelMenu->AddToViewport();
 		LevelMenu->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
+		LevelMenu->OnDisplayLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
+		LevelMenu->OnHideLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
 	}
 
 	bIsLevelMenuDisplayed = false;
@@ -120,10 +122,15 @@ void ASTPlayerController::RestartLevel()
 
 void ASTPlayerController::DisplayLevelMenu()
 {
-	if (!LevelMenu && bIsLevelMenuDisplayed) return;
+	if (!LevelMenu) return;
+	if (bIsLevelMenuDisplayed) return;
+	if (!bIsHideLevelMenuCompleted) return;
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelResume;
 	LevelMenu->OnDisplay();
 	bIsLevelMenuDisplayed = true;
+	bIsDisplayLevelMenuCompleted = false;
+	bIsHideLevelMenuCompleted = false;
 }
 
 void ASTPlayerController::HideLevelMenu()
@@ -131,25 +138,28 @@ void ASTPlayerController::HideLevelMenu()
 	if (!LevelMenu && !bIsLevelMenuDisplayed) return;
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
 	LevelMenu->OnHide();
-	bIsLevelMenuDisplayed = false;
 }
 
 void ASTPlayerController::SelectTopButton()
 {
 	if (!bIsLevelMenuDisplayed) return;
+	if (!bIsDisplayLevelMenuCompleted) return;
 	LevelMenu->SelectTopButton();
 }
 
 void ASTPlayerController::SelectBottomButton()
 {
 	if (!bIsLevelMenuDisplayed) return;
+	if (!bIsDisplayLevelMenuCompleted) return;
 	LevelMenu->SelectBottomButton();
 }
 
 void ASTPlayerController::ConfirmSelectedButton()
 {
-	if (!LevelMenu && !bIsLevelMenuDisplayed) return;
-	
+	if (!LevelMenu) return;
+	if (!bIsLevelMenuDisplayed) return;
+	if (!bIsDisplayLevelMenuCompleted) return;
+
 	switch (CurrentSelectedButtonType)
 	{
 	case EMainMenuButtonTypes::EMMBT_LevelResume:
@@ -178,4 +188,15 @@ void ASTPlayerController::ToggleDebuggerDisplay()
 	}
 
 	PlayerCharacter->ToggleDebuggerDisplay();
+}
+
+void ASTPlayerController::HandleDisplayLevelMenuCompleted()
+{
+	bIsDisplayLevelMenuCompleted = true;
+}
+
+void ASTPlayerController::HandleHideLevelMenuCompleted()
+{
+	bIsLevelMenuDisplayed = false;
+	bIsHideLevelMenuCompleted = true;
 }

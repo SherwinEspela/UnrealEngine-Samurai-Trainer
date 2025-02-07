@@ -100,10 +100,18 @@ protected:
 	void ConfirmSelectedButton();
 	void ToggleDebuggerDisplay();
 
+	UFUNCTION()
+	void HandleDisplayLevelMenuCompleted();
+
+	UFUNCTION()
+	void HandleHideLevelMenuCompleted();
+
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;
 	UEnhancedInputComponent* EnhancedInputComponent;
 	ADisplayLabelActor* DisplayLabel;
 	bool bIsDebuggerDisplayed = true;
 	bool bIsLevelMenuDisplayed = false;
+	bool bIsDisplayLevelMenuCompleted = false;
+	bool bIsHideLevelMenuCompleted = true;
 };

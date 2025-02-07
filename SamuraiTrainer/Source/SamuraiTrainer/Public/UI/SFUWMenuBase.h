@@ -7,9 +7,9 @@
 #define DESCRIPTION_BUTTON_SETTINGS FName("Configure game settings to suit your preferences.")
 #define DESCRIPTION_BUTTON_DEVBIO FName("Meet Sherwin Espela, Creator of Samurai Fury.")
 #define DESCRIPTION_BUTTON_TUTORIALS FName("Understand the intricacies of Samurai Fury's gameplay.")
-#define DESCRIPTION_BUTTON_RESUME FName("Resume playing the game.")
-#define DESCRIPTION_BUTTON_CONTROLS FName("Show the control configurations.")
-#define DESCRIPTION_BUTTON_EXIT FName("Stop playing the game and go to main menu.")
+#define DESCRIPTION_BUTTON_LEVEL_RESUME FName("Resume playing the game.")
+#define DESCRIPTION_BUTTON_LEVEL_CONTROLS FName("Show the control configurations.")
+#define DESCRIPTION_BUTTON_LEVEL_EXIT FName("Stop playing the game and go to main menu.")
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"

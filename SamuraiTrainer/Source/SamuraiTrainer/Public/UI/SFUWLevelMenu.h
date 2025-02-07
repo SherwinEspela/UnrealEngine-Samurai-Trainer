@@ -11,6 +11,9 @@ class UUWButtonMainMenu;
 class UUWButtonNavigation;
 class UTextBlock;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDisplayLevelMenuCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHideLevelMenuCompletedSignature);
+
 /**
  * 
  */
@@ -19,10 +22,6 @@ class SAMURAITRAINER_API USFUWLevelMenu : public USFUWMenuBase
 {
 	GENERATED_BODY()
 
-//public:
-//	void Display();
-//	void Hide();
-
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDisplay();
@@ -30,8 +29,17 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHide();
 
+	FDisplayLevelMenuCompletedSignature OnDisplayLevelMenuCompleted;
+	FHideLevelMenuCompletedSignature OnHideLevelMenuCompleted;
+
 protected:
 	virtual void NativeConstruct() override;
+
+	UFUNCTION(BlueprintCallable)
+	void HandleDisplayLevelMenuCompleted();
+
+	UFUNCTION(BlueprintCallable)
+	void HandleHideLevelMenuCompleted();
 
 protected:
 	// Buttons

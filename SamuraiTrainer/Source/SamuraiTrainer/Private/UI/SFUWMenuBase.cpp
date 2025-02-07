@@ -35,6 +35,20 @@ void USFUWMenuBase::SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Val
 	switch (Value)
 	{
 	case EMainMenuButtonTypes::EMMBT_Play:
+		
+		break;
+	case EMainMenuButtonTypes::EMMBT_Modes:
+		
+		break;
+	
+	default:
+		break;
+	}
+
+	switch (Value
+)
+	{
+	case EMainMenuButtonTypes::EMMBT_Play:
 		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_PLAY));
 		break;
 	case EMainMenuButtonTypes::EMMBT_Modes:
@@ -48,6 +62,17 @@ void USFUWMenuBase::SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Val
 		break;
 	case EMainMenuButtonTypes::EMMBT_Tutorials:
 		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_TUTORIALS));
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelResume:
+		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_RESUME));
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelControls:
+		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_CONTROLS));
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelExit:
+		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_EXIT));
+		break;
+	case EMainMenuButtonTypes::EMMBT_Default:
 		break;
 	default:
 		break;
