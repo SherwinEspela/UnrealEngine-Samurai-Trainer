@@ -44,6 +44,10 @@ enum class EMainMenuButtonTypes : uint8
 	EMMBT_Settings		UMETA(DisplayName = "Settings"),
 	EMMBT_DevBio		UMETA(DisplayName = "DevBio"),
 	EMMBT_Tutorials		UMETA(DisplayName = "Tutorials"),
+	EMMBT_LevelResume	UMETA(DisplayName = "Level Resume"),
+	EMMBT_LevelControls	UMETA(DisplayName = "Level Controls"),
+	EMMBT_LevelSettings	UMETA(DisplayName = "Level Settings"),
+	EMMBT_LevelExit		UMETA(DisplayName = "Level Exit"),
 	EMMBT_Default		UMETA(DisplayName = "Default")
 };
 

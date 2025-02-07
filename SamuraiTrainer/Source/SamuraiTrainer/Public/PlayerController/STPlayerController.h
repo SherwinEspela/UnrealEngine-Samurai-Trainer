@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerController/SFPlayerControllerBase.h"
 #include "GameFramework/PlayerController.h"
 #include "STPlayerController.generated.h"
 
@@ -18,7 +19,7 @@ struct FInputActionValue;
  * 
  */
 UCLASS()
-class SAMURAITRAINER_API ASTPlayerController : public APlayerController
+class SAMURAITRAINER_API ASTPlayerController : public ASFPlayerControllerBase
 {
 	GENERATED_BODY()
 	
@@ -35,7 +36,6 @@ protected:
 	void Block();
 	void ParryOrBlock();
 	void Kick();
-	//void Counter();
 
 protected:
 	// Player Inputs
@@ -73,10 +73,16 @@ protected:
 	UInputAction* InputActionToggleDebuggerDisplay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
-	UInputAction* IASelectTopButton;
+	UInputAction* IADpadUp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
-	UInputAction* IASelectBottomButton;
+	UInputAction* IADpadDown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* IALevelMenu;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* IAButtonA;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -87,10 +93,11 @@ protected:
 
 protected:
 	void RestartLevel();
-	void ToggleLevelMenuDisplay();
+	void DisplayLevelMenu();
+	void HideLevelMenu();
 	void SelectTopButton();
 	void SelectBottomButton();
-	void ButtonClicked();
+	void ConfirmSelectedButton();
 	void ToggleDebuggerDisplay();
 
 private:
@@ -98,4 +105,5 @@ private:
 	UEnhancedInputComponent* EnhancedInputComponent;
 	ADisplayLabelActor* DisplayLabel;
 	bool bIsDebuggerDisplayed = true;
+	bool bIsLevelMenuDisplayed = false;
 };

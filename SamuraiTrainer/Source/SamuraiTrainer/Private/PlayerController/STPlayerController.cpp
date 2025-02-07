@@ -32,10 +32,10 @@ void ASTPlayerController::BeginPlay()
 	{
 		LevelMenu = CreateWidget<USFUWLevelMenu>(GetWorld(), SFUWLevelMenuClass);
 		LevelMenu->AddToViewport();
-		//UWMainMenu->OnLogoIntroAnimFinished.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleLogoIntroAnimFinished);
-		//UWMainMenu->OnMainMenuEntryAnimFinished.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleMainMenuEntryAnimFinished);
-		//UWMainMenu->OnButtonSelected.AddDynamic(this, &ASFPlayerControllerMainMenu::HandleButtonSelected);
+		LevelMenu->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
 	}
+
+	bIsLevelMenuDisplayed = false;
 }
 
 void ASTPlayerController::SetupInputComponent()
@@ -49,12 +49,16 @@ void ASTPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(InputActionAttack, ETriggerEvent::Triggered, this, &ASTPlayerController::Attack);
 	EnhancedInputComponent->BindAction(InputActionAttackCombo2, ETriggerEvent::Triggered, this, &ASTPlayerController::AttackCombo2);
 	EnhancedInputComponent->BindAction(InputActionBlock, ETriggerEvent::Triggered, this, &ASTPlayerController::ParryOrBlock);
-	//EnhancedInputComponent->BindAction(InputActionKick, ETriggerEvent::Triggered, this, &ASTPlayerController::Kick);
-	//EnhancedInputComponent->BindAction(InputActionCounter, ETriggerEvent::Triggered, this, &ASTPlayerController::Counter);
 	EnhancedInputComponent->BindAction(InputActionRestartLevel, ETriggerEvent::Triggered, this, &ASTPlayerController::RestartLevel);
 	EnhancedInputComponent->BindAction(InputActionToggleDebuggerDisplay, ETriggerEvent::Triggered, this, &ASTPlayerController::ToggleDebuggerDisplay);
-	EnhancedInputComponent->BindAction(IASelectTopButton, ETriggerEvent::Triggered, this, &ASFPlayerControllerMainMenu::SelectTopButton);
-	EnhancedInputComponent->BindAction(IASelectBottomButton, ETriggerEvent::Triggered, this, &ASFPlayerControllerMainMenu::SelectBottomButton);
+	EnhancedInputComponent->BindAction(IADpadUp, ETriggerEvent::Triggered, this, &ASTPlayerController::SelectTopButton);
+	EnhancedInputComponent->BindAction(IADpadDown, ETriggerEvent::Triggered, this, &ASTPlayerController::SelectBottomButton);
+	EnhancedInputComponent->BindAction(IALevelMenu, ETriggerEvent::Triggered, this, &ASTPlayerController::DisplayLevelMenu);
+	EnhancedInputComponent->BindAction(IAButtonA, ETriggerEvent::Triggered, this, &ASTPlayerController::ConfirmSelectedButton);
+
+	IADpadUp->bTriggerWhenPaused = true;
+	IADpadDown->bTriggerWhenPaused = true;
+	IAButtonA->bTriggerWhenPaused = true;
 }
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
@@ -109,30 +113,60 @@ void ASTPlayerController::Kick()
 	PlayerCharacter->Kick();
 }
 
-//void ASTPlayerController::Counter()
-//{
-//	PlayerCharacter->Counter();
-//}
-
 void ASTPlayerController::RestartLevel()
 {
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
 
-void ASTPlayerController::ToggleLevelMenuDisplay()
+void ASTPlayerController::DisplayLevelMenu()
 {
+	if (!LevelMenu && bIsLevelMenuDisplayed) return;
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	LevelMenu->OnDisplay();
+	bIsLevelMenuDisplayed = true;
+}
 
+void ASTPlayerController::HideLevelMenu()
+{
+	if (!LevelMenu && !bIsLevelMenuDisplayed) return;
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+	LevelMenu->OnHide();
+	bIsLevelMenuDisplayed = false;
 }
 
 void ASTPlayerController::SelectTopButton()
 {
-	//if (!bMainMenuEntered) return;
+	if (!bIsLevelMenuDisplayed) return;
 	LevelMenu->SelectTopButton();
 }
 
 void ASTPlayerController::SelectBottomButton()
 {
+	if (!bIsLevelMenuDisplayed) return;
 	LevelMenu->SelectBottomButton();
+}
+
+void ASTPlayerController::ConfirmSelectedButton()
+{
+	if (!LevelMenu && !bIsLevelMenuDisplayed) return;
+	
+	switch (CurrentSelectedButtonType)
+	{
+	case EMainMenuButtonTypes::EMMBT_LevelResume:
+		HideLevelMenu();
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelControls:
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelSettings:
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelExit:
+		UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+		break;
+	case EMainMenuButtonTypes::EMMBT_Default:
+		break;
+	default:
+		break;
+	}
 }
 
 void ASTPlayerController::ToggleDebuggerDisplay()

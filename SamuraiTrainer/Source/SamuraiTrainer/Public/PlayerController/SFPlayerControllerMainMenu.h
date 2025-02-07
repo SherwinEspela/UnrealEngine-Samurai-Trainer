@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CustomEnums.h"
+#include "PlayerController/SFPlayerControllerBase.h"
 #include "GameFramework/PlayerController.h"
 #include "SFPlayerControllerMainMenu.generated.h"
 
@@ -15,7 +15,7 @@ class UInputAction;
  * 
  */
 UCLASS()
-class SAMURAITRAINER_API ASFPlayerControllerMainMenu : public APlayerController
+class SAMURAITRAINER_API ASFPlayerControllerMainMenu : public ASFPlayerControllerBase
 {
 	GENERATED_BODY()
 
@@ -78,6 +78,7 @@ protected:
 	void SelectTopButton();
 	void SelectBottomButton();
 	void PlayButtonClicked();
+	void HandleButtonSelected(EMainMenuButtonTypes ButtonType) override;
 
 private:
 	// Event Handlers
@@ -87,13 +88,9 @@ private:
 	UFUNCTION()
 	void HandleMainMenuEntryAnimFinished();
 
-	UFUNCTION()
-	void HandleButtonSelected(EMainMenuButtonTypes ButtonType);
-
 private:
 	UEnhancedInputComponent* EnhancedInputComponent;
 	bool bLogoTitleEntered = false;
 	bool bMainMenuEntered = false;
 	bool bIsPlayButtonClicked = false;
-	EMainMenuButtonTypes CurrentSelectedButtonType;
 };

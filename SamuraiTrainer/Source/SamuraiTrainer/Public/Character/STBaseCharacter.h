@@ -67,7 +67,7 @@ public:
 	bool WillBeDead(float Damage) const;
 
 public:
-	// Movementments
+	// Movements
 	virtual void SwordAttack();
 	virtual void Block();
 	virtual void Block(FName SectionName);
@@ -225,6 +225,10 @@ protected:
 	bool bDidCounterAttack = false;
 	bool bCanPerformNextAttack = false;
 	bool bCanSwordAttack = true;
+	bool bIsSlowMotion = false;
 	ASamuraiTrainerGameMode* CurrentMode;
 	EHitDirectionType CurrentHitDirection;
+
+private:
+	void ConfigTimeDilation();
 };

@@ -19,6 +19,17 @@ class SAMURAITRAINER_API USFUWLevelMenu : public USFUWMenuBase
 {
 	GENERATED_BODY()
 
+//public:
+//	void Display();
+//	void Hide();
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDisplay();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHide();
+
 protected:
 	virtual void NativeConstruct() override;
 

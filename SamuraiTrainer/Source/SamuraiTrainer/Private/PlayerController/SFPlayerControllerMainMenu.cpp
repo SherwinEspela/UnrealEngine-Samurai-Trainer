@@ -73,7 +73,6 @@ void ASFPlayerControllerMainMenu::SelectBottomButton()
 void ASFPlayerControllerMainMenu::PlayButtonClicked()
 {
 	if (CurrentSelectedButtonType != EMainMenuButtonTypes::EMMBT_Play) return;
-	//if (bIsPlayButtonClicked) return;
 	if (!bMainMenuEntered) return;
 
 	bIsPlayButtonClicked = true;
@@ -92,7 +91,7 @@ void ASFPlayerControllerMainMenu::HandleMainMenuEntryAnimFinished()
 
 void ASFPlayerControllerMainMenu::HandleButtonSelected(EMainMenuButtonTypes ButtonType)
 {
-	CurrentSelectedButtonType = ButtonType;
+	Super::HandleButtonSelected(ButtonType);
 
 	switch (ButtonType)
 	{

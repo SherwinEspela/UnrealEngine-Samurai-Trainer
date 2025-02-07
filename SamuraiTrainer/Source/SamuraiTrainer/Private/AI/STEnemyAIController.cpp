@@ -43,19 +43,19 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 
 void ASTEnemyAIController::SetChosenToAttack(bool Value)
 {
-	auto BlackboardC = GetBlackboardComponent();
-	if (BlackboardC == nullptr) return;
-	
-	BlackboardC->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
-	bool IsHitReacting = BlackboardC->GetValueAsBool(BB_KEY_HIT_REACTING);
-	bool IsStaggered = BlackboardC->GetValueAsBool(BB_KEY_STAGGERED);
-	bool IsBlocking = BlackboardC->GetValueAsBool(BB_KEY_BLOCKING);
-	bool IsRecovering = BlackboardC->GetValueAsBool(BB_KEY_RECOVERING);
-	bool IsDying = BlackboardC->GetValueAsBool(BB_KEY_DYING);
-	
-	if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
+	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
 	{
-		SetAttacking(true);
+		BlackboardComp->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
+		bool IsHitReacting = BlackboardComp->GetValueAsBool(BB_KEY_HIT_REACTING);
+		bool IsStaggered = BlackboardComp->GetValueAsBool(BB_KEY_STAGGERED);
+		bool IsBlocking = BlackboardComp->GetValueAsBool(BB_KEY_BLOCKING);
+		bool IsRecovering = BlackboardComp->GetValueAsBool(BB_KEY_RECOVERING);
+		bool IsDying = BlackboardComp->GetValueAsBool(BB_KEY_DYING);
+
+		if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
+		{
+			SetAttacking(true);
+		}
 	}
 }
 

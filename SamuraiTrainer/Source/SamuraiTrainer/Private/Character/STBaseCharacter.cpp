@@ -247,7 +247,13 @@ FVector ASTBaseCharacter::GetAttackPositionByLineTrace(FVector OtherActorLocatio
 
 void ASTBaseCharacter::SetSlowMotion(bool IsSlow)
 {
-	if (IsSlow)
+	bIsSlowMotion = IsSlow;
+	ConfigTimeDilation();
+}
+
+void ASTBaseCharacter::ConfigTimeDilation()
+{
+	if (bIsSlowMotion)
 	{
 		if (CurrentMode)
 		{
