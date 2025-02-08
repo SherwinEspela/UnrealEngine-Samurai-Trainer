@@ -95,6 +95,7 @@ protected:
 	void RestartLevel();
 	void DisplayLevelMenu();
 	void HideLevelMenu();
+	void ExitToMainMenu();
 	void SelectTopButton();
 	void SelectBottomButton();
 	void ConfirmSelectedButton();
@@ -106,6 +107,9 @@ protected:
 	UFUNCTION()
 	void HandleHideLevelMenuCompleted();
 
+	UFUNCTION()
+	void HandleExitGameFinished();
+
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;
 	UEnhancedInputComponent* EnhancedInputComponent;
@@ -114,4 +118,5 @@ private:
 	bool bIsLevelMenuDisplayed = false;
 	bool bIsDisplayLevelMenuCompleted = false;
 	bool bIsHideLevelMenuCompleted = true;
+	bool bIsGameExiting = false;
 };

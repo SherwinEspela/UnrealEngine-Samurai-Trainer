@@ -35,6 +35,7 @@ void ASTPlayerController::BeginPlay()
 		LevelMenu->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
 		LevelMenu->OnDisplayLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
 		LevelMenu->OnHideLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
+		LevelMenu->OnExitGameAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
 	}
 
 	bIsLevelMenuDisplayed = false;
@@ -125,6 +126,7 @@ void ASTPlayerController::DisplayLevelMenu()
 	if (!LevelMenu) return;
 	if (bIsLevelMenuDisplayed) return;
 	if (!bIsHideLevelMenuCompleted) return;
+	if (bIsGameExiting) return;
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
 	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelResume;
 	LevelMenu->OnDisplay();
@@ -136,14 +138,24 @@ void ASTPlayerController::DisplayLevelMenu()
 void ASTPlayerController::HideLevelMenu()
 {
 	if (!LevelMenu && !bIsLevelMenuDisplayed) return;
+	if (bIsGameExiting) return;
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
 	LevelMenu->OnHide();
+}
+
+void ASTPlayerController::ExitToMainMenu()
+{
+	if (!LevelMenu && !bIsLevelMenuDisplayed) return;
+	if (bIsGameExiting) return;
+	LevelMenu->OnExitToMainMenu();
+	bIsGameExiting = true;
 }
 
 void ASTPlayerController::SelectTopButton()
 {
 	if (!bIsLevelMenuDisplayed) return;
 	if (!bIsDisplayLevelMenuCompleted) return;
+	if (bIsGameExiting) return;
 	LevelMenu->SelectTopButton();
 }
 
@@ -151,6 +163,7 @@ void ASTPlayerController::SelectBottomButton()
 {
 	if (!bIsLevelMenuDisplayed) return;
 	if (!bIsDisplayLevelMenuCompleted) return;
+	if (bIsGameExiting) return;
 	LevelMenu->SelectBottomButton();
 }
 
@@ -170,7 +183,7 @@ void ASTPlayerController::ConfirmSelectedButton()
 	case EMainMenuButtonTypes::EMMBT_LevelSettings:
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelExit:
-		UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+		ExitToMainMenu();
 		break;
 	case EMainMenuButtonTypes::EMMBT_Default:
 		break;
@@ -199,4 +212,9 @@ void ASTPlayerController::HandleHideLevelMenuCompleted()
 {
 	bIsLevelMenuDisplayed = false;
 	bIsHideLevelMenuCompleted = true;
+}
+
+void ASTPlayerController::HandleExitGameFinished()
+{
+	UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
 }

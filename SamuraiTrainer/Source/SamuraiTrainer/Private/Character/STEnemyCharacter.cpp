@@ -17,7 +17,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CapsuleComponent.h"
 
-#define NV_LINEAR_COLOR FString("SpriteColor")
+#define NV_LINEAR_COLOR FName("SpriteColor")
 #define ATTACK_INDICATOR_COLOR_RED FLinearColor(FColor::Red)
 #define ATTACK_INDICATOR_COLOR_YELLOW FLinearColor(FColor::Yellow)
 #define ATTACK_INDICATOR_COLOR_BLUE FLinearColor(FColor::Blue)
@@ -115,7 +115,7 @@ void ASTEnemyCharacter::BeginPlay()
 	FXAttackIndicator->Deactivate();
 	FXAttackIndicator->SetForceSolo(true);
 	FXAttackIndicator->SetCustomTimeDilation(1.f/CurrentMode->GetSlowMotionTime());
-	FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
+	FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
 	FXAttackIndicator->OnSystemFinished.AddDynamic(this, &ASTEnemyCharacter::OnFXAttackIndicatorFinished);
 
 	ShouldDisplayTargetIndicator(false);
@@ -237,17 +237,17 @@ EPlayerQTEResponseType ASTEnemyCharacter::GenerateRandomQTEResponse()
 		switch (RandomNumber)
 		{
 		case 1:
-			FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
+			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
 			ResponseType = EPlayerQTEResponseType::EPQTER_Counter;
 			break;
 
 		case 2:
-			FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_GREEN);
+			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_GREEN);
 			ResponseType = EPlayerQTEResponseType::EPQTER_Kick;
 			break;
 
 		default:
-			FXAttackIndicator->SetNiagaraVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_YELLOW);
+			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_YELLOW);
 			ResponseType = EPlayerQTEResponseType::EPQTER_Block;
 			break;
 		}

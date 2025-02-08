@@ -30,3 +30,8 @@ void USFUWLevelMenu::HandleHideLevelMenuCompleted()
 {
 	OnHideLevelMenuCompleted.Broadcast();
 }
+
+void USFUWLevelMenu::HandleExitGameAnimFinished()
+{
+	OnExitGameAnimFinished.Broadcast();
+}

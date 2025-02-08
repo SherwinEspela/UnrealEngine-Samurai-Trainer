@@ -71,7 +71,7 @@ EHitDirectionType ASTBaseCharacter::DetermineHitDirectionByLineTrace(FVector Lin
 		Hit, LineTraceStart, LineTraceEnd, ECollisionChannel::ECC_Pawn, CollisionQueryParams
 	);
 
-	EHitDirectionType HitDirection;
+	EHitDirectionType HitDirection = EHitDirectionType::EHDT_Front;
 	if (bHitSuccess)
 	{
 		const FVector EnemyForward = CurrentTargetPawn->GetActorForwardVector();

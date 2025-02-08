@@ -13,6 +13,7 @@ class UTextBlock;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDisplayLevelMenuCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHideLevelMenuCompletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FExitGameAnimFinishedSignature);
 
 /**
  * 
@@ -29,8 +30,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHide();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnExitToMainMenu();
+
 	FDisplayLevelMenuCompletedSignature OnDisplayLevelMenuCompleted;
 	FHideLevelMenuCompletedSignature OnHideLevelMenuCompleted;
+	FExitGameAnimFinishedSignature OnExitGameAnimFinished;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -40,6 +45,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void HandleHideLevelMenuCompleted();
+
+	UFUNCTION(BlueprintCallable)
+	void HandleExitGameAnimFinished();
 
 protected:
 	// Buttons
