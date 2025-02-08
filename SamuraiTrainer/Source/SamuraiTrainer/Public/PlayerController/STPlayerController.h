@@ -13,6 +13,8 @@ class UInputAction;
 class UEnhancedInputComponent;
 class ADisplayLabelActor;
 class USFUWLevelMenu;
+class USoundBase;
+class UAudioComponent;
 struct FInputActionValue;
 
 /**
@@ -90,6 +92,13 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Level Menu UI")
 	USFUWLevelMenu* LevelMenu;
+
+protected:
+	// Sound FX
+	UPROPERTY(EditDefaultsOnly, Category = "Level Music")
+	TObjectPtr<USoundBase> SoundMusic;
+
+	TObjectPtr<UAudioComponent> LevelMusicAudioComponent;
 
 protected:
 	void RestartLevel();

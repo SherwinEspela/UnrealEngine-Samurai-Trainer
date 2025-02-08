@@ -10,6 +10,11 @@
 #include "Misc/DisplayLabelActor.h"
 #include "Combat/TargetLockActor.h"
 #include "UI/SFUWLevelMenu.h"
+#include "Components/AudioComponent.h"
+
+#define MAIN_MENU_MAP FName("MainMenuMap")
+#define MUSIC_VOLUME_MAX 0.75f
+#define MUSIC_VOLUME_MIN 0.3f
 
 void ASTPlayerController::BeginPlay()
 {
@@ -22,7 +27,6 @@ void ASTPlayerController::BeginPlay()
 
 	TArray<AActor*> DisplayLabelActors;
 	UGameplayStatics::GetAllActorsWithTag(this, FName("DisplayLabel"), DisplayLabelActors);
-
 	if (DisplayLabelActors.Num() > 0)
 	{
 		DisplayLabel = Cast<ADisplayLabelActor>(DisplayLabelActors[0]);
@@ -39,6 +43,8 @@ void ASTPlayerController::BeginPlay()
 	}
 
 	bIsLevelMenuDisplayed = false;
+
+	LevelMusicAudioComponent = UGameplayStatics::SpawnSound2D(this, SoundMusic, MUSIC_VOLUME_MAX);
 }
 
 void ASTPlayerController::SetupInputComponent()
@@ -123,30 +129,34 @@ void ASTPlayerController::RestartLevel()
 
 void ASTPlayerController::DisplayLevelMenu()
 {
-	if (!LevelMenu) return;
 	if (bIsLevelMenuDisplayed) return;
 	if (!bIsHideLevelMenuCompleted) return;
 	if (bIsGameExiting) return;
+	
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
 	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelResume;
 	LevelMenu->OnDisplay();
 	bIsLevelMenuDisplayed = true;
 	bIsDisplayLevelMenuCompleted = false;
 	bIsHideLevelMenuCompleted = false;
+	LevelMusicAudioComponent->SetVolumeMultiplier(MUSIC_VOLUME_MIN);
 }
 
 void ASTPlayerController::HideLevelMenu()
 {
-	if (!LevelMenu && !bIsLevelMenuDisplayed) return;
+	if (!bIsLevelMenuDisplayed) return;
 	if (bIsGameExiting) return;
+
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
 	LevelMenu->OnHide();
+	LevelMusicAudioComponent->SetVolumeMultiplier(MUSIC_VOLUME_MAX);
 }
 
 void ASTPlayerController::ExitToMainMenu()
 {
-	if (!LevelMenu && !bIsLevelMenuDisplayed) return;
+	if (!bIsLevelMenuDisplayed) return;
 	if (bIsGameExiting) return;
+
 	LevelMenu->OnExitToMainMenu();
 	bIsGameExiting = true;
 }
@@ -156,6 +166,7 @@ void ASTPlayerController::SelectTopButton()
 	if (!bIsLevelMenuDisplayed) return;
 	if (!bIsDisplayLevelMenuCompleted) return;
 	if (bIsGameExiting) return;
+
 	LevelMenu->SelectTopButton();
 }
 
@@ -169,7 +180,6 @@ void ASTPlayerController::SelectBottomButton()
 
 void ASTPlayerController::ConfirmSelectedButton()
 {
-	if (!LevelMenu) return;
 	if (!bIsLevelMenuDisplayed) return;
 	if (!bIsDisplayLevelMenuCompleted) return;
 
@@ -216,5 +226,5 @@ void ASTPlayerController::HandleHideLevelMenuCompleted()
 
 void ASTPlayerController::HandleExitGameFinished()
 {
-	UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+	UGameplayStatics::OpenLevel(this, FName(MAIN_MENU_MAP));
 }
