@@ -122,11 +122,18 @@ void ACombatSystemPawn::HandleBlockCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 
 void ACombatSystemPawn::HandleDeathCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 {
-	Enemy->GetEnemyAIController()->SetChosenToAttack(false);
-	Enemies.Remove(Enemy);
+	try
+	{
+		Enemy->GetEnemyAIController()->SetChosenToAttack(false);
+		Enemies.Remove(Enemy);
 
-	SelectAttacker();
-	//SetEnemiesToPauseAttacking(false);
+		SelectAttacker();
+		//SetEnemiesToPauseAttacking(false);
+	}
+	catch (const std::exception&)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Exception handled........."));
+	}
 }
 
 void ACombatSystemPawn::HandleEnemyAttackCompleted()
