@@ -43,19 +43,26 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 
 void ASTEnemyAIController::SetChosenToAttack(bool Value)
 {
-	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
+	try
 	{
-		BlackboardComp->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
-		bool IsHitReacting = BlackboardComp->GetValueAsBool(BB_KEY_HIT_REACTING);
-		bool IsStaggered = BlackboardComp->GetValueAsBool(BB_KEY_STAGGERED);
-		bool IsBlocking = BlackboardComp->GetValueAsBool(BB_KEY_BLOCKING);
-		bool IsRecovering = BlackboardComp->GetValueAsBool(BB_KEY_RECOVERING);
-		bool IsDying = BlackboardComp->GetValueAsBool(BB_KEY_DYING);
-
-		if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
+		if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
 		{
-			SetAttacking(true);
+			BlackboardComp->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
+			bool IsHitReacting = BlackboardComp->GetValueAsBool(BB_KEY_HIT_REACTING);
+			bool IsStaggered = BlackboardComp->GetValueAsBool(BB_KEY_STAGGERED);
+			bool IsBlocking = BlackboardComp->GetValueAsBool(BB_KEY_BLOCKING);
+			bool IsRecovering = BlackboardComp->GetValueAsBool(BB_KEY_RECOVERING);
+			bool IsDying = BlackboardComp->GetValueAsBool(BB_KEY_DYING);
+
+			if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
+			{
+				SetAttacking(true);
+			}
 		}
+	}
+	catch (const std::exception&)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Exception caught at ASTEnemyAIController::SetChosenToAttack......"));
 	}
 }
 

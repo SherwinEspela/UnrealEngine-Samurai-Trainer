@@ -10,6 +10,7 @@
 #include "Misc/DisplayLabelActor.h"
 #include "Combat/TargetLockActor.h"
 #include "UI/SFUWLevelMenu.h"
+#include "UI/SFUWLevelIntro.h"
 #include "Components/AudioComponent.h"
 
 #define MAIN_MENU_MAP FName("MainMenuMap")
@@ -32,19 +33,14 @@ void ASTPlayerController::BeginPlay()
 		DisplayLabel = Cast<ADisplayLabelActor>(DisplayLabelActors[0]);
 	}
 
-	if (SFUWLevelMenuClass)
+	if (SFUWLevelIntroClass)
 	{
-		LevelMenu = CreateWidget<USFUWLevelMenu>(GetWorld(), SFUWLevelMenuClass);
-		LevelMenu->AddToViewport();
-		LevelMenu->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
-		LevelMenu->OnDisplayLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
-		LevelMenu->OnHideLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
-		LevelMenu->OnExitGameAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+		LevelIntro = CreateWidget<USFUWLevelIntro>(GetWorld(), SFUWLevelIntroClass);
+		LevelIntro->AddToViewport();
+		LevelIntro->OnLevelIntroCompleted.AddDynamic(this, &ASTPlayerController::HandleLevelIntroCompleted);
 	}
 
 	bIsLevelMenuDisplayed = false;
-
-	LevelMusicAudioComponent = UGameplayStatics::SpawnSound2D(this, SoundMusic, MUSIC_VOLUME_MAX);
 }
 
 void ASTPlayerController::SetupInputComponent()
@@ -72,6 +68,8 @@ void ASTPlayerController::SetupInputComponent()
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
 {
+	if (!bLevelIntroCompleted) return;
+
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	const FRotator Rotation = GetControlRotation();
@@ -87,6 +85,8 @@ void ASTPlayerController::Move(const FInputActionValue& Value)
 
 void ASTPlayerController::Look(const FInputActionValue& Value)
 {
+	if (!bLevelIntroCompleted) return;
+
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 	PlayerCharacter->AddControllerYawInput(LookAxisVector.X);
 	PlayerCharacter->AddControllerPitchInput(LookAxisVector.Y);
@@ -94,41 +94,56 @@ void ASTPlayerController::Look(const FInputActionValue& Value)
 
 void ASTPlayerController::SwordInteract()
 {
+	if (!bLevelIntroCompleted) return;
+
 	PlayerCharacter->SwordInteract();
 }
 
 void ASTPlayerController::Attack()
 {
+	if (!bLevelIntroCompleted) return;
+
 	PlayerCharacter->SwordAttack();
 }
 
 void ASTPlayerController::AttackCombo2()
 {
+	if (!bLevelIntroCompleted) return;
+
 	PlayerCharacter->SwordAttackCombo2();
 }
 
 void ASTPlayerController::Block()
 {
+	if (!bLevelIntroCompleted) return;
+
 	PlayerCharacter->Block();
 }
 
 void ASTPlayerController::ParryOrBlock()
 {
+	if (!bLevelIntroCompleted) return;
+
 	PlayerCharacter->ParryOrBlock();
 }
 
 void ASTPlayerController::Kick()
 {
+	if (!bLevelIntroCompleted) return;
+
 	PlayerCharacter->Kick();
 }
 
 void ASTPlayerController::RestartLevel()
 {
+	if (!bLevelIntroCompleted) return;
+
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
 
 void ASTPlayerController::DisplayLevelMenu()
 {
+	if (!bLevelIntroCompleted) return;
 	if (bIsLevelMenuDisplayed) return;
 	if (!bIsHideLevelMenuCompleted) return;
 	if (bIsGameExiting) return;
@@ -227,4 +242,20 @@ void ASTPlayerController::HandleHideLevelMenuCompleted()
 void ASTPlayerController::HandleExitGameFinished()
 {
 	UGameplayStatics::OpenLevel(this, FName(MAIN_MENU_MAP));
+}
+
+void ASTPlayerController::HandleLevelIntroCompleted()
+{
+	if (SFUWLevelMenuClass)
+	{
+		LevelMenu = CreateWidget<USFUWLevelMenu>(GetWorld(), SFUWLevelMenuClass);
+		LevelMenu->AddToViewport();
+		LevelMenu->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
+		LevelMenu->OnDisplayLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
+		LevelMenu->OnHideLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
+		LevelMenu->OnExitGameAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+	}
+
+	bLevelIntroCompleted = true;
+	LevelMusicAudioComponent = UGameplayStatics::SpawnSound2D(this, SoundMusic, MUSIC_VOLUME_MAX);
 }

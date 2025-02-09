@@ -13,6 +13,7 @@ class UInputAction;
 class UEnhancedInputComponent;
 class ADisplayLabelActor;
 class USFUWLevelMenu;
+class USFUWLevelIntro;
 class USoundBase;
 class UAudioComponent;
 struct FInputActionValue;
@@ -87,11 +88,17 @@ protected:
 	UInputAction* IAButtonA;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UPROPERTY(EditDefaultsOnly, Category = "Level UI")
 	TSubclassOf<USFUWLevelMenu> SFUWLevelMenuClass;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Level Menu UI")
+	UPROPERTY(BlueprintReadOnly, Category = "Level UI")
 	USFUWLevelMenu* LevelMenu;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Level UI")
+	TSubclassOf<USFUWLevelIntro> SFUWLevelIntroClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Level UI")
+	USFUWLevelIntro* LevelIntro;
 
 protected:
 	// Sound FX
@@ -119,6 +126,9 @@ protected:
 	UFUNCTION()
 	void HandleExitGameFinished();
 
+	UFUNCTION()
+	void HandleLevelIntroCompleted();
+
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;
 	UEnhancedInputComponent* EnhancedInputComponent;
@@ -128,4 +138,5 @@ private:
 	bool bIsDisplayLevelMenuCompleted = false;
 	bool bIsHideLevelMenuCompleted = true;
 	bool bIsGameExiting = false;
+	bool bLevelIntroCompleted = false;
 };
