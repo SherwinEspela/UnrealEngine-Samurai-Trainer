@@ -107,6 +107,7 @@ public:
 	virtual void ParryOrBlock();
 	virtual void HitReact() override;
 	virtual void PlayAttackStagger(FName SectionName) override;
+	virtual void Death() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -215,6 +216,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
 	UAnimMontage* MontageParryFatal;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation Montages")
+	UAnimMontage* MontageDeath;
 
 	FName NextAttackSectionName = ATTACK_DOWNSLASH;
 	FName NextHitReactionSectionName = HIT_REACTION_DOWNSLASH;

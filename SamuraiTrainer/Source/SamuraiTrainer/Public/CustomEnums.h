@@ -25,6 +25,7 @@ enum class EMovementStates : uint8
 	EPMS_ComboEnding		UMETA(DisplayName = "Combo Ending"),
 	EPMS_Parrying			UMETA(DisplayName = "Parrying"),
 	EPMS_ParryAttacking		UMETA(DisplayName = "Parry Attacking"),
+	EPMS_Death				UMETA(DisplayName = "Death"),
 	EPMS_Default			UMETA(DisplayName = "Default")
 };
 

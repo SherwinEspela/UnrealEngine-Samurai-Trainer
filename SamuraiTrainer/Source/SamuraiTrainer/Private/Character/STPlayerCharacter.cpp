@@ -429,6 +429,17 @@ void ASTPlayerCharacter::PlayAttackStagger(FName SectionName)
 	}
 }
 
+void ASTPlayerCharacter::Death()
+{
+	Super::Death();
+
+	if (PlayerAnimInstance && MontageDeath)
+	{
+		PlayerAnimInstance->Montage_Play(MontageDeath);
+		//PlayerAnimInstance->Montage_JumpToSection(CurrentHRSectionName, MontageDeath);
+	}
+}
+
 void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)
 {
 	MovementState = EMovementStates::EPMS_Attacking;
@@ -583,8 +594,18 @@ float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	OnStaggerStarted.Broadcast();
 	PlayerAnimInstance->StopAllMontages(0.2f);
 	PlaySoundSlashHit();
-	HitReact();
+	
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (bIsDead)
+	{
+		Death();
+	}
+	else {
+		HitReact();
+	}
+
+
 	return 0.0f;
 }
 

@@ -72,6 +72,7 @@ public:
 	virtual void Block();
 	virtual void Block(FName SectionName);
 	virtual void HitReact();
+	virtual void Death();
 
 public:
 	FORCEINLINE bool IsHealthCritical() const { return bIsHealthCritical; }

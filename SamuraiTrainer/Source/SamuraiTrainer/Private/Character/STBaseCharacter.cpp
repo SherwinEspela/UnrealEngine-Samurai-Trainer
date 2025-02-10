@@ -182,6 +182,11 @@ void ASTBaseCharacter::HitReact()
 	MovementState = EMovementStates::EPMS_HitReacting;
 }
 
+void ASTBaseCharacter::Death()
+{
+	MovementState = EMovementStates::EPMS_Death;
+}
+
 void ASTBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
