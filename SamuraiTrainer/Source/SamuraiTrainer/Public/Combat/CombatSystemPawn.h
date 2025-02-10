@@ -13,7 +13,7 @@ class ASTEnemyCharacter;
 class UBehaviorTree;
 class ACombatSystemAIController;
 class ASTPlayerCharacter;
-//class ATargetIndicatorActor;
+class ASTPlayerController;
 
 UCLASS()
 class SAMURAITRAINER_API ACombatSystemPawn : public APawn
@@ -63,10 +63,14 @@ protected:
 	UFUNCTION()
 	void HandleEnemyWillBeDead();
 
+	UFUNCTION()
+	void HandleLevelIntroCompleted();
+
 	void SetEnemiesToPauseAttacking(bool Paused = true);
 
 protected:
 	TObjectPtr<ASTPlayerCharacter> Player;
+	TObjectPtr<ASTPlayerController> PlayerController;
 
 	UPROPERTY(VisibleAnywhere, Category = "Enemies")
 	TArray<ASTEnemyCharacter*> Enemies;
@@ -89,4 +93,5 @@ protected:
 
 private:
 	void HandleEventFromEnemyCompleted(ASTEnemyCharacter* Enemy);
+	void HandleAllEnemiesKilled();
 };

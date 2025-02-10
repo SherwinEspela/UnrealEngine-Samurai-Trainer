@@ -3,23 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/SFUWMenuBase.h"
+#include "UI/SFUWExitableMenu.h"
 #include "Blueprint/UserWidget.h"
 #include "SFUWLevelMenu.generated.h"
 
 class UUWButtonMainMenu;
 class UUWButtonNavigation;
-class UTextBlock;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDisplayLevelMenuCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHideLevelMenuCompletedSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FExitGameAnimFinishedSignature);
 
 /**
  * 
  */
 UCLASS()
-class SAMURAITRAINER_API USFUWLevelMenu : public USFUWMenuBase
+class SAMURAITRAINER_API USFUWLevelMenu : public USFUWExitableMenu
 {
 	GENERATED_BODY()
 
@@ -30,12 +28,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHide();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnExitToMainMenu();
-
 	FDisplayLevelMenuCompletedSignature OnDisplayLevelMenuCompleted;
 	FHideLevelMenuCompletedSignature OnHideLevelMenuCompleted;
-	FExitGameAnimFinishedSignature OnExitGameAnimFinished;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -45,9 +39,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void HandleHideLevelMenuCompleted();
-
-	UFUNCTION(BlueprintCallable)
-	void HandleExitGameAnimFinished();
 
 protected:
 	// Buttons

@@ -35,6 +35,11 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = true;
 
+	LevelCompleteCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("LevelCompleteCamera"));
+	LevelCompleteCamera->SetupAttachment(RootComponent);
+	LevelCompleteCamera->bUsePawnControlRotation = false;
+	LevelCompleteCamera->SetActive(false);
+
 	FXTargetBeam = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FX Target Beam"));
 	FXTargetBeam->SetupAttachment(GetRootComponent());
 }
@@ -55,6 +60,8 @@ void ASTPlayerCharacter::BeginPlay()
 
 	InitPlayerAnimInstance();
 	InitQueues();
+
+	StartingPosition = GetActorLocation();
 }
 
 void ASTPlayerCharacter::InitPlayerAnimInstance()
@@ -625,6 +632,13 @@ void ASTPlayerCharacter::SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value)
 void ASTPlayerCharacter::ToggleDebuggerDisplay()
 {
 	bIsDebuggerDisplayed = !bIsDebuggerDisplayed;
+}
+
+void ASTPlayerCharacter::SwitchTLevelCompleteCamera()
+{
+	SetActorLocation(StartingPosition);
+	FollowCamera->SetActive(false);
+	LevelCompleteCamera->SetActive(true);
 }
 
 void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType)

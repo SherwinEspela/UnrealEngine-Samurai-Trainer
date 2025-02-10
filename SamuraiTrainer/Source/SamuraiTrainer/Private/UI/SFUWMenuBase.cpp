@@ -66,6 +66,9 @@ void USFUWMenuBase::SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Val
 	case EMainMenuButtonTypes::EMMBT_LevelResume:
 		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_RESUME));
 		break;
+	case EMainMenuButtonTypes::EMMBT_LevelContinue:
+		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_CONTINUE));
+		break;
 	case EMainMenuButtonTypes::EMMBT_LevelControls:
 		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_CONTROLS));
 		break;

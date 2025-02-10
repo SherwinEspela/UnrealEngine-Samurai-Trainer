@@ -45,6 +45,7 @@ enum class EMainMenuButtonTypes : uint8
 	EMMBT_DevBio		UMETA(DisplayName = "DevBio"),
 	EMMBT_Tutorials		UMETA(DisplayName = "Tutorials"),
 	EMMBT_LevelResume	UMETA(DisplayName = "Level Resume"),
+	EMMBT_LevelContinue	UMETA(DisplayName = "Level Continue"),
 	EMMBT_LevelControls	UMETA(DisplayName = "Level Controls"),
 	EMMBT_LevelSettings	UMETA(DisplayName = "Level Settings"),
 	EMMBT_LevelExit		UMETA(DisplayName = "Level Exit"),
@@ -53,4 +54,8 @@ enum class EMainMenuButtonTypes : uint8
 
 FORCEINLINE void PrintMovementState(EMovementStates MovementState) {
 	UE_LOG(LogTemp, Log, TEXT("Movement State is : %s"), *UEnum::GetValueAsName(MovementState).ToString());
+}
+
+FORCEINLINE void PrintButtonType(EMainMenuButtonTypes ButtonType) {
+	UE_LOG(LogTemp, Log, TEXT("Button Type is : %s"), *UEnum::GetValueAsName(ButtonType).ToString());
 }

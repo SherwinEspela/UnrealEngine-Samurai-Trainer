@@ -85,6 +85,7 @@ public:
 	void RemoveCurrentAttackingEnemy();
 	void SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value);
 	void ToggleDebuggerDisplay();
+	void SwitchTLevelCompleteCamera();
 
 public:
 	FOnEnemiesCanAttackSignature OnEnemiesCanAttack;
@@ -149,6 +150,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
 	TObjectPtr<UCameraComponent> FollowCamera;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
+	TObjectPtr<UCameraComponent> LevelCompleteCamera;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon States")
 	EWeaponStates WeaponState = EWeaponStates::EWS_Stored;
@@ -285,4 +289,5 @@ private:
 	UPlayerAnimInstance* PlayerAnimInstance;
 	bool bEnemyCanBlockOrEvade;
 	bool bButtonsDisabled = false;
+	FVector StartingPosition;
 };

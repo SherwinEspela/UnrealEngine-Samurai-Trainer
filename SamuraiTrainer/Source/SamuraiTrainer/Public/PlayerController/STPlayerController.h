@@ -14,9 +14,12 @@ class UEnhancedInputComponent;
 class ADisplayLabelActor;
 class USFUWLevelMenu;
 class USFUWLevelIntro;
+class USFUWLevelResults;
 class USoundBase;
 class UAudioComponent;
 struct FInputActionValue;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelIntroHandledSignature);
 
 /**
  * 
@@ -26,6 +29,11 @@ class SAMURAITRAINER_API ASTPlayerController : public ASFPlayerControllerBase
 {
 	GENERATED_BODY()
 	
+public:
+	void HandleAllEnemiesKilled();
+
+	FLevelIntroHandledSignature OnLevelIntroHandled;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -100,6 +108,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Level UI")
 	USFUWLevelIntro* LevelIntro;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Level UI")
+	TSubclassOf<USFUWLevelResults> SFUWLevelResultsClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Level UI")
+	USFUWLevelResults* LevelResults;
+
 protected:
 	// Sound FX
 	UPROPERTY(EditDefaultsOnly, Category = "Level Music")
@@ -116,6 +130,7 @@ protected:
 	void SelectBottomButton();
 	void ConfirmSelectedButton();
 	void ToggleDebuggerDisplay();
+	void DelayedOutcomeEvent();
 
 	UFUNCTION()
 	void HandleDisplayLevelMenuCompleted();
@@ -139,4 +154,5 @@ private:
 	bool bIsHideLevelMenuCompleted = true;
 	bool bIsGameExiting = false;
 	bool bLevelIntroCompleted = false;
+	bool bIsLevelCompleted = false;
 };

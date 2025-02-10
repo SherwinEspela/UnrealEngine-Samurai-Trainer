@@ -11,6 +11,7 @@
 #include "Combat/TargetLockActor.h"
 #include "UI/SFUWLevelMenu.h"
 #include "UI/SFUWLevelIntro.h"
+#include "UI/SFUWLevelResults.h"
 #include "Components/AudioComponent.h"
 
 #define MAIN_MENU_MAP FName("MainMenuMap")
@@ -68,6 +69,7 @@ void ASTPlayerController::SetupInputComponent()
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 
 	const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -85,6 +87,7 @@ void ASTPlayerController::Move(const FInputActionValue& Value)
 
 void ASTPlayerController::Look(const FInputActionValue& Value)
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -94,6 +97,7 @@ void ASTPlayerController::Look(const FInputActionValue& Value)
 
 void ASTPlayerController::SwordInteract()
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->SwordInteract();
@@ -101,6 +105,7 @@ void ASTPlayerController::SwordInteract()
 
 void ASTPlayerController::Attack()
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->SwordAttack();
@@ -108,6 +113,7 @@ void ASTPlayerController::Attack()
 
 void ASTPlayerController::AttackCombo2()
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->SwordAttackCombo2();
@@ -115,6 +121,7 @@ void ASTPlayerController::AttackCombo2()
 
 void ASTPlayerController::Block()
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->Block();
@@ -122,6 +129,7 @@ void ASTPlayerController::Block()
 
 void ASTPlayerController::ParryOrBlock()
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->ParryOrBlock();
@@ -129,6 +137,7 @@ void ASTPlayerController::ParryOrBlock()
 
 void ASTPlayerController::Kick()
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->Kick();
@@ -143,6 +152,7 @@ void ASTPlayerController::RestartLevel()
 
 void ASTPlayerController::DisplayLevelMenu()
 {
+	if (bIsLevelCompleted) return;
 	if (!bLevelIntroCompleted) return;
 	if (bIsLevelMenuDisplayed) return;
 	if (!bIsHideLevelMenuCompleted) return;
@@ -169,15 +179,27 @@ void ASTPlayerController::HideLevelMenu()
 
 void ASTPlayerController::ExitToMainMenu()
 {
-	if (!bIsLevelMenuDisplayed) return;
 	if (bIsGameExiting) return;
-
-	LevelMenu->OnExitToMainMenu();
 	bIsGameExiting = true;
+
+	if (bIsLevelCompleted)
+	{
+		LevelResults->OnExitToMainMenu();
+		return;
+	}
+
+	if (!bIsLevelMenuDisplayed) return;
+	LevelMenu->OnExitToMainMenu();
 }
 
 void ASTPlayerController::SelectTopButton()
 {
+	if (bIsLevelCompleted && !bIsGameExiting)
+	{
+		LevelResults->SelectTopButton();	
+		return;
+	}
+
 	if (!bIsLevelMenuDisplayed) return;
 	if (!bIsDisplayLevelMenuCompleted) return;
 	if (bIsGameExiting) return;
@@ -187,14 +209,38 @@ void ASTPlayerController::SelectTopButton()
 
 void ASTPlayerController::SelectBottomButton()
 {
+	if (bIsLevelCompleted && !bIsGameExiting)
+	{
+		LevelResults->SelectBottomButton();
+		return;
+	}
+
 	if (!bIsLevelMenuDisplayed) return;
 	if (!bIsDisplayLevelMenuCompleted) return;
 	if (bIsGameExiting) return;
+
 	LevelMenu->SelectBottomButton();
 }
 
 void ASTPlayerController::ConfirmSelectedButton()
 {
+	if (bIsLevelCompleted && !bIsGameExiting)
+	{
+		switch (CurrentSelectedButtonType)
+		{
+		case EMainMenuButtonTypes::EMMBT_LevelContinue:
+			
+			break;
+		case EMainMenuButtonTypes::EMMBT_LevelExit:
+			ExitToMainMenu();
+			break;
+		default:
+			break;
+		}
+
+		return;
+	}
+
 	if (!bIsLevelMenuDisplayed) return;
 	if (!bIsDisplayLevelMenuCompleted) return;
 
@@ -254,8 +300,36 @@ void ASTPlayerController::HandleLevelIntroCompleted()
 		LevelMenu->OnDisplayLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
 		LevelMenu->OnHideLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
 		LevelMenu->OnExitGameAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelResume;
 	}
 
 	bLevelIntroCompleted = true;
 	LevelMusicAudioComponent = UGameplayStatics::SpawnSound2D(this, SoundMusic, MUSIC_VOLUME_MAX);
+	OnLevelIntroHandled.Broadcast();
+}
+
+void ASTPlayerController::HandleAllEnemiesKilled()
+{
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::DelayedOutcomeEvent, 3.0f, false);
+}
+
+void ASTPlayerController::DelayedOutcomeEvent()
+{
+	LevelMenu->OnButtonSelected.RemoveDynamic(this, &ASTPlayerController::HandleButtonSelected);
+	LevelMenu->OnDisplayLevelMenuCompleted.RemoveDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
+	LevelMenu->OnHideLevelMenuCompleted.RemoveDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
+	LevelMenu->OnExitGameAnimFinished.RemoveDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+
+	if (SFUWLevelResultsClass)
+	{
+		LevelResults = CreateWidget<USFUWLevelResults>(GetWorld(), SFUWLevelResultsClass);
+		LevelResults->AddToViewport();
+		LevelResults->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
+		LevelResults->OnExitGameAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelContinue;
+	}
+
+	PlayerCharacter->SwitchTLevelCompleteCamera();
+	bIsLevelCompleted = true;
 }

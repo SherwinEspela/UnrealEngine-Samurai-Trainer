@@ -9,6 +9,7 @@
 #include "Character/STPlayerCharacter.h"
 #include "Combat/TargetLockActor.h"
 #include "Components/CapsuleComponent.h"
+#include "PlayerController/STPlayerController.h"
 
 ACombatSystemPawn::ACombatSystemPawn()
 {
@@ -23,6 +24,8 @@ void ACombatSystemPawn::BeginPlay()
 	Player->OnAttackStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerAttackStarted);
 	Player->OnEnemiesCanAttack.AddDynamic(this, &ACombatSystemPawn::HandleEnemisCanAttack);
 	Player->OnStaggerStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerStaggerStarted);
+	PlayerController = CastChecked<ASTPlayerController>(Player->GetController());
+	PlayerController->OnLevelIntroHandled.AddDynamic(this, &ACombatSystemPawn::HandleLevelIntroCompleted);
 
 	bIsSequenceAttacking = true;
 
@@ -47,12 +50,6 @@ void ACombatSystemPawn::BeginPlay()
 				EnemiesQ.Enqueue(Enemy);
 			}
 		}
-	}
-
-	CombatSystemAIController = Cast<ACombatSystemAIController>(GetController());
-	if (CombatSystemAIController)
-	{
-		CombatSystemAIController->Initialize(BehaviorTree);
 	}
 }
 
@@ -173,7 +170,11 @@ void ACombatSystemPawn::SelectAttacker()
 {
 	try
 	{
-		if (Enemies.Num() <= 0) return;
+		if (Enemies.Num() <= 0) {
+			CombatSystemAIController->StopBehavior();
+			HandleAllEnemiesKilled();
+			return;
+		}
 
 		ASTEnemyCharacter* NewAttacker;
 		Player->RemoveCurrentAttackingEnemy();
@@ -218,5 +219,19 @@ void ACombatSystemPawn::SelectAttacker()
 	catch (const std::exception&)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Exception handled........."));
+	}
+}
+
+void ACombatSystemPawn::HandleAllEnemiesKilled()
+{
+	PlayerController->HandleAllEnemiesKilled();
+}
+
+void ACombatSystemPawn::HandleLevelIntroCompleted()
+{
+	CombatSystemAIController = Cast<ACombatSystemAIController>(GetController());
+	if (CombatSystemAIController)
+	{
+		CombatSystemAIController->Initialize(BehaviorTree);
 	}
 }

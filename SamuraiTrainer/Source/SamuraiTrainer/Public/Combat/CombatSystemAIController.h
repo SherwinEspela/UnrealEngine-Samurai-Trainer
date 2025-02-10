@@ -16,4 +16,5 @@ class SAMURAITRAINER_API ACombatSystemAIController : public AAIController
 	
 public:
 	void Initialize(TObjectPtr<UBehaviorTree> BehaviorTree);
+	void StopBehavior();
 };
