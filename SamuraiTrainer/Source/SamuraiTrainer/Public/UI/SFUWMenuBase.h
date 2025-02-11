@@ -9,6 +9,7 @@
 #define DESCRIPTION_BUTTON_TUTORIALS FName("Understand the intricacies of Samurai Fury's gameplay.")
 #define DESCRIPTION_BUTTON_LEVEL_RESUME FName("Resume playing the game.")
 #define DESCRIPTION_BUTTON_LEVEL_CONTINUE FName("Continue playing to next level.")
+#define DESCRIPTION_BUTTON_LEVEL_RESTART FName("Restart the current level.")
 #define DESCRIPTION_BUTTON_LEVEL_CONTROLS FName("Show the control configurations.")
 #define DESCRIPTION_BUTTON_LEVEL_EXIT FName("Stop playing the game and go to main menu.")
 
@@ -38,11 +39,13 @@ public:
 	FButtonSelectedSignature OnButtonSelected;
 
 protected:
+	void SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value);
+	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UTextBlock* TextDescription;
 	UUWButtonMainMenu* CurrentButton;
 
 private:
 	void NavigateToNextButton(UUWButtonNavigation* Value);
-	void SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value);
+	
 };

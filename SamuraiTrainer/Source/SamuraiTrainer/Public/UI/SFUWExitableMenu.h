@@ -6,7 +6,7 @@
 #include "UI/SFUWMenuBase.h"
 #include "SFUWExitableMenu.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FExitGameAnimFinishedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FExitMenuAnimFinishedSignature);
 
 /**
  * 
@@ -18,11 +18,11 @@ class SAMURAITRAINER_API USFUWExitableMenu : public USFUWMenuBase
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnExitToMainMenu();
+	void OnExitMenu();
 
 	UFUNCTION(BlueprintCallable)
-	void HandleExitGameAnimFinished();
+	void HandleExitMenuAnimFinished();
 
-	FExitGameAnimFinishedSignature OnExitGameAnimFinished;
+	FExitMenuAnimFinishedSignature OnExitMenuAnimFinished;
 
 };

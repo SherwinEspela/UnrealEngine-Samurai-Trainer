@@ -2,6 +2,7 @@
 
 
 #include "UI/Buttons/UWButtonMainMenu.h"
+#include "Components/TextBlock.h"
 
 void UUWButtonMainMenu::PlaySelect()
 {
@@ -14,9 +15,14 @@ void UUWButtonMainMenu::PlayUnselect()
 	OnPlayUnselectAnimation();
 }
 
-void UUWButtonMainMenu::SetTitle()
+void UUWButtonMainMenu::SetTitle(FString Title)
 {
+	TextTitle->SetText(FText::FromString(Title));
+}
 
+void UUWButtonMainMenu::SetButtonType(EMainMenuButtonTypes ButtonType)
+{
+	MainMenuButtonType = ButtonType;
 }
 
 void UUWButtonMainMenu::HandleSelectAnimFinished()

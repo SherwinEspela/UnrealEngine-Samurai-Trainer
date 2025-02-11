@@ -126,7 +126,6 @@ protected:
 	void RestartLevel();
 	void DisplayLevelMenu();
 	void HideLevelMenu();
-	void ExitToMainMenu();
 	void SelectTopButton();
 	void SelectBottomButton();
 	void ConfirmSelectedButton();

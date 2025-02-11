@@ -155,10 +155,10 @@ protected:
 
 protected:
 	// Character States
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Health")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere, Category = "Health")
 	float HealthMax = 100;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement States")

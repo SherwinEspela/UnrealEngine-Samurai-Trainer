@@ -25,7 +25,8 @@ class SAMURAITRAINER_API UUWButtonMainMenu : public UUWButtonNavigation
 public:
 	void PlaySelect();
 	void PlayUnselect();
-	void SetTitle();
+	void SetTitle(FString Title);
+	void SetButtonType(EMainMenuButtonTypes ButtonType);
 
 public:
 	FButtonSelectStartedSignature OnButtonSelectStarted;

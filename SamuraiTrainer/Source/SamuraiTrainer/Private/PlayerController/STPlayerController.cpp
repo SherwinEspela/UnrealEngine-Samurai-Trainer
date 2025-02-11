@@ -15,6 +15,7 @@
 #include "Components/AudioComponent.h"
 
 #define MAIN_MENU_MAP FName("MainMenuMap")
+#define LEVEL1_MAP FName("SetupMap2_OneEnemy")
 #define MUSIC_VOLUME_MAX 0.75f
 #define MUSIC_VOLUME_MIN 0.3f
 
@@ -179,21 +180,6 @@ void ASTPlayerController::HideLevelMenu()
 	LevelMusicAudioComponent->SetVolumeMultiplier(MUSIC_VOLUME_MAX);
 }
 
-void ASTPlayerController::ExitToMainMenu()
-{
-	if (bIsGameExiting) return;
-	bIsGameExiting = true;
-
-	if (LevelResultType != ELevelResultType::EDPT_Default)
-	{
-		LevelResults->OnExitToMainMenu();
-		return;
-	}
-
-	if (!bIsLevelMenuDisplayed) return;
-	LevelMenu->OnExitToMainMenu();
-}
-
 void ASTPlayerController::SelectTopButton()
 {
 	if (LevelResultType != ELevelResultType::EDPT_Default && !bIsGameExiting)
@@ -231,10 +217,13 @@ void ASTPlayerController::ConfirmSelectedButton()
 		switch (CurrentSelectedButtonType)
 		{
 		case EMainMenuButtonTypes::EMMBT_LevelContinue:
-			
+			LevelResults->OnExitMenu();
+			break;
+		case EMainMenuButtonTypes::EMMBT_LevelRestart:
+			LevelResults->OnExitMenu();
 			break;
 		case EMainMenuButtonTypes::EMMBT_LevelExit:
-			ExitToMainMenu();
+			LevelResults->OnExitMenu();
 			break;
 		default:
 			break;
@@ -256,7 +245,7 @@ void ASTPlayerController::ConfirmSelectedButton()
 	case EMainMenuButtonTypes::EMMBT_LevelSettings:
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelExit:
-		ExitToMainMenu();
+		LevelMenu->OnExitMenu();
 		break;
 	case EMainMenuButtonTypes::EMMBT_Default:
 		break;
@@ -289,7 +278,20 @@ void ASTPlayerController::HandleHideLevelMenuCompleted()
 
 void ASTPlayerController::HandleExitGameFinished()
 {
-	UGameplayStatics::OpenLevel(this, FName(MAIN_MENU_MAP));
+	switch (CurrentSelectedButtonType)
+	{
+	case EMainMenuButtonTypes::EMMBT_LevelContinue:
+		UGameplayStatics::OpenLevel(this, FName(LEVEL1_MAP));
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelRestart:
+		UGameplayStatics::OpenLevel(this, FName(LEVEL1_MAP));
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelExit:
+		UGameplayStatics::OpenLevel(this, FName(MAIN_MENU_MAP));
+		break;
+	default:
+		break;
+	}
 }
 
 void ASTPlayerController::HandleLevelIntroCompleted()
@@ -301,7 +303,7 @@ void ASTPlayerController::HandleLevelIntroCompleted()
 		LevelMenu->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
 		LevelMenu->OnDisplayLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
 		LevelMenu->OnHideLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
-		LevelMenu->OnExitGameAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+		LevelMenu->OnExitMenuAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
 		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelResume;
 	}
 
@@ -329,7 +331,7 @@ void ASTPlayerController::LevelResultsEvent()
 	LevelMenu->OnButtonSelected.RemoveDynamic(this, &ASTPlayerController::HandleButtonSelected);
 	LevelMenu->OnDisplayLevelMenuCompleted.RemoveDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
 	LevelMenu->OnHideLevelMenuCompleted.RemoveDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
-	LevelMenu->OnExitGameAnimFinished.RemoveDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+	LevelMenu->OnExitMenuAnimFinished.RemoveDynamic(this, &ASTPlayerController::HandleExitGameFinished);
 
 	if (LevelResultType == ELevelResultType::ELRT_Completed)
 	{
@@ -342,7 +344,7 @@ void ASTPlayerController::LevelResultsEvent()
 		LevelResults->AddToViewport();
 		LevelResults->SetupButtonsByLevelResult(LevelResultType);
 		LevelResults->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
-		LevelResults->OnExitGameAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+		LevelResults->OnExitMenuAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
 		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelContinue;
 	}
 }

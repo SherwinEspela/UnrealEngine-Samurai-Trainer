@@ -3,7 +3,7 @@
 
 #include "UI/SFUWExitableMenu.h"
 
-void USFUWExitableMenu::HandleExitGameAnimFinished()
+void USFUWExitableMenu::HandleExitMenuAnimFinished()
 {
-	OnExitGameAnimFinished.Broadcast();
+	OnExitMenuAnimFinished.Broadcast();
 }

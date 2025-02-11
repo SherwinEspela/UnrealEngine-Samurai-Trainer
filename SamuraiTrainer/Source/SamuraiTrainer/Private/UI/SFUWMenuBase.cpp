@@ -32,19 +32,6 @@ void USFUWMenuBase::NavigateToNextButton(UUWButtonNavigation* Value)
 
 void USFUWMenuBase::SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value)
 {
-	switch (Value)
-	{
-	case EMainMenuButtonTypes::EMMBT_Play:
-		
-		break;
-	case EMainMenuButtonTypes::EMMBT_Modes:
-		
-		break;
-	
-	default:
-		break;
-	}
-
 	switch (Value
 )
 	{
@@ -68,6 +55,9 @@ void USFUWMenuBase::SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Val
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelContinue:
 		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_CONTINUE));
+		break;
+	case EMainMenuButtonTypes::EMMBT_LevelRestart:
+		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_RESTART));
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelControls:
 		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_LEVEL_CONTROLS));
