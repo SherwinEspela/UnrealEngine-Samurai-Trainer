@@ -23,6 +23,7 @@ void ASTPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerCharacter = Cast<ASTPlayerCharacter>(GetPawn());
+	PlayerCharacter->OnCharacterDied.AddDynamic(this, &ASTPlayerController::HandlePlayerDied);
 
 	UEnhancedInputLocalPlayerSubsystem* PlayerSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	PlayerSubsystem->AddMappingContext(InputMappingContext, 0);
@@ -310,11 +311,19 @@ void ASTPlayerController::HandleLevelIntroCompleted()
 
 void ASTPlayerController::HandleAllEnemiesKilled()
 {
+	bIsLevelCompleted = true;
+
 	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::DelayedOutcomeEvent, 3.0f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::LevelResultsEvent, 3.0f, false);
 }
 
-void ASTPlayerController::DelayedOutcomeEvent()
+void ASTPlayerController::HandlePlayerDied()
+{
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::LevelResultsEvent, 3.0f, false);
+}
+
+void ASTPlayerController::LevelResultsEvent()
 {
 	LevelMenu->OnButtonSelected.RemoveDynamic(this, &ASTPlayerController::HandleButtonSelected);
 	LevelMenu->OnDisplayLevelMenuCompleted.RemoveDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
@@ -330,6 +339,8 @@ void ASTPlayerController::DelayedOutcomeEvent()
 		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelContinue;
 	}
 
-	PlayerCharacter->SwitchTLevelCompleteCamera();
-	bIsLevelCompleted = true;
+	if (bIsLevelCompleted)
+	{
+		PlayerCharacter->SwitchLevelCompleteCamera();
+	}
 }

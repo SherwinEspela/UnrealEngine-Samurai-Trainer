@@ -130,7 +130,7 @@ protected:
 	void SelectBottomButton();
 	void ConfirmSelectedButton();
 	void ToggleDebuggerDisplay();
-	void DelayedOutcomeEvent();
+	void LevelResultsEvent();
 
 	UFUNCTION()
 	void HandleDisplayLevelMenuCompleted();
@@ -143,6 +143,9 @@ protected:
 
 	UFUNCTION()
 	void HandleLevelIntroCompleted();
+
+	UFUNCTION()
+	void HandlePlayerDied();
 
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;

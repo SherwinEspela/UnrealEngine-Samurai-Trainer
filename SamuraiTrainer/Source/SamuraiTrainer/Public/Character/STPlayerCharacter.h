@@ -85,7 +85,7 @@ public:
 	void RemoveCurrentAttackingEnemy();
 	void SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value);
 	void ToggleDebuggerDisplay();
-	void SwitchTLevelCompleteCamera();
+	void SwitchLevelCompleteCamera();
 
 public:
 	FOnEnemiesCanAttackSignature OnEnemiesCanAttack;
@@ -154,6 +154,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
 	TObjectPtr<UCameraComponent> LevelCompleteCamera;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera Setup")
+	TObjectPtr<UCameraComponent> DeathCamera;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon States")
 	EWeaponStates WeaponState = EWeaponStates::EWS_Stored;

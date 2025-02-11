@@ -243,7 +243,6 @@ void ACombatSystemPawn::HandleLevelIntroCompleted()
 
 void ACombatSystemPawn::HandlePlayerCharacterDied()
 {
-	UE_LOG(LogTemp, Warning, TEXT("HandlePlayerCharacterDied........."));
 	SetPlayerDead();
 	CombatSystemAIController->StopBehavior();
 	SetEnemiesToPauseAttacking();

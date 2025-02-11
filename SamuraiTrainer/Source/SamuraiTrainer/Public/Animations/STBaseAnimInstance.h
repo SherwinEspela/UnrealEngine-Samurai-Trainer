@@ -34,6 +34,7 @@ public:
 	FORCEINLINE void SetIsHealthCritical() { bIsHealthCritical = true; }
 	FORCEINLINE void SetDeathPoseType(EDeathPoseTypes Value) { DeathPoseType = Value; }
 	FORCEINLINE float GetMovementSpeed() const { return MovementSpeed; }
+	FORCEINLINE EDeathPoseTypes GetDeathPoseType() const { return DeathPoseType; }
 
 public:
 	// MULTICAST DELEGATES

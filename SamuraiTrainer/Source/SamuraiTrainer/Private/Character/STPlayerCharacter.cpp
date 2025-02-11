@@ -40,6 +40,11 @@ ASTPlayerCharacter::ASTPlayerCharacter()
 	LevelCompleteCamera->bUsePawnControlRotation = false;
 	LevelCompleteCamera->SetActive(false);
 
+	DeathCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Death Camera"));
+	DeathCamera->SetupAttachment(RootComponent);
+	DeathCamera->bUsePawnControlRotation = false;
+	DeathCamera->SetActive(false);
+
 	FXTargetBeam = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FX Target Beam"));
 	FXTargetBeam->SetupAttachment(GetRootComponent());
 }
@@ -448,10 +453,10 @@ void ASTPlayerCharacter::Death()
 		
 		switch (RandomIndex)
 		{
-		case 1:
+		case 0:
 			PlayerAnimInstance->SetDeathPoseType(EDeathPoseTypes::EDPT_DeathPose1);
 			break;
-		case 2:
+		case 1:
 			PlayerAnimInstance->SetDeathPoseType(EDeathPoseTypes::EDPT_DeathPose2);
 			break;
 		default:
@@ -677,7 +682,7 @@ void ASTPlayerCharacter::ToggleDebuggerDisplay()
 	bIsDebuggerDisplayed = !bIsDebuggerDisplayed;
 }
 
-void ASTPlayerCharacter::SwitchTLevelCompleteCamera()
+void ASTPlayerCharacter::SwitchLevelCompleteCamera()
 {
 	SetActorLocation(StartingPosition);
 	FollowCamera->SetActive(false);

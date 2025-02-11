@@ -185,7 +185,6 @@ void ASTBaseCharacter::HitReact()
 void ASTBaseCharacter::Death()
 {
 	MovementState = EMovementStates::EPMS_Death;
-	DetachFromControllerPendingDestroy();
 }
 
 void ASTBaseCharacter::Tick(float DeltaTime)

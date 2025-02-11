@@ -12,3 +12,7 @@ enum class EDeathPoseTypes : uint8
 	EDPT_DeathPoseParryFatal1	UMETA(DisplayName = "Death Pose Parry Fatal 1"),
 	EDPT_DeathPoseParryFatal2	UMETA(DisplayName = "Death Pose Parry Fatal 2")
 };
+
+FORCEINLINE void PrintDeathPoseType(EDeathPoseTypes DeathPose) {
+	UE_LOG(LogTemp, Log, TEXT("Death Pose Type is : %s"), *UEnum::GetValueAsName(DeathPose).ToString());
+}
