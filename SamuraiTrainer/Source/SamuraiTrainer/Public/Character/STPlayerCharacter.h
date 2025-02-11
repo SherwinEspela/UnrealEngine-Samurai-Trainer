@@ -86,6 +86,7 @@ public:
 	void SetCurrentEnemyByLineTrace(ASTEnemyCharacter* Value);
 	void ToggleDebuggerDisplay();
 	void SwitchLevelCompleteCamera();
+	void SetPlayerToEmoteState();
 
 public:
 	FOnEnemiesCanAttackSignature OnEnemiesCanAttack;

@@ -22,9 +22,13 @@ class SAMURAITRAINER_API UPlayerAnimInstance : public USTBaseAnimInstance
 public:
 	virtual void NativeInitializeAnimation() override;
 
+	UFUNCTION(BlueprintCallable)
+	void SetRandomEmoteIdleType();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE ASTPlayerCharacter* GetPlayer() const { return PlayerCharacter; }
+	FORCEINLINE void SetPlayerState(EPlayerStates Value) { PlayerState = Value; }
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -33,6 +37,12 @@ protected:
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon State")
 	EWeaponStates WeaponState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Player States")
+	EPlayerStates PlayerState = EPlayerStates::EPS_Combat;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Player Emote Idle Type")
+	EPlayerEmoteIdleTypes EmoteIdleType;
 
 private:
 	ASTPlayerCharacter* PlayerCharacter;

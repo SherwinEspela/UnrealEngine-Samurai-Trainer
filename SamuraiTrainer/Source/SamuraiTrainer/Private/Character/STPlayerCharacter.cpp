@@ -689,6 +689,11 @@ void ASTPlayerCharacter::SwitchLevelCompleteCamera()
 	LevelCompleteCamera->SetActive(true);
 }
 
+void ASTPlayerCharacter::SetPlayerToEmoteState()
+{
+	PlayerAnimInstance->SetPlayerState(EPlayerStates::EPS_Emoting);
+}
+
 void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType)
 {
 	CurrentBlockSectionName = BlockSectionName;

@@ -139,7 +139,7 @@ protected:
 	void HandleHideLevelMenuCompleted();
 
 	UFUNCTION()
-	void HandleExitGameFinished();
+	void HandleExitMenuFinished();
 
 	UFUNCTION()
 	void HandleLevelIntroCompleted();

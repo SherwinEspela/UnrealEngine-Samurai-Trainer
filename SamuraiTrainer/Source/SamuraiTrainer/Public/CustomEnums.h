@@ -4,9 +4,20 @@
 UENUM(BlueprintType)
 enum class EPlayerStates : uint8
 {
-	EPS_IdleNoWeapon	UMETA(DisplayName = "Idle No Weapon"),
-	EPS_IdleWithWeapon	UMETA(DisplayName = "Idle With Weapon"),
-	EPS_Default			UMETA(DisplayName = "Default")
+	EPS_Combat		UMETA(DisplayName = "Combat"),
+	EPS_Emoting		UMETA(DisplayName = "Emoting"),
+	EPS_Default		UMETA(DisplayName = "Default")
+};
+
+UENUM(BlueprintType)
+enum class EPlayerEmoteIdleTypes : uint8
+{
+	EPEIT_LookingAround		UMETA(DisplayName = "Looking Around"),
+	EPEIT_Impatient			UMETA(DisplayName = "Impatient"),
+	EPEIT_LoosenUp1			UMETA(DisplayName = "Loosen Up 1"),
+	EPEIT_LoosenUp2			UMETA(DisplayName = "Loosen Up 2"),
+	EPEIT_LoosenUp3			UMETA(DisplayName = "Loosen Up 3"),
+	EPEIT_Default			UMETA(DisplayName = "Default")
 };
 
 UENUM(BlueprintType)

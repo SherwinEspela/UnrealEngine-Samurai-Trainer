@@ -276,7 +276,7 @@ void ASTPlayerController::HandleHideLevelMenuCompleted()
 	bIsHideLevelMenuCompleted = true;
 }
 
-void ASTPlayerController::HandleExitGameFinished()
+void ASTPlayerController::HandleExitMenuFinished()
 {
 	switch (CurrentSelectedButtonType)
 	{
@@ -303,7 +303,7 @@ void ASTPlayerController::HandleLevelIntroCompleted()
 		LevelMenu->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
 		LevelMenu->OnDisplayLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
 		LevelMenu->OnHideLevelMenuCompleted.AddDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
-		LevelMenu->OnExitMenuAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+		LevelMenu->OnExitMenuAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitMenuFinished);
 		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelResume;
 	}
 
@@ -331,11 +331,12 @@ void ASTPlayerController::LevelResultsEvent()
 	LevelMenu->OnButtonSelected.RemoveDynamic(this, &ASTPlayerController::HandleButtonSelected);
 	LevelMenu->OnDisplayLevelMenuCompleted.RemoveDynamic(this, &ASTPlayerController::HandleDisplayLevelMenuCompleted);
 	LevelMenu->OnHideLevelMenuCompleted.RemoveDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
-	LevelMenu->OnExitMenuAnimFinished.RemoveDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+	LevelMenu->OnExitMenuAnimFinished.RemoveDynamic(this, &ASTPlayerController::HandleExitMenuFinished);
 
 	if (LevelResultType == ELevelResultType::ELRT_Completed)
 	{
 		PlayerCharacter->SwitchLevelCompleteCamera();
+		PlayerCharacter->SetPlayerToEmoteState();
 	}
 
 	if (SFUWLevelResultsClass)
@@ -344,7 +345,7 @@ void ASTPlayerController::LevelResultsEvent()
 		LevelResults->AddToViewport();
 		LevelResults->SetupButtonsByLevelResult(LevelResultType);
 		LevelResults->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
-		LevelResults->OnExitMenuAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
+		LevelResults->OnExitMenuAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitMenuFinished);
 		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelContinue;
 	}
 }
