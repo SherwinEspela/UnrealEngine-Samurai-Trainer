@@ -14,6 +14,11 @@ void UUWButtonMainMenu::PlayUnselect()
 	OnPlayUnselectAnimation();
 }
 
+void UUWButtonMainMenu::SetTitle()
+{
+
+}
+
 void UUWButtonMainMenu::HandleSelectAnimFinished()
 {
 	OnButtonSelectAnimFinished.Broadcast();

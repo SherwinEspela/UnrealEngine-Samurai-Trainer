@@ -9,9 +9,20 @@ void USFUWLevelResults::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// setup button navigation
 	BMMContinue->SetBottomButton(BMMExit);
 	BMMExit->SetTopButton(BMMContinue);
-
 	CurrentButton = BMMContinue;
+}
+
+void USFUWLevelResults::SetupButtonsByLevelResult(ELevelResultType LevelResult)
+{
+	switch (LevelResult)
+	{
+	case ELevelResultType::ELRT_Completed:
+		break;
+	case ELevelResultType::ELRT_PlayerDied:
+		break;
+	default:
+		break;
+	}
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UI/SFUWMenuBase.h"
 #include "UI/SFUWExitableMenu.h"
+#include "EnumLevelResult.h"
 #include "Blueprint/UserWidget.h"
 #include "SFUWLevelResults.generated.h"
 
@@ -19,6 +20,9 @@ class SAMURAITRAINER_API USFUWLevelResults : public USFUWExitableMenu
 {
 	GENERATED_BODY()
 
+public:
+	void SetupButtonsByLevelResult(ELevelResultType LevelResult);
+
 protected:
 	virtual void NativeConstruct() override;
 
@@ -29,5 +33,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UUWButtonMainMenu* BMMExit;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Level Result Type")
+	ELevelResultType LevelResultType;
 	
 };

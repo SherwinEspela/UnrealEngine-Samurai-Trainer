@@ -331,17 +331,18 @@ void ASTPlayerController::LevelResultsEvent()
 	LevelMenu->OnHideLevelMenuCompleted.RemoveDynamic(this, &ASTPlayerController::HandleHideLevelMenuCompleted);
 	LevelMenu->OnExitGameAnimFinished.RemoveDynamic(this, &ASTPlayerController::HandleExitGameFinished);
 
+	if (LevelResultType == ELevelResultType::ELRT_Completed)
+	{
+		PlayerCharacter->SwitchLevelCompleteCamera();
+	}
+
 	if (SFUWLevelResultsClass)
 	{
 		LevelResults = CreateWidget<USFUWLevelResults>(GetWorld(), SFUWLevelResultsClass);
 		LevelResults->AddToViewport();
+		LevelResults->SetupButtonsByLevelResult(LevelResultType);
 		LevelResults->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
 		LevelResults->OnExitGameAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitGameFinished);
 		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelContinue;
-	}
-
-	if (LevelResultType == ELevelResultType::ELRT_Completed)
-	{
-		PlayerCharacter->SwitchLevelCompleteCamera();
 	}
 }

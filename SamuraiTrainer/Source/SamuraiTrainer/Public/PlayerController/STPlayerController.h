@@ -159,5 +159,4 @@ private:
 	bool bIsGameExiting = false;
 	bool bLevelIntroCompleted = false;
 	ELevelResultType LevelResultType;
-	//bool bIsLevelCompleted = false;
 };
