@@ -43,6 +43,7 @@ void ASTPlayerController::BeginPlay()
 	}
 
 	bIsLevelMenuDisplayed = false;
+	LevelResultType = ELevelResultType::EDPT_Default;
 }
 
 void ASTPlayerController::SetupInputComponent()
@@ -70,7 +71,7 @@ void ASTPlayerController::SetupInputComponent()
 
 void ASTPlayerController::Move(const FInputActionValue& Value)
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
 	if (!bLevelIntroCompleted) return;
 
 	const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -88,7 +89,7 @@ void ASTPlayerController::Move(const FInputActionValue& Value)
 
 void ASTPlayerController::Look(const FInputActionValue& Value)
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType == ELevelResultType::ELRT_Completed) return;
 	if (!bLevelIntroCompleted) return;
 
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -98,7 +99,7 @@ void ASTPlayerController::Look(const FInputActionValue& Value)
 
 void ASTPlayerController::SwordInteract()
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->SwordInteract();
@@ -106,7 +107,7 @@ void ASTPlayerController::SwordInteract()
 
 void ASTPlayerController::Attack()
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->SwordAttack();
@@ -114,7 +115,7 @@ void ASTPlayerController::Attack()
 
 void ASTPlayerController::AttackCombo2()
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->SwordAttackCombo2();
@@ -122,7 +123,7 @@ void ASTPlayerController::AttackCombo2()
 
 void ASTPlayerController::Block()
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->Block();
@@ -130,7 +131,7 @@ void ASTPlayerController::Block()
 
 void ASTPlayerController::ParryOrBlock()
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->ParryOrBlock();
@@ -138,7 +139,7 @@ void ASTPlayerController::ParryOrBlock()
 
 void ASTPlayerController::Kick()
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->Kick();
@@ -153,7 +154,7 @@ void ASTPlayerController::RestartLevel()
 
 void ASTPlayerController::DisplayLevelMenu()
 {
-	if (bIsLevelCompleted) return;
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
 	if (!bLevelIntroCompleted) return;
 	if (bIsLevelMenuDisplayed) return;
 	if (!bIsHideLevelMenuCompleted) return;
@@ -183,7 +184,7 @@ void ASTPlayerController::ExitToMainMenu()
 	if (bIsGameExiting) return;
 	bIsGameExiting = true;
 
-	if (bIsLevelCompleted)
+	if (LevelResultType != ELevelResultType::EDPT_Default)
 	{
 		LevelResults->OnExitToMainMenu();
 		return;
@@ -195,7 +196,7 @@ void ASTPlayerController::ExitToMainMenu()
 
 void ASTPlayerController::SelectTopButton()
 {
-	if (bIsLevelCompleted && !bIsGameExiting)
+	if (LevelResultType != ELevelResultType::EDPT_Default && !bIsGameExiting)
 	{
 		LevelResults->SelectTopButton();	
 		return;
@@ -210,7 +211,7 @@ void ASTPlayerController::SelectTopButton()
 
 void ASTPlayerController::SelectBottomButton()
 {
-	if (bIsLevelCompleted && !bIsGameExiting)
+	if (LevelResultType != ELevelResultType::EDPT_Default && !bIsGameExiting)
 	{
 		LevelResults->SelectBottomButton();
 		return;
@@ -225,7 +226,7 @@ void ASTPlayerController::SelectBottomButton()
 
 void ASTPlayerController::ConfirmSelectedButton()
 {
-	if (bIsLevelCompleted && !bIsGameExiting)
+	if (LevelResultType != ELevelResultType::EDPT_Default && !bIsGameExiting)
 	{
 		switch (CurrentSelectedButtonType)
 		{
@@ -311,14 +312,14 @@ void ASTPlayerController::HandleLevelIntroCompleted()
 
 void ASTPlayerController::HandleAllEnemiesKilled()
 {
-	bIsLevelCompleted = true;
-
+	LevelResultType = ELevelResultType::ELRT_Completed;
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::LevelResultsEvent, 3.0f, false);
 }
 
 void ASTPlayerController::HandlePlayerDied()
 {
+	LevelResultType = ELevelResultType::ELRT_PlayerDied;
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::LevelResultsEvent, 3.0f, false);
 }
@@ -339,7 +340,7 @@ void ASTPlayerController::LevelResultsEvent()
 		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelContinue;
 	}
 
-	if (bIsLevelCompleted)
+	if (LevelResultType == ELevelResultType::ELRT_Completed)
 	{
 		PlayerCharacter->SwitchLevelCompleteCamera();
 	}

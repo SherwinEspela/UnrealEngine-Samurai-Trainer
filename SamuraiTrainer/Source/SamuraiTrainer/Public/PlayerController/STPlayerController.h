@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PlayerController/SFPlayerControllerBase.h"
+#include "EnumLevelResult.h"
 #include "GameFramework/PlayerController.h"
 #include "STPlayerController.generated.h"
 
@@ -157,5 +158,6 @@ private:
 	bool bIsHideLevelMenuCompleted = true;
 	bool bIsGameExiting = false;
 	bool bLevelIntroCompleted = false;
-	bool bIsLevelCompleted = false;
+	ELevelResultType LevelResultType;
+	//bool bIsLevelCompleted = false;
 };
