@@ -146,7 +146,6 @@ protected:
 	TArray<FName> BlockSectionNames;
 	TArray<FName> HitReactionSectionNames;
 	TArray<FName> StaggerSectionNames;
-	//TArray<FName> ParryHRSectionNames;
 
 protected:
 	// Debugging

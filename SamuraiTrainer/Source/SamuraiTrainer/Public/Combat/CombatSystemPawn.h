@@ -66,7 +66,11 @@ protected:
 	UFUNCTION()
 	void HandleLevelIntroCompleted();
 
+	UFUNCTION()
+	void HandlePlayerCharacterDied();
+
 	void SetEnemiesToPauseAttacking(bool Paused = true);
+	void SetPlayerDead();
 
 protected:
 	TObjectPtr<ASTPlayerCharacter> Player;

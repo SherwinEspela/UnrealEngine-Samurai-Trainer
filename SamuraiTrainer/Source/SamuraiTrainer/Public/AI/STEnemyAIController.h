@@ -33,6 +33,7 @@ public:
 	void SetBlocking(bool Value = true);
 	void SetRecovering(bool Value = true);
 	void SetDying(bool Value = true);
+	void SetPlayerDead(bool Value = true);
 
 protected:
 	virtual void BeginPlay() override;

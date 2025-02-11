@@ -15,3 +15,4 @@
 #define BB_KEY_DYING FName("IsDying")
 #define BB_KEY_AT_OUTER_RANGE FName("IsAtOuterRange")
 #define BB_KEY_AT_MIDDLE_RANGE FName("IsAtMiddleRange")
+#define BB_KEY_PLAYER_DEAD FName("IsPlayerDead")

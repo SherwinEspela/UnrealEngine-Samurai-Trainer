@@ -26,6 +26,7 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	RunBehaviorTree(BehaviorTree);
 	GetBlackboardComponent()->SetValueAsObject(BB_KEY_PLAYER_PAWN, PlayerPawn);
+	SetPlayerDead(false);
 	SetChosenToAttack(false);
 	SetToOuterRange();
 	//SetToMiddleRange(false);
@@ -138,6 +139,12 @@ void ASTEnemyAIController::SetDying(bool Value)
 	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
 	GetBlackboardComponent()->SetValueAsBool(BB_KEY_DYING, Value);
+}
+
+void ASTEnemyAIController::SetPlayerDead(bool Value)
+{
+	if (!GetBlackboardComponent()) return;
+	GetBlackboardComponent()->SetValueAsBool(BB_KEY_PLAYER_DEAD, Value);
 }
 
 void ASTEnemyAIController::ResetAllValues()

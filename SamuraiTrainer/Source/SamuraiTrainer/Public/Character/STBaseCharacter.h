@@ -23,6 +23,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBlockCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaggerStartedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaggerCompletedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpponentWillBeDeadSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDiedSignature);
 
 UCLASS()
 class SAMURAITRAINER_API ASTBaseCharacter : public ACharacter
@@ -94,6 +95,7 @@ public:
 	FOnStaggerStartedSignature OnStaggerStarted;
 	FOnStaggerCompletedSignature OnStaggerCompleted;
 	FOnOpponentWillBeDeadSignature OnOpponentWillBeDead;
+	FCharacterDiedSignature OnCharacterDied;
 	//FOnAttackHitDirectionDeterminedSignature OnAttackHitDirectionDetermined;
 
 protected:

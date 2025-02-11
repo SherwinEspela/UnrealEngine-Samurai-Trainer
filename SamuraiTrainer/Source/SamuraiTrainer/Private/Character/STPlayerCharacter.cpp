@@ -164,6 +164,9 @@ void ASTPlayerCharacter::InitQueues()
 
 	ParrySectionNames.Add(PARRY_1);
 	ParrySectionNames.Add(PARRY_2);
+
+	DeathSectionNames.Add(DEATH1);
+	DeathSectionNames.Add(DEATH2);
 }
 
 void ASTPlayerCharacter::Tick(float DeltaTime)
@@ -433,10 +436,30 @@ void ASTPlayerCharacter::Death()
 {
 	Super::Death();
 
+	OnCharacterDied.Broadcast();
+
 	if (PlayerAnimInstance && MontageDeath)
 	{
 		PlayerAnimInstance->Montage_Play(MontageDeath);
-		//PlayerAnimInstance->Montage_JumpToSection(CurrentHRSectionName, MontageDeath);
+		const int RandomIndex = FMath::RandRange(0, DeathSectionNames.Num() - 1);
+		const FName DeathSectionName = DeathSectionNames[RandomIndex];
+		PlayerAnimInstance->Montage_JumpToSection(DeathSectionName, MontageDeath);
+		PlayerAnimInstance->SetDead();
+		
+		switch (RandomIndex)
+		{
+		case 1:
+			PlayerAnimInstance->SetDeathPoseType(EDeathPoseTypes::EDPT_DeathPose1);
+			break;
+		case 2:
+			PlayerAnimInstance->SetDeathPoseType(EDeathPoseTypes::EDPT_DeathPose2);
+			break;
+		default:
+			break;
+		}
+
+		TargetLockActor->SetEnabled(false);
+		FXTargetBeam->Deactivate();
 	}
 }
 
@@ -604,7 +627,6 @@ float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	else {
 		HitReact();
 	}
-
 
 	return 0.0f;
 }

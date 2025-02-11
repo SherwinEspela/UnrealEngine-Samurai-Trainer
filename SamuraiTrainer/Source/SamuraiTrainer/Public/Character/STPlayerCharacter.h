@@ -236,6 +236,7 @@ protected:
 
 	TArray<FName> BlockSectionNames;
 	TArray<FName> ParrySectionNames;
+	TArray<FName> DeathSectionNames;
 
 	//FName CurrentParryFatalSectionName;
 

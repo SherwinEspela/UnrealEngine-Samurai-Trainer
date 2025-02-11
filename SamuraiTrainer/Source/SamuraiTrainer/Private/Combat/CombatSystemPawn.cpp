@@ -24,6 +24,8 @@ void ACombatSystemPawn::BeginPlay()
 	Player->OnAttackStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerAttackStarted);
 	Player->OnEnemiesCanAttack.AddDynamic(this, &ACombatSystemPawn::HandleEnemisCanAttack);
 	Player->OnStaggerStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerStaggerStarted);
+	Player->OnCharacterDied.AddDynamic(this, &ACombatSystemPawn::HandlePlayerCharacterDied);
+	
 	PlayerController = CastChecked<ASTPlayerController>(Player->GetController());
 	PlayerController->OnLevelIntroHandled.AddDynamic(this, &ACombatSystemPawn::HandleLevelIntroCompleted);
 
@@ -51,6 +53,8 @@ void ACombatSystemPawn::BeginPlay()
 			}
 		}
 	}
+
+	CombatSystemAIController = Cast<ACombatSystemAIController>(GetController());
 }
 
 void ACombatSystemPawn::HandlePlayerAttackStarted()
@@ -152,7 +156,12 @@ void ACombatSystemPawn::SetEnemiesToPauseAttacking(bool Paused)
 {
 	for (auto AnEnemy : Enemies)
 	{
-		if (!AnEnemy->IsDead() && !AnEnemy->IsAttacking())
+	/*	if (!AnEnemy->IsDead() && !AnEnemy->IsAttacking())
+		{
+			AnEnemy->GetEnemyAIController()->SetPausedToAttack(Paused);
+		}*/
+
+		if (!AnEnemy->IsDead())
 		{
 			AnEnemy->GetEnemyAIController()->SetPausedToAttack(Paused);
 		}
@@ -229,9 +238,24 @@ void ACombatSystemPawn::HandleAllEnemiesKilled()
 
 void ACombatSystemPawn::HandleLevelIntroCompleted()
 {
-	CombatSystemAIController = Cast<ACombatSystemAIController>(GetController());
-	if (CombatSystemAIController)
+	CombatSystemAIController->Initialize(BehaviorTree);
+}
+
+void ACombatSystemPawn::HandlePlayerCharacterDied()
+{
+	UE_LOG(LogTemp, Warning, TEXT("HandlePlayerCharacterDied........."));
+	SetPlayerDead();
+	CombatSystemAIController->StopBehavior();
+	SetEnemiesToPauseAttacking();
+}
+
+void ACombatSystemPawn::SetPlayerDead()
+{
+	for (auto AnEnemy : Enemies)
 	{
-		CombatSystemAIController->Initialize(BehaviorTree);
+		if (!AnEnemy->IsDead())
+		{
+			AnEnemy->GetEnemyAIController()->SetPlayerDead();
+		}
 	}
 }
