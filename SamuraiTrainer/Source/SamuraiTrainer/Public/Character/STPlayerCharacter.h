@@ -19,6 +19,7 @@ class UPlayerAnimInstance;
 class USceneComponent;
 class ATargetLockActor;
 class UNiagaraComponent;
+class AKatanaCover;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemiesCanAttackSignature);
 
@@ -87,6 +88,7 @@ public:
 	void ToggleDebuggerDisplay();
 	void SwitchLevelCompleteCamera();
 	void SetPlayerToEmoteState();
+	void AddKatanaCover();
 
 public:
 	FOnEnemiesCanAttackSignature OnEnemiesCanAttack;
@@ -142,6 +144,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleWeaponToRightHand();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleSwordToCover();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleEnemiesCanAttackMarker();
@@ -268,6 +273,14 @@ private:
 	void ExecuteParry();
 	void ExecuteKick();
 	void ExecuteCounter();
+
+protected:
+	// Weapon
+	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AKatanaCover> KatanaCoverClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Katana Cover")
+	AKatanaCover* KatanaCover;
 
 protected:
 	// Combat

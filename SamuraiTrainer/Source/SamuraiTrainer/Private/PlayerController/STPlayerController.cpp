@@ -347,5 +347,10 @@ void ASTPlayerController::LevelResultsEvent()
 		LevelResults->OnButtonSelected.AddDynamic(this, &ASTPlayerController::HandleButtonSelected);
 		LevelResults->OnExitMenuAnimFinished.AddDynamic(this, &ASTPlayerController::HandleExitMenuFinished);
 		CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_LevelContinue;
+
+		if (LevelResultType == ELevelResultType::ELRT_Completed)
+		{
+			PlayerCharacter->AddKatanaCover();
+		}
 	}
 }

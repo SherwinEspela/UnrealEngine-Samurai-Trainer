@@ -15,6 +15,7 @@
 #include "Combat/TargetLockComponent.h"
 #include "Misc/DisplayLabelActor.h"
 #include "Combat/TargetLockActor.h"
+#include "Items/KatanaCover.h"
 #include "NiagaraComponent.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
@@ -589,6 +590,13 @@ void ASTPlayerCharacter::HandleWeaponToRightHand()
 	AttachSwordToSocket(FName("WEAPON_R"));
 }
 
+void ASTPlayerCharacter::HandleSwordToCover()
+{
+	if (!KatanaCover) return;
+	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+	Katana->AttachToComponent(KatanaCover->GetMesh(), TransformRules, FName("Katana_AnchorSocket"));
+}
+
 void ASTPlayerCharacter::HandleEnemiesCanAttackMarker()
 {
 	OnEnemiesCanAttack.Broadcast();
@@ -692,6 +700,16 @@ void ASTPlayerCharacter::SwitchLevelCompleteCamera()
 void ASTPlayerCharacter::SetPlayerToEmoteState()
 {
 	PlayerAnimInstance->SetPlayerState(EPlayerStates::EPS_Emoting);
+}
+
+void ASTPlayerCharacter::AddKatanaCover()
+{
+	if (KatanaCoverClass)
+	{
+		KatanaCover = GetWorld()->SpawnActor<AKatanaCover>(KatanaCoverClass);
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		KatanaCover->AttachToComponent(GetMesh(), TransformRules, FName("SocketKatanaCover"));
+	}
 }
 
 void ASTPlayerCharacter::HandleOpponentAttackStarted(FName BlockSectionName, FName HRSectionName, EPlayerQTEResponseType ResponseType)

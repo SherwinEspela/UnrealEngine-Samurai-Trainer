@@ -16,6 +16,8 @@ class SAMURAITRAINER_API AItem : public AActor
 public:	
 	AItem();
 
+	FORCEINLINE TObjectPtr<USkeletalMeshComponent> GetMesh() const { return Mesh; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USkeletalMeshComponent> Mesh;
