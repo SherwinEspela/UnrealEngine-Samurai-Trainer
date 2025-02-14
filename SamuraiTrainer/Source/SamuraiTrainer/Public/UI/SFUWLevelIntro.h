@@ -8,6 +8,8 @@
 
 class UTextBlock;
 class UImage;
+class UTexture2D;
+class USoundBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelIntroCompletedSignature);
 
@@ -21,6 +23,7 @@ class SAMURAITRAINER_API USFUWLevelIntro : public UUserWidget
 	
 public:
 	void SetShowdownCount(int Value);
+	void SetRandomBackground();
 
 	FLevelIntroCompletedSignature OnLevelIntroCompleted;
 
@@ -36,4 +39,10 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* ImageBG;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Background Textures")
+	TArray<UTexture2D*> BackgroundTextures;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Intro Sounds")
+	TArray<USoundBase*> IntroSounds;
 };
