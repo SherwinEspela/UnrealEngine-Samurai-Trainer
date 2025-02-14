@@ -48,10 +48,14 @@ void ASTPlayerController::BeginPlay()
 		LevelIntro = CreateWidget<USFUWLevelIntro>(GetWorld(), SFUWLevelIntroClass);
 		LevelIntro->AddToViewport();
 
-		if ((SaveGameData = Cast<USFSaveGameData>(UGameplayStatics::LoadGameFromSlot(TEXT("TestSaveSlot"), 0))))
+		if (SaveGameData)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("LOADED: %1"), SaveGameData->ShowdownCounter);
-			LevelIntro->SetShowdownCount(SaveGameData->ShowdownCounter);
+			FString SaveSlotName = SaveGameData->SaveSlotName;
+			uint32 UserIndex = SaveGameData->UserIndex;
+			if ((SaveGameData = Cast<USFSaveGameData>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex))))
+			{
+				LevelIntro->SetShowdownCount(SaveGameData->ShowdownCounter);
+			}
 		}
 
 		LevelIntro->OnLevelIntroCompleted.AddDynamic(this, &ASTPlayerController::HandleLevelIntroCompleted);
@@ -295,6 +299,7 @@ void ASTPlayerController::HandleExitMenuFinished()
 	switch (CurrentSelectedButtonType)
 	{
 	case EMainMenuButtonTypes::EMMBT_LevelContinue:
+		IncrementAndSaveShowdownCount();
 		UGameplayStatics::OpenLevel(this, FName(LEVEL1_MAP));
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelRestart:
@@ -340,6 +345,21 @@ void ASTPlayerController::HandlePlayerDied()
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::LevelResultsEvent, 3.0f, false);
 }
 
+void ASTPlayerController::IncrementAndSaveShowdownCount()
+{
+	if (!SaveGameData) return;
+	
+	FString SaveSlotName = SaveGameData->SaveSlotName;
+	uint32 UserIndex = SaveGameData->UserIndex;
+	SaveGameData->ShowdownCounter += 1;
+
+	try
+	{
+		UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
+	}
+	catch (const std::exception&) {}
+}
+
 void ASTPlayerController::LevelResultsEvent()
 {
 	LevelMenu->OnButtonSelected.RemoveDynamic(this, &ASTPlayerController::HandleButtonSelected);
@@ -364,15 +384,6 @@ void ASTPlayerController::LevelResultsEvent()
 
 		if (LevelResultType == ELevelResultType::ELRT_Completed)
 		{
-			if (SaveGameData)
-			{
-				SaveGameData->ShowdownCounter += 1;
-				if (UGameplayStatics::SaveGameToSlot(SaveGameData, TEXT("TestSaveSlot"), 0))
-				{
-					UE_LOG(LogTemp, Warning, TEXT("game saved"));
-				}
-			}
-			
 			PlayerCharacter->AddKatanaCover();
 		}
 	}

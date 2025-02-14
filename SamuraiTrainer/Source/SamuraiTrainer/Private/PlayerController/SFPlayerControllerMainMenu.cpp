@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "UI/SFUWMainMenu.h"
+#include "DataPersistence/SFSaveGameData.h"
 #include "Kismet/GameplayStatics.h"
 
 void ASFPlayerControllerMainMenu::BeginPlay()
@@ -18,6 +19,25 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 	bLogoTitleEntered = false;
 	bMainMenuEntered = false;
 	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_Default;
+
+	if (SaveGameData == nullptr)
+	{
+		// Create save game data
+		SaveGameData = CastChecked<USFSaveGameData>(UGameplayStatics::CreateSaveGameObject(USFSaveGameData::StaticClass()));
+	}
+
+	if (SaveGameData)
+	{
+		FString SaveSlotName = SaveGameData->SaveSlotName;
+		uint32 UserIndex = SaveGameData->UserIndex;
+
+		try
+		{
+			SaveGameData->ShowdownCounter = 1;
+			UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
+		}
+		catch (const std::exception&) {}
+	}
 
 	if (SFUWMainMenuClass)
 	{

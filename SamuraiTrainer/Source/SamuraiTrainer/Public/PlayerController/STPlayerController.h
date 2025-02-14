@@ -154,7 +154,11 @@ protected:
 
 protected:
 	// Saving Game Data
+	UPROPERTY()
 	USFSaveGameData* SaveGameData;
+
+private:
+	void IncrementAndSaveShowdownCount();
 
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;

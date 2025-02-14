@@ -10,6 +10,7 @@
 class USFUWMainMenu;
 class UInputMappingContext;
 class UInputAction;
+class USFSaveGameData;
 
 /**
  * 
@@ -79,6 +80,11 @@ protected:
 	void SelectBottomButton();
 	void PlayButtonClicked();
 	void HandleButtonSelected(EMainMenuButtonTypes ButtonType) override;
+
+protected:
+	// Saving Game Data
+	UPROPERTY()
+	USFSaveGameData* SaveGameData;
 
 private:
 	// Event Handlers
