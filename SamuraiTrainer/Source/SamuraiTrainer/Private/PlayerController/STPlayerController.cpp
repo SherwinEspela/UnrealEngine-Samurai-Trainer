@@ -12,6 +12,7 @@
 #include "UI/SFUWLevelMenu.h"
 #include "UI/SFUWLevelIntro.h"
 #include "UI/SFUWLevelResults.h"
+#include "DataPersistence/SFSaveGameData.h"
 #include "Components/AudioComponent.h"
 
 #define MAIN_MENU_MAP FName("MainMenuMap")
@@ -36,10 +37,23 @@ void ASTPlayerController::BeginPlay()
 		DisplayLabel = Cast<ADisplayLabelActor>(DisplayLabelActors[0]);
 	}
 
+	if (SaveGameData == nullptr)
+	{
+		// Create save game data
+		SaveGameData = CastChecked<USFSaveGameData>(UGameplayStatics::CreateSaveGameObject(USFSaveGameData::StaticClass()));
+	}
+
 	if (SFUWLevelIntroClass)
 	{
 		LevelIntro = CreateWidget<USFUWLevelIntro>(GetWorld(), SFUWLevelIntroClass);
 		LevelIntro->AddToViewport();
+
+		if ((SaveGameData = Cast<USFSaveGameData>(UGameplayStatics::LoadGameFromSlot(TEXT("TestSaveSlot"), 0))))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("LOADED: %1"), SaveGameData->ShowdownCounter);
+			LevelIntro->SetShowdownCount(SaveGameData->ShowdownCounter);
+		}
+
 		LevelIntro->OnLevelIntroCompleted.AddDynamic(this, &ASTPlayerController::HandleLevelIntroCompleted);
 	}
 
@@ -350,6 +364,15 @@ void ASTPlayerController::LevelResultsEvent()
 
 		if (LevelResultType == ELevelResultType::ELRT_Completed)
 		{
+			if (SaveGameData)
+			{
+				SaveGameData->ShowdownCounter += 1;
+				if (UGameplayStatics::SaveGameToSlot(SaveGameData, TEXT("TestSaveSlot"), 0))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("game saved"));
+				}
+			}
+			
 			PlayerCharacter->AddKatanaCover();
 		}
 	}

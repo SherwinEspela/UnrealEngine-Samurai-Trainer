@@ -18,6 +18,7 @@ class USFUWLevelIntro;
 class USFUWLevelResults;
 class USoundBase;
 class UAudioComponent;
+class USFSaveGameData;
 struct FInputActionValue;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelIntroHandledSignature);
@@ -29,11 +30,15 @@ UCLASS()
 class SAMURAITRAINER_API ASTPlayerController : public ASFPlayerControllerBase
 {
 	GENERATED_BODY()
+
 	
+
 public:
 	void HandleAllEnemiesKilled();
 
 	FLevelIntroHandledSignature OnLevelIntroHandled;
+
+	//static int ShowdownCounter;
 
 protected:
 	virtual void BeginPlay() override;
@@ -146,6 +151,10 @@ protected:
 
 	UFUNCTION()
 	void HandlePlayerDied();
+
+protected:
+	// Saving Game Data
+	USFSaveGameData* SaveGameData;
 
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;
