@@ -93,8 +93,6 @@ void ACombatSystemPawn::HandleEnemyAttackBegan(EPlayerQTEResponseType PlayerResp
 
 void ACombatSystemPawn::HandleAttackBeganFromEnemy(ASTEnemyCharacter* Enemy, EPlayerQTEResponseType PlayerResponseType)
 {
-	//PrintPlayerQTEResponse(PlayerResponseType);
-
 	for(auto AnEnemy : Enemies)
 	{
 		AnEnemy->ShouldDisplayTargetIndicator(false);

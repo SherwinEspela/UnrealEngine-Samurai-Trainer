@@ -300,10 +300,10 @@ void ASTPlayerController::HandleExitMenuFinished()
 	{
 	case EMainMenuButtonTypes::EMMBT_LevelContinue:
 		IncrementAndSaveShowdownCount();
-		UGameplayStatics::OpenLevel(this, FName(LEVEL1_MAP));
+		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelRestart:
-		UGameplayStatics::OpenLevel(this, FName(LEVEL1_MAP));
+		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelExit:
 		UGameplayStatics::OpenLevel(this, FName(MAIN_MENU_MAP));
