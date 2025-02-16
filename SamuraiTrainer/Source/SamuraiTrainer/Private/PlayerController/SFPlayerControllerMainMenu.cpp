@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "UI/SFUWMainMenu.h"
 #include "DataPersistence/SFSaveGameData.h"
+#include "Utility/RandomLevelLoader.h"
 #include "Kismet/GameplayStatics.h"
 
 void ASFPlayerControllerMainMenu::BeginPlay()
@@ -19,6 +20,7 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 	bLogoTitleEntered = false;
 	bMainMenuEntered = false;
 	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_Default;
+	RandomLevelLoader::MaxLevelCount = 2;
 
 	if (SaveGameData == nullptr)
 	{
@@ -133,4 +135,9 @@ void ASFPlayerControllerMainMenu::HandleButtonSelected(EMainMenuButtonTypes Butt
 	default:
 		break;
 	}
+}
+
+void ASFPlayerControllerMainMenu::HandleMainMenuFadeOutCompleted()
+{
+	RandomLevelLoader::LoadRandomLevel(this);
 }

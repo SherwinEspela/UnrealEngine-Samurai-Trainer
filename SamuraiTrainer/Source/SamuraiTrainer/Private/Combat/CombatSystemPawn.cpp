@@ -183,7 +183,7 @@ void ACombatSystemPawn::SelectAttacker()
 			return;
 		}
 
-		ASTEnemyCharacter* NewAttacker;
+		ASTEnemyCharacter* NewAttacker = Enemies[0];
 		Player->RemoveCurrentAttackingEnemy();
 
 		if (Enemies.Num() == 1)

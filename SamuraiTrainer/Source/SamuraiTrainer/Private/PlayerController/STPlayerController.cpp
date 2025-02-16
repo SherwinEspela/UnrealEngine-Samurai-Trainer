@@ -13,6 +13,7 @@
 #include "UI/SFUWLevelIntro.h"
 #include "UI/SFUWLevelResults.h"
 #include "DataPersistence/SFSaveGameData.h"
+#include "Utility/RandomLevelLoader.h"
 #include "Components/AudioComponent.h"
 
 #define MAIN_MENU_MAP FName("MainMenuMap")
@@ -300,7 +301,7 @@ void ASTPlayerController::HandleExitMenuFinished()
 	{
 	case EMainMenuButtonTypes::EMMBT_LevelContinue:
 		IncrementAndSaveShowdownCount();
-		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
+		RandomLevelLoader::LoadRandomLevel(this);
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelRestart:
 		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));

@@ -51,7 +51,7 @@ void ASTEnemyCharacter::BeginPlay()
 	
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 
-	EnemyAIController = Cast<ASTEnemyAIController>(EnemyAnimInstance->TryGetPawnOwner()->GetController());
+	EnemyAIController = Cast<ASTEnemyAIController>(GetController()); //EnemyAnimInstance->TryGetPawnOwner()->GetController());
 	if (EnemyAIController && !bDebugCannotMove)
 	{
 		EnemyAIController->Initialize(BehaviorTree);
