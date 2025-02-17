@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "UI/SFUWMainMenu.h"
 #include "DataPersistence/SFSaveGameData.h"
+#include "Utility/RandomLevelLoader.h"
 #include "Kismet/GameplayStatics.h"
 
 void ASFPlayerControllerMainMenu::BeginPlay()
@@ -19,6 +20,7 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 	bLogoTitleEntered = false;
 	bMainMenuEntered = false;
 	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_Default;
+	//RandomLevelLoader::MaxLevelCount = 2;
 
 	if (SaveGameData == nullptr)
 	{
@@ -30,13 +32,8 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 	{
 		FString SaveSlotName = SaveGameData->SaveSlotName;
 		uint32 UserIndex = SaveGameData->UserIndex;
-
-		try
-		{
-			SaveGameData->ShowdownCounter = 1;
-			UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
-		}
-		catch (const std::exception&) {}
+		SaveGameData->ShowdownCounter = 1;
+		UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
 	}
 
 	if (SFUWMainMenuClass)
@@ -133,4 +130,10 @@ void ASFPlayerControllerMainMenu::HandleButtonSelected(EMainMenuButtonTypes Butt
 	default:
 		break;
 	}
+}
+
+void ASFPlayerControllerMainMenu::HandleMainMenuFadeOutCompleted()
+{
+	RandomLevelLoader* LevelLoader = new RandomLevelLoader();
+	LevelLoader->LoadRandomLevel(this);
 }

@@ -93,8 +93,6 @@ void ACombatSystemPawn::HandleEnemyAttackBegan(EPlayerQTEResponseType PlayerResp
 
 void ACombatSystemPawn::HandleAttackBeganFromEnemy(ASTEnemyCharacter* Enemy, EPlayerQTEResponseType PlayerResponseType)
 {
-	//PrintPlayerQTEResponse(PlayerResponseType);
-
 	for(auto AnEnemy : Enemies)
 	{
 		AnEnemy->ShouldDisplayTargetIndicator(false);
@@ -123,18 +121,9 @@ void ACombatSystemPawn::HandleBlockCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 
 void ACombatSystemPawn::HandleDeathCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 {
-	try
-	{
-		Enemy->GetEnemyAIController()->SetChosenToAttack(false);
-		Enemies.Remove(Enemy);
-
-		SelectAttacker();
-		//SetEnemiesToPauseAttacking(false);
-	}
-	catch (const std::exception&)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Exception handled........."));
-	}
+	Enemy->GetEnemyAIController()->SetChosenToAttack(false);
+	Enemies.Remove(Enemy);
+	SelectAttacker();
 }
 
 void ACombatSystemPawn::HandleEnemyAttackCompleted()
@@ -171,63 +160,55 @@ void ACombatSystemPawn::SetEnemiesToPauseAttacking(bool Paused)
 void ACombatSystemPawn::HandleEventFromEnemyCompleted(ASTEnemyCharacter* Enemy)
 {
 	Enemy->GetEnemyAIController()->SetChosenToAttack(false);
-	//SetEnemiesToPauseAttacking(false);
 	EnemiesQ.Enqueue(Enemy);
 }
 
 void ACombatSystemPawn::SelectAttacker()
 {
-	try
+	if (Enemies.Num() <= 0) {
+		CombatSystemAIController->StopBehavior();
+		HandleAllEnemiesKilled();
+		return;
+	}
+
+	ASTEnemyCharacter* NewAttacker = Enemies[0];
+	Player->RemoveCurrentAttackingEnemy();
+
+	if (Enemies.Num() == 1)
 	{
-		if (Enemies.Num() <= 0) {
-			CombatSystemAIController->StopBehavior();
-			HandleAllEnemiesKilled();
-			return;
-		}
+		NewAttacker = Enemies[0];
+		NewAttacker->GetEnemyAIController()->SetChosenToAttack();
+		return;
+	}
 
-		ASTEnemyCharacter* NewAttacker;
-		Player->RemoveCurrentAttackingEnemy();
-
-		if (Enemies.Num() == 1)
+	if (bIsSequenceAttacking)
+	{
+		if (!EnemiesQ.IsEmpty())
 		{
-			NewAttacker = Enemies[0];
+			EnemiesQ.Dequeue(NewAttacker);
 			NewAttacker->GetEnemyAIController()->SetChosenToAttack();
-			return;
-		}
-
-		if (bIsSequenceAttacking)
-		{
-			if (!EnemiesQ.IsEmpty())
-			{
-				EnemiesQ.Dequeue(NewAttacker);
-				NewAttacker->GetEnemyAIController()->SetChosenToAttack();
-			}
-		}
-		else {
-			if (bIsAttacking) return;
-
-			if (CurrentEnemyAttacker)
-			{
-				CurrentEnemyAttacker->GetEnemyAIController()->SetChosenToAttack(false);
-			}
-
-			int RandomIndex = FMath::RandRange(0, Enemies.Num() - 1);
-			NewAttacker = Enemies[RandomIndex];
-
-			if (NewAttacker)
-			{
-				CurrentEnemyAttacker = NewAttacker;
-				auto EnemyAIC = CurrentEnemyAttacker->GetEnemyAIController();
-				if (CurrentEnemyAttacker && EnemyAIC)
-				{
-					EnemyAIC->SetChosenToAttack();
-				}
-			}
 		}
 	}
-	catch (const std::exception&)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Exception handled........."));
+	else {
+		if (bIsAttacking) return;
+
+		if (CurrentEnemyAttacker)
+		{
+			CurrentEnemyAttacker->GetEnemyAIController()->SetChosenToAttack(false);
+		}
+
+		int RandomIndex = FMath::RandRange(0, Enemies.Num() - 1);
+		NewAttacker = Enemies[RandomIndex];
+
+		if (NewAttacker)
+		{
+			CurrentEnemyAttacker = NewAttacker;
+			auto EnemyAIC = CurrentEnemyAttacker->GetEnemyAIController();
+			if (CurrentEnemyAttacker && EnemyAIC)
+			{
+				EnemyAIC->SetChosenToAttack();
+			}
+		}
 	}
 }
 

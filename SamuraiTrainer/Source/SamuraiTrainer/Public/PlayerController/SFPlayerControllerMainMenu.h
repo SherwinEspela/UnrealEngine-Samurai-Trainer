@@ -42,6 +42,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPlayButtonClicked();
 
+	UFUNCTION(BlueprintCallable)
+	void HandleMainMenuFadeOutCompleted();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

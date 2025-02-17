@@ -13,6 +13,7 @@
 #include "UI/SFUWLevelIntro.h"
 #include "UI/SFUWLevelResults.h"
 #include "DataPersistence/SFSaveGameData.h"
+#include "Utility/RandomLevelLoader.h"
 #include "Components/AudioComponent.h"
 
 #define MAIN_MENU_MAP FName("MainMenuMap")
@@ -296,14 +297,15 @@ void ASTPlayerController::HandleHideLevelMenuCompleted()
 
 void ASTPlayerController::HandleExitMenuFinished()
 {
+	RandomLevelLoader* LevelLoader = new RandomLevelLoader();
 	switch (CurrentSelectedButtonType)
 	{
 	case EMainMenuButtonTypes::EMMBT_LevelContinue:
 		IncrementAndSaveShowdownCount();
-		UGameplayStatics::OpenLevel(this, FName(LEVEL1_MAP));
+		LevelLoader->LoadRandomLevel(this);
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelRestart:
-		UGameplayStatics::OpenLevel(this, FName(LEVEL1_MAP));
+		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelExit:
 		UGameplayStatics::OpenLevel(this, FName(MAIN_MENU_MAP));
@@ -352,12 +354,7 @@ void ASTPlayerController::IncrementAndSaveShowdownCount()
 	FString SaveSlotName = SaveGameData->SaveSlotName;
 	uint32 UserIndex = SaveGameData->UserIndex;
 	SaveGameData->ShowdownCounter += 1;
-
-	try
-	{
-		UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
-	}
-	catch (const std::exception&) {}
+	UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
 }
 
 void ASTPlayerController::LevelResultsEvent()
