@@ -20,7 +20,6 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 	bLogoTitleEntered = false;
 	bMainMenuEntered = false;
 	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_Default;
-	//RandomLevelLoader::MaxLevelCount = 2;
 
 	if (SaveGameData == nullptr)
 	{

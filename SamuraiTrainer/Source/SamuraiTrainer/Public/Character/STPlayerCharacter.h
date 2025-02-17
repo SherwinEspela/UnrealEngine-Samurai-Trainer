@@ -108,6 +108,7 @@ public:
 	void Counter();
 	virtual void Block() override;
 	virtual void ParryOrBlock();
+	virtual void Evade();
 	virtual void HitReact() override;
 	virtual void PlayAttackStagger(FName SectionName) override;
 	virtual void Death() override;

@@ -77,6 +77,7 @@ void ASTPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(InputActionAttack, ETriggerEvent::Triggered, this, &ASTPlayerController::Attack);
 	EnhancedInputComponent->BindAction(InputActionAttackCombo2, ETriggerEvent::Triggered, this, &ASTPlayerController::AttackCombo2);
 	EnhancedInputComponent->BindAction(InputActionBlock, ETriggerEvent::Triggered, this, &ASTPlayerController::ParryOrBlock);
+	EnhancedInputComponent->BindAction(InputActionEvade, ETriggerEvent::Triggered, this, &ASTPlayerController::Evade);
 	EnhancedInputComponent->BindAction(InputActionRestartLevel, ETriggerEvent::Triggered, this, &ASTPlayerController::RestartLevel);
 	EnhancedInputComponent->BindAction(InputActionToggleDebuggerDisplay, ETriggerEvent::Triggered, this, &ASTPlayerController::ToggleDebuggerDisplay);
 	EnhancedInputComponent->BindAction(IADpadUp, ETriggerEvent::Triggered, this, &ASTPlayerController::SelectTopButton);
@@ -155,6 +156,14 @@ void ASTPlayerController::ParryOrBlock()
 	if (!bLevelIntroCompleted) return;
 
 	PlayerCharacter->ParryOrBlock();
+}
+
+void ASTPlayerController::Evade()
+{
+	if (LevelResultType != ELevelResultType::EDPT_Default) return;
+	if (!bLevelIntroCompleted) return;
+
+	PlayerCharacter->Evade();
 }
 
 void ASTPlayerController::Kick()

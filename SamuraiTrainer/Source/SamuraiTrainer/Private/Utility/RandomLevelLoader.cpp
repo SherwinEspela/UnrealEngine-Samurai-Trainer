@@ -6,7 +6,7 @@
 
 RandomLevelLoader::RandomLevelLoader()
 {
-	MaxLevelCount = 2;
+	MaxLevelCount = 7;
 }
 
 void RandomLevelLoader::LoadRandomLevel(const UObject* WorldContextObject)
@@ -14,9 +14,3 @@ void RandomLevelLoader::LoadRandomLevel(const UObject* WorldContextObject)
 	const int RandNumber = FMath::RandRange(1, MaxLevelCount);
 	UGameplayStatics::OpenLevel(WorldContextObject, FName(FString::Printf(TEXT("LevelMap%i"), RandNumber)));
 }
-
-RandomLevelLoader::~RandomLevelLoader()
-{
-}
-
-

@@ -118,6 +118,13 @@ void ASTEnemyCharacter::BeginPlay()
 	FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
 	FXAttackIndicator->OnSystemFinished.AddDynamic(this, &ASTEnemyCharacter::OnFXAttackIndicatorFinished);
 
+	if (!bIsDebugMode)
+	{
+		FXTargetIndicator->SetVisibility(false);
+		FXTargetIndicator->bHiddenInGame = true;
+		FXTargetIndicator->SetActive(false);
+	}
+
 	ShouldDisplayTargetIndicator(false);
 }
 
@@ -232,18 +239,28 @@ EPlayerQTEResponseType ASTEnemyCharacter::GenerateRandomQTEResponse()
 {
 	EPlayerQTEResponseType ResponseType = EPlayerQTEResponseType::EPQTER_Block;
 
-	int RandomNumber = FMath::RandRange(1, 3);
+	int RandomNumber = FMath::RandRange(1, 4);
 	
 		switch (RandomNumber)
 		{
 		case 1:
 			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
-			ResponseType = EPlayerQTEResponseType::EPQTER_Counter;
+			ResponseType = EPlayerQTEResponseType::EPQTER_Evade;
 			break;
 
 		case 2:
 			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_GREEN);
-			ResponseType = EPlayerQTEResponseType::EPQTER_Kick;
+			ResponseType = EPlayerQTEResponseType::EPQTER_SwordAttack1;
+			break;
+
+		case 3:
+			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_BLUE);
+			ResponseType = EPlayerQTEResponseType::EPQTER_SwordAttack2;
+			break;
+
+		case 4:
+			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_YELLOW);
+			ResponseType = EPlayerQTEResponseType::EPQTER_Block;
 			break;
 
 		default:
@@ -418,6 +435,7 @@ void ASTEnemyCharacter::SetDeathPoseType(EDeathPoseTypes Value)
 
 void ASTEnemyCharacter::ShouldDisplayTargetIndicator(bool ShouldDisplay)
 {
+	if (!bIsDebugMode) return;
 	if (FXTargetIndicator == nullptr) return;
 
 	if (ShouldDisplay)
@@ -440,9 +458,9 @@ void ASTEnemyCharacter::SwordAttack()
 	int MaxIndex = SwordAttacks.Num();
 	CurrentAttackData = SwordAttacks[FMath::RandRange(0, MaxIndex - 1)];
 	EPlayerQTEResponseType ResponseType = GenerateRandomQTEResponse();
-	OnAttackStartedWith3Params.Broadcast(CurrentAttackData.CounterBlock, CurrentAttackData.HitReaction, EPlayerQTEResponseType::EPQTER_Block);
-	OnAttackBegan.Broadcast(EPlayerQTEResponseType::EPQTER_Block);
-	OnAttackBeganFromThisEnemy.Broadcast(this, EPlayerQTEResponseType::EPQTER_Block);
+	// OnAttackStartedWith3Params.Broadcast(CurrentAttackData.CounterBlock, CurrentAttackData.HitReaction, ResponseType);
+	// OnAttackBegan.Broadcast(ResponseType);
+	OnAttackBeganFromThisEnemy.Broadcast(this, ResponseType);
 
 	EHitDirectionType HitDirection = DetermineHitDirectionByLineTrace(GetActorLocation(), PlayerCharacter->GetActorLocation());
 	PlayerCharacter->SetHitDirectionType(HitDirection);
