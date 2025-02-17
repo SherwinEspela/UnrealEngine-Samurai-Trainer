@@ -297,11 +297,12 @@ void ASTPlayerController::HandleHideLevelMenuCompleted()
 
 void ASTPlayerController::HandleExitMenuFinished()
 {
+	RandomLevelLoader* LevelLoader = new RandomLevelLoader();
 	switch (CurrentSelectedButtonType)
 	{
 	case EMainMenuButtonTypes::EMMBT_LevelContinue:
 		IncrementAndSaveShowdownCount();
-		RandomLevelLoader::LoadRandomLevel(this);
+		LevelLoader->LoadRandomLevel(this);
 		break;
 	case EMainMenuButtonTypes::EMMBT_LevelRestart:
 		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
@@ -353,12 +354,7 @@ void ASTPlayerController::IncrementAndSaveShowdownCount()
 	FString SaveSlotName = SaveGameData->SaveSlotName;
 	uint32 UserIndex = SaveGameData->UserIndex;
 	SaveGameData->ShowdownCounter += 1;
-
-	try
-	{
-		UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
-	}
-	catch (const std::exception&) {}
+	UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
 }
 
 void ASTPlayerController::LevelResultsEvent()

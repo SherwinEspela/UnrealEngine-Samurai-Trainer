@@ -30,7 +30,6 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 	SetPlayerDead(false);
 	SetChosenToAttack(false);
 	SetToOuterRange();
-	//SetToMiddleRange(false);
 	SetIdle();
 
 	UCrowdFollowingComponent* CrowdFollowingComponent = FindComponentByClass<UCrowdFollowingComponent>();
@@ -45,23 +44,16 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 
 void ASTEnemyAIController::SetChosenToAttack(bool Value)
 {
-	try
-	{
-		Blackboard->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
-		bool IsHitReacting = Blackboard->GetValueAsBool(BB_KEY_HIT_REACTING);
-		bool IsStaggered = Blackboard->GetValueAsBool(BB_KEY_STAGGERED);
-		bool IsBlocking = Blackboard->GetValueAsBool(BB_KEY_BLOCKING);
-		bool IsRecovering = Blackboard->GetValueAsBool(BB_KEY_RECOVERING);
-		bool IsDying = Blackboard->GetValueAsBool(BB_KEY_DYING);
+	Blackboard->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
+	bool IsHitReacting = Blackboard->GetValueAsBool(BB_KEY_HIT_REACTING);
+	bool IsStaggered = Blackboard->GetValueAsBool(BB_KEY_STAGGERED);
+	bool IsBlocking = Blackboard->GetValueAsBool(BB_KEY_BLOCKING);
+	bool IsRecovering = Blackboard->GetValueAsBool(BB_KEY_RECOVERING);
+	bool IsDying = Blackboard->GetValueAsBool(BB_KEY_DYING);
 
-		if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
-		{
-			SetAttacking(true);
-		}
-	}
-	catch (const std::exception&)
+	if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Exception caught at ASTEnemyAIController::SetChosenToAttack......"));
+		SetAttacking(true);
 	}
 }
 

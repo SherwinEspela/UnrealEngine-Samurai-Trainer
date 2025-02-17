@@ -11,8 +11,8 @@ class SAMURAITRAINER_API RandomLevelLoader
 {
 public:
 	RandomLevelLoader();
-	static void LoadRandomLevel(const UObject* WorldContextObject);
+	void LoadRandomLevel(const UObject* WorldContextObject);
 	~RandomLevelLoader();
 
-	static int MaxLevelCount;
+	int MaxLevelCount;
 };

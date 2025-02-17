@@ -20,7 +20,7 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 	bLogoTitleEntered = false;
 	bMainMenuEntered = false;
 	CurrentSelectedButtonType = EMainMenuButtonTypes::EMMBT_Default;
-	RandomLevelLoader::MaxLevelCount = 2;
+	//RandomLevelLoader::MaxLevelCount = 2;
 
 	if (SaveGameData == nullptr)
 	{
@@ -32,13 +32,8 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 	{
 		FString SaveSlotName = SaveGameData->SaveSlotName;
 		uint32 UserIndex = SaveGameData->UserIndex;
-
-		try
-		{
-			SaveGameData->ShowdownCounter = 1;
-			UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
-		}
-		catch (const std::exception&) {}
+		SaveGameData->ShowdownCounter = 1;
+		UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
 	}
 
 	if (SFUWMainMenuClass)
@@ -139,5 +134,6 @@ void ASFPlayerControllerMainMenu::HandleButtonSelected(EMainMenuButtonTypes Butt
 
 void ASFPlayerControllerMainMenu::HandleMainMenuFadeOutCompleted()
 {
-	RandomLevelLoader::LoadRandomLevel(this);
+	RandomLevelLoader* LevelLoader = new RandomLevelLoader();
+	LevelLoader->LoadRandomLevel(this);
 }
