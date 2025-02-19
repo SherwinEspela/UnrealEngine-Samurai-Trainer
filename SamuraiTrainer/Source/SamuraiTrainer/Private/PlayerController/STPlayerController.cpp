@@ -196,6 +196,7 @@ void ASTPlayerController::DisplayLevelMenu()
 	bIsDisplayLevelMenuCompleted = false;
 	bIsHideLevelMenuCompleted = false;
 	LevelMusicAudioComponent->SetVolumeMultiplier(MUSIC_VOLUME_MIN);
+	CurrentVolumeLevel = MUSIC_VOLUME_MIN;
 }
 
 void ASTPlayerController::HideLevelMenu()
@@ -206,6 +207,7 @@ void ASTPlayerController::HideLevelMenu()
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
 	LevelMenu->OnHide();
 	LevelMusicAudioComponent->SetVolumeMultiplier(MUSIC_VOLUME_MAX);
+	CurrentVolumeLevel = MUSIC_VOLUME_MAX;
 }
 
 void ASTPlayerController::SelectTopButton()
@@ -338,7 +340,12 @@ void ASTPlayerController::HandleLevelIntroCompleted()
 	}
 
 	bLevelIntroCompleted = true;
-	LevelMusicAudioComponent = UGameplayStatics::SpawnSound2D(this, SoundMusic, MUSIC_VOLUME_MAX);
+
+	
+	int RandomIndex = FMath::RandRange(0, LevelMusicSounds.Num() - 1);
+	CurrentVolumeLevel = MUSIC_VOLUME_MAX;
+	LevelMusicAudioComponent = UGameplayStatics::SpawnSound2D(this, LevelMusicSounds[RandomIndex], MUSIC_VOLUME_MAX);
+	LevelMusicAudioComponent->OnAudioFinished.AddDynamic(this, &ASTPlayerController::HandleMusicAudioFinished);
 	OnLevelIntroHandled.Broadcast();
 }
 
@@ -354,6 +361,12 @@ void ASTPlayerController::HandlePlayerDied()
 	LevelResultType = ELevelResultType::ELRT_PlayerDied;
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::LevelResultsEvent, 3.0f, false);
+}
+
+void ASTPlayerController::HandleMusicAudioFinished()
+{
+	int RandomIndex = FMath::RandRange(0, LevelMusicSounds.Num() - 1);
+	LevelMusicAudioComponent = UGameplayStatics::SpawnSound2D(this, LevelMusicSounds[RandomIndex], CurrentVolumeLevel);
 }
 
 void ASTPlayerController::IncrementAndSaveShowdownCount()

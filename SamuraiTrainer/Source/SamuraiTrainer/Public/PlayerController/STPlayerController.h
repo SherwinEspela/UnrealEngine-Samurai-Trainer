@@ -127,10 +127,11 @@ protected:
 protected:
 	// Sound FX
 	UPROPERTY(EditDefaultsOnly, Category = "Level Music")
-	TObjectPtr<USoundBase> SoundMusic;
+	TArray<USoundBase*> LevelMusicSounds;
 
 	TObjectPtr<UAudioComponent> LevelMusicAudioComponent;
-
+	float CurrentVolumeLevel;
+	
 protected:
 	void RestartLevel();
 	void DisplayLevelMenu();
@@ -155,6 +156,9 @@ protected:
 
 	UFUNCTION()
 	void HandlePlayerDied();
+
+	UFUNCTION()
+	void HandleMusicAudioFinished();
 
 protected:
 	// Saving Game Data
