@@ -17,6 +17,8 @@ void USFUWMenuBase::SelectBottomButton()
 
 void USFUWMenuBase::NavigateToNextButton(UUWButtonNavigation* Value)
 {
+	if (!bCanNavigateToNextButton) return;
+
 	if (Value)
 	{
 		CurrentButton->PlayUnselect();

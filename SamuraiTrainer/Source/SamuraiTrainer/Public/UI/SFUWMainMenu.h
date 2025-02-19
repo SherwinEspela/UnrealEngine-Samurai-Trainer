@@ -11,6 +11,7 @@
 class UUWButtonMainMenu;
 class UUWButtonNavigation;
 class UTextBlock;
+class UHorizontalBox;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLogoIntroAnimFinishedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMainMenuEntryAnimFinishedSignature);
@@ -51,6 +52,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void HandleMainMenuEntryAnimFinished();
 
+	UFUNCTION()
+	void HandleButtonSelectStarted();
+
+	UFUNCTION()
+	void HandleButtonSelectAnimFinished();
+
 protected:
 	// Buttons
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -68,14 +75,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UUWButtonMainMenu* BMMTutorial;
 
-	/*UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UTextBlock* TextDescription;
-
-	UUWButtonMainMenu* CurrentMMButton;*/
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UHorizontalBox* HBConfirmGroup;
 
 private:
-	//void NavigateToNextButton(UUWButtonNavigation* Value);
-	//void SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value);
 	void SetupButtonNavigationMapping();
 	void SubscribeToButtonEvents();
 
