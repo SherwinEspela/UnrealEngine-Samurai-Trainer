@@ -535,6 +535,8 @@ void ASTPlayerCharacter::OnParryAttackFrameEnded()
 
 void ASTPlayerCharacter::OnComboEnderStarted()
 {
+	OnAttackStarted.Broadcast();
+
 	if (TargetLockActor)
 	{
 		TargetLockActor->SetEnabled(false);

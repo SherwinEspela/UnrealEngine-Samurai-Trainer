@@ -8,6 +8,7 @@
 
 class UBehaviorTreeComponent;
 class UBehaviorTree;
+class UBlackboardComponent;
 
 /**
  * 
@@ -21,8 +22,13 @@ public:
 	ASTEnemyAIController();
 
 	void Initialize(TObjectPtr<UBehaviorTree> BehaviorTree);
+
+	UFUNCTION()
 	void SetChosenToAttack(bool Value = true);
+	
+	UFUNCTION()
 	void SetPausedToAttack(bool Value = true);
+	
 	void SetToOuterRange(bool Value = true);
 	void SetToMiddleRange(bool Value = true);
 	void SetAttacking(bool Value = true);
@@ -43,6 +49,9 @@ protected:
 protected:
 	UPROPERTY()
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
+
+	UPROPERTY()
+	TObjectPtr<UBlackboardComponent> EnemyBlackboardComponent;
 
 	APawn* PlayerPawn;
 

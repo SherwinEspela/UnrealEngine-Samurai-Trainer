@@ -113,7 +113,10 @@ void ACombatSystemPawn::HandleAttackBeganFromEnemy(ASTEnemyCharacter* Enemy, EPl
 		AnEnemy->ShouldDisplayTargetIndicator(false);
 	}
 
-	if (Player) Player->SetCurrentAttackingEnemyWithResponseType(Enemy, PlayerResponseType);
+	if (Player) {
+		Player->HandleBasicAttackCompleted();
+		Player->SetCurrentAttackingEnemyWithResponseType(Enemy, PlayerResponseType);
+	}
 	if (QTEWidget) QTEWidget->DisplayWithPlayerResponseType(PlayerResponseType);
 
 	SetEnemiesToPauseAttacking();
@@ -134,9 +137,11 @@ void ACombatSystemPawn::HandleBlockCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 
 void ACombatSystemPawn::HandleDeathCompletedFromEnemy(ASTEnemyCharacter* Enemy)
 {
-	Enemy->GetEnemyAIController()->SetChosenToAttack(false);
-	Enemies.Remove(Enemy);
-	SelectAttacker();
+	if (Enemy && Enemy->GetEnemyAIController()) {
+		Enemy->GetEnemyAIController()->SetChosenToAttack(false);
+		Enemies.Remove(Enemy);
+		SelectAttacker();
+	}
 }
 
 void ACombatSystemPawn::HandleEnemyAttackCompleted()
@@ -167,8 +172,11 @@ void ACombatSystemPawn::SetEnemiesToPauseAttacking(bool Paused)
 
 void ACombatSystemPawn::HandleEventFromEnemyCompleted(ASTEnemyCharacter* Enemy)
 {
-	Enemy->GetEnemyAIController()->SetChosenToAttack(false);
-	EnemiesQ.Enqueue(Enemy);
+	if (Enemy && Enemy->GetEnemyAIController())
+	{
+		Enemy->GetEnemyAIController()->SetChosenToAttack(false);
+		EnemiesQ.Enqueue(Enemy);
+	}
 }
 
 void ACombatSystemPawn::SelectAttacker()
@@ -185,7 +193,10 @@ void ACombatSystemPawn::SelectAttacker()
 	if (Enemies.Num() == 1)
 	{
 		NewAttacker = Enemies[0];
-		NewAttacker->GetEnemyAIController()->SetChosenToAttack();
+		if (NewAttacker && NewAttacker->GetEnemyAIController())
+		{
+			NewAttacker->GetEnemyAIController()->SetChosenToAttack();
+		}
 		return;
 	}
 
@@ -194,13 +205,16 @@ void ACombatSystemPawn::SelectAttacker()
 		if (!EnemiesQ.IsEmpty())
 		{
 			EnemiesQ.Dequeue(NewAttacker);
-			NewAttacker->GetEnemyAIController()->SetChosenToAttack();
+			if (NewAttacker && NewAttacker->GetEnemyAIController())
+			{
+				NewAttacker->GetEnemyAIController()->SetChosenToAttack();
+			}
 		}
 	}
 	else {
 		if (bIsAttacking) return;
 
-		if (CurrentEnemyAttacker)
+		if (CurrentEnemyAttacker && CurrentEnemyAttacker->GetEnemyAIController())
 		{
 			CurrentEnemyAttacker->GetEnemyAIController()->SetChosenToAttack(false);
 		}

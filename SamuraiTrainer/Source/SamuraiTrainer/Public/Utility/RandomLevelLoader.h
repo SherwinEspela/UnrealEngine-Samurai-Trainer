@@ -15,4 +15,5 @@ public:
 
 private:
 	int MaxLevelCount;
+	int CurrentLevelIndex;
 };

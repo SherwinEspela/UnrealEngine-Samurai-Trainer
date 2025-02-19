@@ -19,6 +19,7 @@ class USFUWLevelResults;
 class USoundBase;
 class UAudioComponent;
 class USFSaveGameData;
+class RandomLevelLoader;
 struct FInputActionValue;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelIntroHandledSignature);
@@ -179,4 +180,5 @@ private:
 	bool bIsGameExiting = false;
 	bool bLevelIntroCompleted = false;
 	ELevelResultType LevelResultType;
+	RandomLevelLoader* LevelLoader;
 };
