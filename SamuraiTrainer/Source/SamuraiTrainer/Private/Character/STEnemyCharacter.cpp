@@ -283,6 +283,7 @@ float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 		if (bIsDead)
 		{
+			OnOpponentWillBeDead.Broadcast();
 			FXTargetIndicator->Deactivate();
 			FXTargetIndicator->SetActive(false);
 

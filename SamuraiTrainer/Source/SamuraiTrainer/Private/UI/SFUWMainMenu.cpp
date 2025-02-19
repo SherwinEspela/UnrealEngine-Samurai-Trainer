@@ -4,6 +4,7 @@
 #include "UI/Buttons/UWButtonMainMenu.h"
 #include "UI/Buttons/UWButtonNavigation.h"
 #include "Components/TextBlock.h"
+#include "Components/HorizontalBox.h"
 
 void USFUWMainMenu::NativeConstruct()
 {
@@ -11,6 +12,12 @@ void USFUWMainMenu::NativeConstruct()
 
 	TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_PLAY));
 
+	SetupButtonNavigationMapping();
+	SubscribeToButtonEvents();
+}
+
+void USFUWMainMenu::SetupButtonNavigationMapping()
+{
 	// setup button navigation
 	BMMPlay->SetBottomButton(BMMModes);
 	BMMModes->SetTopButton(BMMPlay);
@@ -24,12 +31,20 @@ void USFUWMainMenu::NativeConstruct()
 	CurrentButton = BMMPlay;
 }
 
-void USFUWMainMenu::SetupButtonNavigationMapping()
-{
-}
-
 void USFUWMainMenu::SubscribeToButtonEvents()
 {
+	BMMPlay->OnButtonSelectStarted.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectStarted);
+	BMMModes->OnButtonSelectStarted.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectStarted);
+	BMMSettings->OnButtonSelectStarted.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectStarted);
+	BMMDevBio->OnButtonSelectStarted.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectStarted);
+	BMMTutorial->OnButtonSelectStarted.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectStarted);
+
+
+	BMMPlay->OnButtonSelectAnimFinished.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectAnimFinished);
+	BMMModes->OnButtonSelectAnimFinished.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectAnimFinished);
+	BMMSettings->OnButtonSelectAnimFinished.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectAnimFinished);
+	BMMDevBio->OnButtonSelectAnimFinished.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectAnimFinished);
+	BMMTutorial->OnButtonSelectAnimFinished.AddDynamic(this, &USFUWMainMenu::HandleButtonSelectAnimFinished);
 }
 
 void USFUWMainMenu::PlayLogoExit()
@@ -42,55 +57,6 @@ void USFUWMainMenu::PlayEnterMainMenu()
 	OnPlayEnterMainMenu();
 }
 
-//void USFUWMainMenu::SelectTopButton()
-//{
-//	NavigateToNextButton(CurrentMMButton->SelectTopButton());
-//}
-//
-//void USFUWMainMenu::SelectBottomButton()
-//{
-//	NavigateToNextButton(CurrentMMButton->SelectBottomButton());
-//}
-//
-//void USFUWMainMenu::NavigateToNextButton(UUWButtonNavigation* Value)
-//{
-//	if (Value)
-//	{
-//		CurrentMMButton->PlayUnselect();
-//		auto NextButton = Cast<UUWButtonMainMenu>(Value);
-//		NextButton->PlaySelect();
-//		CurrentMMButton = NextButton;
-//
-//		EMainMenuButtonTypes ButtonType = CurrentMMButton->GetButtonType();
-//		OnButtonSelected.Broadcast(ButtonType);
-//		SetDescriptionForSelectedButtonType(ButtonType);
-//	}
-//}
-
-//void USFUWMainMenu::SetDescriptionForSelectedButtonType(EMainMenuButtonTypes Value)
-//{
-//	switch (Value)
-//	{
-//	case EMainMenuButtonTypes::EMMBT_Play:
-//		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_PLAY));
-//		break;
-//	case EMainMenuButtonTypes::EMMBT_Modes:
-//		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_MODES));
-//		break;
-//	case EMainMenuButtonTypes::EMMBT_Settings:
-//		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_SETTINGS));
-//		break;
-//	case EMainMenuButtonTypes::EMMBT_DevBio:
-//		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_DEVBIO));
-//		break;
-//	case EMainMenuButtonTypes::EMMBT_Tutorials:
-//		TextDescription->SetText(FText::FromName(DESCRIPTION_BUTTON_TUTORIALS));
-//		break;
-//	default:
-//		break;
-//	}
-//}
-
 void USFUWMainMenu::HandleLogoIntroAnimFinished()
 {
 	OnLogoIntroAnimFinished.Broadcast();
@@ -99,4 +65,16 @@ void USFUWMainMenu::HandleLogoIntroAnimFinished()
 void USFUWMainMenu::HandleMainMenuEntryAnimFinished()
 {
 	OnMainMenuEntryAnimFinished.Broadcast();
+}
+
+void USFUWMainMenu::HandleButtonSelectStarted()
+{
+	bCanNavigateToNextButton = false;
+	HBConfirmGroup->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void USFUWMainMenu::HandleButtonSelectAnimFinished()
+{
+	bCanNavigateToNextButton = true;
+	HBConfirmGroup->SetVisibility(ESlateVisibility::Visible);
 }
