@@ -18,10 +18,6 @@
 #include "Components/CapsuleComponent.h"
 
 #define NV_LINEAR_COLOR FName("SpriteColor")
-#define ATTACK_INDICATOR_COLOR_RED FLinearColor(FColor::Red)
-#define ATTACK_INDICATOR_COLOR_YELLOW FLinearColor(FColor::Yellow)
-#define ATTACK_INDICATOR_COLOR_BLUE FLinearColor(FColor::Blue)
-#define ATTACK_INDICATOR_COLOR_GREEN FLinearColor(FColor::Green)
 
 ASTEnemyCharacter::ASTEnemyCharacter()
 {
@@ -249,12 +245,12 @@ EPlayerQTEResponseType ASTEnemyCharacter::GenerateRandomQTEResponse()
 			break;
 
 		case 2:
-			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_GREEN);
+			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_BLUE);
 			ResponseType = EPlayerQTEResponseType::EPQTER_SwordAttack1;
 			break;
 
 		case 3:
-			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_BLUE);
+			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_GREEN);
 			ResponseType = EPlayerQTEResponseType::EPQTER_SwordAttack2;
 			break;
 

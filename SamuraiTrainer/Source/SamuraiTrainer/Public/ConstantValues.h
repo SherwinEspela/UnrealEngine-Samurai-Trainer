@@ -87,3 +87,8 @@
 #define KICK_DAMAGE 10.f
 #define STAGGER_DAMAGE 5.f
 #define FATAL_DAMAGE 100.f
+
+#define ATTACK_INDICATOR_COLOR_RED FLinearColor(FColor::Red)
+#define ATTACK_INDICATOR_COLOR_YELLOW FLinearColor(FColor::Yellow)
+#define ATTACK_INDICATOR_COLOR_BLUE FLinearColor(FColor::Cyan)
+#define ATTACK_INDICATOR_COLOR_GREEN FLinearColor(FColor::Green)

@@ -758,6 +758,7 @@ void ASTPlayerCharacter::QTEResult()
 
 	if (ExpectedPlayerQTEResponse == CurrentPlayerQTEResponse)
 	{
+		OnQTEResponseStarted.Broadcast();
 		ExecuteParry();
 	}
 	else {

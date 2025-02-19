@@ -10,6 +10,7 @@
 #include "Combat/TargetLockActor.h"
 #include "Components/CapsuleComponent.h"
 #include "PlayerController/STPlayerController.h"
+#include "UI/SFUWQuickTimeEvent.h"
 
 ACombatSystemPawn::ACombatSystemPawn()
 {
@@ -22,6 +23,7 @@ void ACombatSystemPawn::BeginPlay()
 
 	Player = CastChecked<ASTPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	Player->OnAttackStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerAttackStarted);
+	Player->OnQTEResponseStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerQTEResponseStarted);
 	Player->OnEnemiesCanAttack.AddDynamic(this, &ACombatSystemPawn::HandleEnemisCanAttack);
 	Player->OnStaggerStarted.AddDynamic(this, &ACombatSystemPawn::HandlePlayerStaggerStarted);
 	Player->OnCharacterDied.AddDynamic(this, &ACombatSystemPawn::HandlePlayerCharacterDied);
@@ -55,6 +57,12 @@ void ACombatSystemPawn::BeginPlay()
 	}
 
 	CombatSystemAIController = Cast<ACombatSystemAIController>(GetController());
+
+	if (SFUWQuickTimeEventClass)
+	{
+		QTEWidget = CreateWidget<USFUWQuickTimeEvent>(GetWorld(), SFUWQuickTimeEventClass);
+		QTEWidget->AddToViewport();
+	}
 }
 
 void ACombatSystemPawn::HandlePlayerAttackStarted()
@@ -62,8 +70,14 @@ void ACombatSystemPawn::HandlePlayerAttackStarted()
 	SetEnemiesToPauseAttacking();
 }
 
+void ACombatSystemPawn::HandlePlayerQTEResponseStarted()
+{
+	QTEWidget->Hide();
+}
+
 void ACombatSystemPawn::HandlePlayerStaggerStarted()
 {
+	QTEWidget->Hide();
 	SetEnemiesToPauseAttacking();
 }
 
@@ -98,10 +112,8 @@ void ACombatSystemPawn::HandleAttackBeganFromEnemy(ASTEnemyCharacter* Enemy, EPl
 		AnEnemy->ShouldDisplayTargetIndicator(false);
 	}
 
-	if (Player)
-	{
-		Player->SetCurrentAttackingEnemyWithResponseType(Enemy, PlayerResponseType);
-	}
+	if (Player) Player->SetCurrentAttackingEnemyWithResponseType(Enemy, PlayerResponseType);
+	if (QTEWidget) QTEWidget->DisplayWithPlayerResponseType(PlayerResponseType);
 
 	SetEnemiesToPauseAttacking();
 }

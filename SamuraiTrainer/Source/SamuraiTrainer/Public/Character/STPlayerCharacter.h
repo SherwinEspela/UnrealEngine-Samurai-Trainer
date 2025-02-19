@@ -22,6 +22,7 @@ class UNiagaraComponent;
 class AKatanaCover;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemiesCanAttackSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnQTEResponseStartedSignature);
 
 /**
  * 
@@ -92,6 +93,7 @@ public:
 
 public:
 	FOnEnemiesCanAttackSignature OnEnemiesCanAttack;
+	FOnQTEResponseStartedSignature OnQTEResponseStarted;
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }

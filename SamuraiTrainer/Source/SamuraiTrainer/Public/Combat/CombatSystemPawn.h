@@ -14,6 +14,7 @@ class UBehaviorTree;
 class ACombatSystemAIController;
 class ASTPlayerCharacter;
 class ASTPlayerController;
+class USFUWQuickTimeEvent;
 
 UCLASS()
 class SAMURAITRAINER_API ACombatSystemPawn : public APawn
@@ -32,6 +33,9 @@ protected:
 
 	UFUNCTION()
 	void HandlePlayerAttackStarted();
+
+	UFUNCTION()
+	void HandlePlayerQTEResponseStarted();
 
 	UFUNCTION()
 	void HandlePlayerStaggerStarted();
@@ -94,6 +98,14 @@ protected:
 
 	bool bIsAttacking = false;
 	bool bIsSequenceAttacking = true;
+
+protected:
+	// UI
+	UPROPERTY(EditDefaultsOnly, Category = "QTE UI")
+	TSubclassOf<USFUWQuickTimeEvent> SFUWQuickTimeEventClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "QTE UI")
+	TObjectPtr<USFUWQuickTimeEvent> QTEWidget;
 
 private:
 	void HandleEventFromEnemyCompleted(ASTEnemyCharacter* Enemy);
