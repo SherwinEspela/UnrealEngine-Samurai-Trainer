@@ -72,6 +72,7 @@ void ACombatSystemPawn::HandlePlayerAttackStarted()
 
 void ACombatSystemPawn::HandlePlayerQTEResponseStarted()
 {
+	SetEnemiesToPauseAttacking();
 	QTEWidget->Hide();
 }
 
@@ -157,11 +158,6 @@ void ACombatSystemPawn::SetEnemiesToPauseAttacking(bool Paused)
 {
 	for (auto AnEnemy : Enemies)
 	{
-	/*	if (!AnEnemy->IsDead() && !AnEnemy->IsAttacking())
-		{
-			AnEnemy->GetEnemyAIController()->SetPausedToAttack(Paused);
-		}*/
-
 		if (!AnEnemy->IsDead())
 		{
 			AnEnemy->GetEnemyAIController()->SetPausedToAttack(Paused);
