@@ -180,6 +180,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack Location Offset")
 	float AttackLocationOffsetDefault = 120.f;
 
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+	bool bIsDebugMode = false;
+
 protected:
 	// Weapon
 	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))

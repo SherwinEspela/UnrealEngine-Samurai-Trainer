@@ -22,6 +22,7 @@ class UNiagaraComponent;
 class AKatanaCover;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemiesCanAttackSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnQTEResponseStartedSignature);
 
 /**
  * 
@@ -92,6 +93,7 @@ public:
 
 public:
 	FOnEnemiesCanAttackSignature OnEnemiesCanAttack;
+	FOnQTEResponseStartedSignature OnQTEResponseStarted;
 
 public:
 	FORCEINLINE void SetIsInteractingWithWeapon(bool Value) { bIsInteractingWithWeapon = Value; }
@@ -108,6 +110,7 @@ public:
 	void Counter();
 	virtual void Block() override;
 	virtual void ParryOrBlock();
+	virtual void Evade();
 	virtual void HitReact() override;
 	virtual void PlayAttackStagger(FName SectionName) override;
 	virtual void Death() override;

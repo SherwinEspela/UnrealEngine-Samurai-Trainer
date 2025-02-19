@@ -52,6 +52,7 @@ protected:
 	void AttackCombo2();
 	void Block();
 	void ParryOrBlock();
+	void Evade();
 	void Kick();
 
 protected:
@@ -76,6 +77,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionBlock;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
+	UInputAction* InputActionEvade;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input")
 	UInputAction* InputActionKick;

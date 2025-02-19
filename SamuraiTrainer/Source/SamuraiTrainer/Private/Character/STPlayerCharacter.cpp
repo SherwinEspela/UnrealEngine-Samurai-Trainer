@@ -173,6 +173,13 @@ void ASTPlayerCharacter::InitQueues()
 
 	DeathSectionNames.Add(DEATH1);
 	DeathSectionNames.Add(DEATH2);
+
+	if (!bIsDebugMode)
+	{
+		FXTargetBeam->SetVisibility(false);
+		FXTargetBeam->SetActive(false);
+		FXTargetBeam->bHiddenInGame = true;
+	}
 }
 
 void ASTPlayerCharacter::Tick(float DeltaTime)
@@ -184,6 +191,7 @@ void ASTPlayerCharacter::Tick(float DeltaTime)
 		TargetLockActor->SetActorLocation(GetActorLocation());
 	}
 
+	if (!bIsDebugMode) return;
 	if (CurrentEnemy == nullptr) return;
 	if (!CurrentEnemy->IsDead())
 	{
@@ -309,7 +317,7 @@ void ASTPlayerCharacter::SwordAttack()
 
 	if (bIsQTEMode)
 	{
-		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_SwordAttack;
+		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_SwordAttack1;
 		QTEResult();
 		return;
 	}
@@ -330,7 +338,7 @@ void ASTPlayerCharacter::SwordAttackCombo2()
 
 	if (bIsQTEMode)
 	{
-		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_SwordAttack;
+		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_SwordAttack2;
 		QTEResult();
 		return;
 	}
@@ -377,6 +385,27 @@ void ASTPlayerCharacter::ParryOrBlock()
 	// TODO: insert conditions if player can
 	// parry or block here. Parry for now.
 	ExecuteParry();
+}
+
+void ASTPlayerCharacter::Evade()
+{
+	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
+	if (MovementState == EMovementStates::EPMS_Parrying) return;
+	if (MovementState == EMovementStates::EPMS_ParryAttacking) return;
+	if (MovementState == EMovementStates::EPMS_HitReacting) return;
+	if (bButtonsDisabled) return;
+
+	SetSlowMotion(false);
+	OnAttackStarted.Broadcast();
+
+	if (bIsQTEMode)
+	{
+		CurrentPlayerQTEResponse = EPlayerQTEResponseType::EPQTER_Evade;
+		QTEResult();
+		return;
+	}
+
+	// TODO: add execute evade on future versions here
 }
 
 void ASTPlayerCharacter::Kick()
@@ -672,6 +701,7 @@ void ASTPlayerCharacter::SetCurrentAttackingEnemyWithResponseType(ASTEnemyCharac
 	CurrentAttackingEnemy = Value;
 	CurrentEnemy = Value;
 	SetCurrentEnemy(CurrentEnemy);
+	bIsQTEMode = true;
 }
 
 void ASTPlayerCharacter::RemoveCurrentAttackingEnemy()
@@ -726,31 +756,16 @@ void ASTPlayerCharacter::QTEResult()
 	bIsQTEMode = false;
 	bDidCounterAttack = true;
 
-	if (ExpectedPlayerQTEResponse != CurrentPlayerQTEResponse)
+	if (ExpectedPlayerQTEResponse == CurrentPlayerQTEResponse)
 	{
+		OnQTEResponseStarted.Broadcast();
+		ExecuteParry();
+	}
+	else {
 		// Player made a wrong QTE response
 		FDamageEvent DamageEvent;
 		TakeDamage(SWORD_DAMAGE_ENEMY, DamageEvent, GetController(), this);
-		return;
-	}
-
-	switch (CurrentPlayerQTEResponse)
-	{
-	case EPlayerQTEResponseType::EPQTER_SwordAttack:
-		ExecuteSwordAttack();
-		break;
-	case EPlayerQTEResponseType::EPQTER_Kick:
-		ExecuteKick();
-		break;
-	case EPlayerQTEResponseType::EPQTER_Block:
-		ExecuteParry();
-		break;
-	case EPlayerQTEResponseType::EPQTER_Counter:
-		PlaySoundSlashNoHit();
-		ExecuteCounter();
-		break;
-	default:
-		break;
+		TargetLockActor->SetEnabled(true);
 	}
 }
 
@@ -925,10 +940,13 @@ void ASTPlayerCharacter::ExecuteKick()
 
 void ASTPlayerCharacter::ExecuteCounter()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::ExecuteCounter..."));
+
 	if (MontageCounter == nullptr && MontageCounterComboEnder == nullptr) return;
 
 	if (CurrentEnemy && CurrentEnemy->IsAttacking()) {
 		if (bCanCounterAttack) bDidCounterAttack = true;
+		UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking..."));
 		PlayerAnimInstance->Montage_Play(MontageCounter);
 		PlayerAnimInstance->Montage_JumpToSection(COUNTER5, MontageCounter);
 		return;
