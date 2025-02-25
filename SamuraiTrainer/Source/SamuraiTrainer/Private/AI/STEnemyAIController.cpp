@@ -11,8 +11,7 @@
 
 ASTEnemyAIController::ASTEnemyAIController()
 {
-	//Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
-	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
+	//BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
 }
 
 void ASTEnemyAIController::BeginPlay()
@@ -25,8 +24,9 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 	if (BehaviorTree == nullptr) return;
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	RunBehaviorTree(BehaviorTree);
-	
-	Blackboard->SetValueAsObject(BB_KEY_PLAYER_PAWN, PlayerPawn);
+
+	EnemyBlackboardComponent = GetBlackboardComponent();
+	EnemyBlackboardComponent->SetValueAsObject(BB_KEY_PLAYER_PAWN, PlayerPawn);
 	SetPlayerDead(false);
 	SetChosenToAttack(false);
 	SetToOuterRange();
@@ -44,42 +44,47 @@ void ASTEnemyAIController::Initialize(TObjectPtr<UBehaviorTree> BehaviorTree)
 
 void ASTEnemyAIController::SetChosenToAttack(bool Value)
 {
-	Blackboard->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
-	bool IsHitReacting = Blackboard->GetValueAsBool(BB_KEY_HIT_REACTING);
-	bool IsStaggered = Blackboard->GetValueAsBool(BB_KEY_STAGGERED);
-	bool IsBlocking = Blackboard->GetValueAsBool(BB_KEY_BLOCKING);
-	bool IsRecovering = Blackboard->GetValueAsBool(BB_KEY_RECOVERING);
-	bool IsDying = Blackboard->GetValueAsBool(BB_KEY_DYING);
+	if (!GetBlackboardComponent()) return;
 
-	if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
+	if (EnemyBlackboardComponent)
 	{
-		SetAttacking(true);
+		EnemyBlackboardComponent->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
+		bool IsHitReacting = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_HIT_REACTING);
+		bool IsStaggered = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_STAGGERED);
+		bool IsBlocking = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_BLOCKING);
+		bool IsRecovering = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_RECOVERING);
+		bool IsDying = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_DYING);
+
+		if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
+		{
+			SetAttacking(true);
+		}
 	}
 }
 
 void ASTEnemyAIController::SetPausedToAttack(bool Value)
 {
-	if (!Blackboard) return;
-	Blackboard->SetValueAsBool(BB_KEY_PAUSED_TO_ATTACK, Value);
+	if (!EnemyBlackboardComponent) return;
+	EnemyBlackboardComponent->SetValueAsBool(BB_KEY_PAUSED_TO_ATTACK, Value);
 }
 
 void ASTEnemyAIController::SetToOuterRange(bool Value)
 {
-	if (!Blackboard) return;
-	Blackboard->SetValueAsBool(BB_KEY_AT_OUTER_RANGE, Value);
+	if (!EnemyBlackboardComponent) return;
+	EnemyBlackboardComponent->SetValueAsBool(BB_KEY_AT_OUTER_RANGE, Value);
 }
 
 void ASTEnemyAIController::SetToMiddleRange(bool Value)
 {
-	if (!Blackboard) return;
-	Blackboard->SetValueAsBool(BB_KEY_AT_MIDDLE_RANGE, Value);
+	if (!EnemyBlackboardComponent) return;
+	EnemyBlackboardComponent->SetValueAsBool(BB_KEY_AT_MIDDLE_RANGE, Value);
 }
 
 void ASTEnemyAIController::SetAttacking(bool Value)
 {
 	if (!GetBlackboardComponent()) return;
 	ResetAllValues();
-	Blackboard->SetValueAsBool(BB_KEY_ATTACKING, Value);
+	EnemyBlackboardComponent->SetValueAsBool(BB_KEY_ATTACKING, Value);
 }
 
 void ASTEnemyAIController::SetCloseEvading(bool Value)

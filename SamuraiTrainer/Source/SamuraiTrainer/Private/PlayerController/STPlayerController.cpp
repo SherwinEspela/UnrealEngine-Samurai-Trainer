@@ -64,6 +64,7 @@ void ASTPlayerController::BeginPlay()
 
 	bIsLevelMenuDisplayed = false;
 	LevelResultType = ELevelResultType::EDPT_Default;
+	LevelLoader = new RandomLevelLoader();
 }
 
 void ASTPlayerController::SetupInputComponent()
@@ -110,7 +111,6 @@ void ASTPlayerController::Move(const FInputActionValue& Value)
 
 void ASTPlayerController::Look(const FInputActionValue& Value)
 {
-	if (LevelResultType == ELevelResultType::ELRT_Completed) return;
 	if (!bLevelIntroCompleted) return;
 
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -308,7 +308,6 @@ void ASTPlayerController::HandleHideLevelMenuCompleted()
 
 void ASTPlayerController::HandleExitMenuFinished()
 {
-	RandomLevelLoader* LevelLoader = new RandomLevelLoader();
 	switch (CurrentSelectedButtonType)
 	{
 	case EMainMenuButtonTypes::EMMBT_LevelContinue:

@@ -74,6 +74,7 @@ public:
 	virtual void Block(FName SectionName);
 	virtual void HitReact();
 	virtual void Death();
+	void ResetCounterAttackStates();
 
 public:
 	FORCEINLINE bool IsHealthCritical() const { return bIsHealthCritical; }
@@ -135,8 +136,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnCounterAttackFrameEnded();
-
-	void ResetCounterAttackStates();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleBeginSlashSound();

@@ -19,6 +19,10 @@ void USFUWLevelIntro::HandleLevelIntroAnimationCompleted()
 void USFUWLevelIntro::SetShowdownCount(int Value)
 {
 	TextShowdown->SetText(FText::FromString(FString::Printf(TEXT("Showdown %i"), Value)));
+
+	int RandomIndex = FMath::RandRange(0, SymbolValues.Num() - 1);
+	TextSymbol->SetText(FText::FromString(SymbolValues[RandomIndex]));
+
 	SetRandomBackground();
 }
 

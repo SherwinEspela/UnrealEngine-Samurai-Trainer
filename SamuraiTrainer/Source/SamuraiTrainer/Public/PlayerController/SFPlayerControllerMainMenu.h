@@ -101,5 +101,5 @@ private:
 	UEnhancedInputComponent* EnhancedInputComponent;
 	bool bLogoTitleEntered = false;
 	bool bMainMenuEntered = false;
-	bool bIsPlayButtonClicked = false;
+	bool bIsPlayModeSelected = false;
 };
