@@ -306,9 +306,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	float TargetBeamActiveDistance = 500.f;
 
+protected:
+	// Camera Pitch Controls
+	UPROPERTY(EditDefaultsOnly, Category = "Camera Pitch Controls")
+	float ViewPitchMin = -70.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera Pitch Controls")
+	float ViewPitchMax = -20.f;
+
 private:
 	bool EnemyReachedMaxTargetBeamDistance();
 	void ShouldDisplayTargetBeamAndHideTargetIndicator();
+	void SetLimitsToCameraPitch();
 
 private:
 	UPlayerAnimInstance* PlayerAnimInstance;

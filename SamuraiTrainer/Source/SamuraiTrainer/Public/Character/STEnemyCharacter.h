@@ -155,6 +155,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Debugging")
 	bool bDebugCannotMove = false;
 
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+	bool bIsDebuggingQTE = false;
+
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+	EPlayerQTEResponseType ResponseTypeToDebug = EPlayerQTEResponseType::EPQTER_Block;
+
 protected:
 	// FX
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
@@ -162,6 +168,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "FX")
 	UNiagaraComponent* FXTargetIndicator;
+
+private:
+	void SetFXAttackIndicatorColor(EPlayerQTEResponseType Value);
 
 private:
 	USTEnemyAnimInstance* EnemyAnimInstance;

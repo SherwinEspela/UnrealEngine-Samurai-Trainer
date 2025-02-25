@@ -17,6 +17,7 @@
 #include "Combat/TargetLockActor.h"
 #include "Items/KatanaCover.h"
 #include "NiagaraComponent.h"
+#include "Camera/PlayerCameraManager.h"
 
 ASTPlayerCharacter::ASTPlayerCharacter()
 {
@@ -68,6 +69,8 @@ void ASTPlayerCharacter::BeginPlay()
 	InitQueues();
 
 	StartingPosition = GetActorLocation();
+
+	SetLimitsToCameraPitch();
 }
 
 void ASTPlayerCharacter::InitPlayerAnimInstance()
@@ -306,6 +309,8 @@ void ASTPlayerCharacter::EnemyInteract(
 
 void ASTPlayerCharacter::SwordAttack()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::SwordAttack....."));
+
 	if (MovementState == EMovementStates::EPMS_PreAttacking) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
@@ -327,6 +332,8 @@ void ASTPlayerCharacter::SwordAttack()
 
 void ASTPlayerCharacter::SwordAttackCombo2()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::SwordAttackCombo2....."));
+
 	if (MovementState == EMovementStates::EPMS_PreAttacking) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
@@ -391,6 +398,9 @@ void ASTPlayerCharacter::ParryOrBlock()
 void ASTPlayerCharacter::Evade()
 {
 	if (!bIsQTEMode) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::Evade....."));
+
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
 	if (MovementState == EMovementStates::EPMS_ParryAttacking) return;
@@ -978,4 +988,11 @@ void ASTPlayerCharacter::ShouldDisplayTargetBeamAndHideTargetIndicator()
 		FXTargetBeam->Deactivate();
 		CurrentEnemy->ShouldDisplayTargetIndicator();
 	}
+}
+
+void ASTPlayerCharacter::SetLimitsToCameraPitch()
+{
+	APlayerCameraManager* PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+	PlayerCameraManager->ViewPitchMin = ViewPitchMin;
+	PlayerCameraManager->ViewPitchMax = ViewPitchMax;
 }

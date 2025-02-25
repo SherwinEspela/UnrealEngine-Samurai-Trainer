@@ -72,7 +72,10 @@ public:
 	virtual void SwordAttack();
 	virtual void Block();
 	virtual void Block(FName SectionName);
+
+	UFUNCTION()
 	virtual void HitReact();
+	
 	virtual void Death();
 	void ResetCounterAttackStates();
 

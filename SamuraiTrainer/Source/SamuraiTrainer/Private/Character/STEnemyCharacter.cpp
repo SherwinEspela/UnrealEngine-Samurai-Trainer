@@ -233,39 +233,62 @@ void ASTEnemyCharacter::OnFXAttackIndicatorFinished(UNiagaraComponent* Value)
 
 EPlayerQTEResponseType ASTEnemyCharacter::GenerateRandomQTEResponse()
 {
-	EPlayerQTEResponseType ResponseType = EPlayerQTEResponseType::EPQTER_Block;
+	if (bIsDebuggingQTE)
+	{
+		SetFXAttackIndicatorColor(ResponseTypeToDebug);
+		return ResponseTypeToDebug;
+	}
 
+	EPlayerQTEResponseType ResponseType = EPlayerQTEResponseType::EPQTER_Block;
 	int RandomNumber = FMath::RandRange(1, 4);
-	
+
 		switch (RandomNumber)
 		{
 		case 1:
-			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
 			ResponseType = EPlayerQTEResponseType::EPQTER_Evade;
 			break;
 
 		case 2:
-			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_BLUE);
 			ResponseType = EPlayerQTEResponseType::EPQTER_SwordAttack1;
 			break;
 
 		case 3:
-			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_GREEN);
 			ResponseType = EPlayerQTEResponseType::EPQTER_SwordAttack2;
 			break;
 
 		case 4:
-			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_YELLOW);
 			ResponseType = EPlayerQTEResponseType::EPQTER_Block;
 			break;
 
 		default:
-			FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_YELLOW);
 			ResponseType = EPlayerQTEResponseType::EPQTER_Block;
 			break;
 		}
 
+	SetFXAttackIndicatorColor(ResponseType);
+
 	return ResponseType;
+}
+
+void ASTEnemyCharacter::SetFXAttackIndicatorColor(EPlayerQTEResponseType Value)
+{
+	switch (Value)
+	{
+	case EPlayerQTEResponseType::EPQTER_SwordAttack1:
+		FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_BLUE);
+		break;
+	case EPlayerQTEResponseType::EPQTER_SwordAttack2:
+		FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_GREEN);
+		break;
+	case EPlayerQTEResponseType::EPQTER_Block:
+		FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_YELLOW);
+		break;
+	case EPlayerQTEResponseType::EPQTER_Evade:
+		FXAttackIndicator->SetVariableLinearColor(NV_LINEAR_COLOR, ATTACK_INDICATOR_COLOR_RED);
+		break;
+	default:
+		break;
+	}
 }
 
 float ASTEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
