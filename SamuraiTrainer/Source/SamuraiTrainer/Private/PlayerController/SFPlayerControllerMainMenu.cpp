@@ -88,10 +88,11 @@ void ASFPlayerControllerMainMenu::SelectBottomButton()
 
 void ASFPlayerControllerMainMenu::PlayButtonClicked()
 {
+	if (bIsPlayModeSelected) return;
 	if (CurrentSelectedButtonType != EMainMenuButtonTypes::EMMBT_Play) return;
 	if (!bMainMenuEntered) return;
 
-	bIsPlayButtonClicked = true;
+	bIsPlayModeSelected = true;
 	OnPlayButtonClicked();
 }
 

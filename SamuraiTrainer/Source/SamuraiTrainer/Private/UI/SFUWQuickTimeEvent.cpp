@@ -12,6 +12,7 @@
 
 void USFUWQuickTimeEvent::DisplayWithPlayerResponseType(EPlayerQTEResponseType PlayerResponseType)
 {
+	bIsDisplayed = true;
 	FLinearColor LinearColor = ATTACK_INDICATOR_COLOR_GREEN;
 	FString StringButtonType(TEXT_BUTTON_X);
 
@@ -46,5 +47,9 @@ void USFUWQuickTimeEvent::DisplayWithPlayerResponseType(EPlayerQTEResponseType P
 
 void USFUWQuickTimeEvent::Hide()
 {
-	OnHide();
+	if (bIsDisplayed)
+	{
+		bIsDisplayed = false;
+		OnHide();
+	}
 }

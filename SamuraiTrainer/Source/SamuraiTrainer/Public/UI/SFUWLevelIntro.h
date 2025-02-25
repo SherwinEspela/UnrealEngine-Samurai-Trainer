@@ -38,6 +38,9 @@ protected:
 	UTextBlock* TextShowdown;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* TextSymbol;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* ImageBG;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Background Textures")
@@ -45,4 +48,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Intro Sounds")
 	TArray<USoundBase*> IntroSounds;
+
+	UPROPERTY(EditAnywhere, Category = "Random Symbol Values")
+	TArray<FString> SymbolValues;
 };

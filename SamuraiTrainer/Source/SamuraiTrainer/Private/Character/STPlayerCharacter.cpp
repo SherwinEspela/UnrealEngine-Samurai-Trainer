@@ -366,6 +366,7 @@ void ASTPlayerCharacter::Block()
 
 void ASTPlayerCharacter::ParryOrBlock()
 {
+	if (!bIsQTEMode) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
 	if (MovementState == EMovementStates::EPMS_ParryAttacking) return;
@@ -389,6 +390,7 @@ void ASTPlayerCharacter::ParryOrBlock()
 
 void ASTPlayerCharacter::Evade()
 {
+	if (!bIsQTEMode) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
 	if (MovementState == EMovementStates::EPMS_ParryAttacking) return;

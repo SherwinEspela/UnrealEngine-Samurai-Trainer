@@ -67,13 +67,14 @@ void ACombatSystemPawn::BeginPlay()
 
 void ACombatSystemPawn::HandlePlayerAttackStarted()
 {
+	QTEWidget->Hide();
 	SetEnemiesToPauseAttacking();
 }
 
 void ACombatSystemPawn::HandlePlayerQTEResponseStarted()
 {
-	SetEnemiesToPauseAttacking();
 	QTEWidget->Hide();
+	SetEnemiesToPauseAttacking();
 }
 
 void ACombatSystemPawn::HandlePlayerStaggerStarted()
@@ -246,6 +247,7 @@ void ACombatSystemPawn::HandleLevelIntroCompleted()
 
 void ACombatSystemPawn::HandlePlayerCharacterDied()
 {
+	QTEWidget->Hide();
 	SetPlayerDead();
 	CombatSystemAIController->StopBehavior();
 	SetEnemiesToPauseAttacking();

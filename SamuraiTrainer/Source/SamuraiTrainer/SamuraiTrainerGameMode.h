@@ -18,7 +18,7 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Time Controls")
-	float SlowMotionTime = 0.45f;
+	float SlowMotionTime = 0.25f;
 };
 
 

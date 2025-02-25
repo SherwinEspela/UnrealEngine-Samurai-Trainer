@@ -39,4 +39,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* ImageRingInner;
 
+private:
+	bool bIsDisplayed = false;
+
 };
