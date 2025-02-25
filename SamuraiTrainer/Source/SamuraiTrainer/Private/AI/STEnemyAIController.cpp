@@ -49,7 +49,7 @@ void ASTEnemyAIController::SetChosenToAttack(bool Value)
 	if (EnemyBlackboardComponent)
 	{
 		EnemyBlackboardComponent->SetValueAsBool(BB_KEY_CHOSEN_TO_ATTACK, Value);
-		bool IsHitReacting = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_HIT_REACTING);
+		/*bool IsHitReacting = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_HIT_REACTING);
 		bool IsStaggered = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_STAGGERED);
 		bool IsBlocking = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_BLOCKING);
 		bool IsRecovering = EnemyBlackboardComponent->GetValueAsBool(BB_KEY_RECOVERING);
@@ -58,7 +58,7 @@ void ASTEnemyAIController::SetChosenToAttack(bool Value)
 		if (!IsHitReacting && !IsStaggered && !IsBlocking && !IsRecovering && !IsDying && Value)
 		{
 			SetAttacking(true);
-		}
+		}*/
 	}
 }
 

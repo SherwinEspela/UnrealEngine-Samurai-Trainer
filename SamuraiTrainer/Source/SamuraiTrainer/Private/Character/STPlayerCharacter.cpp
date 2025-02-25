@@ -309,8 +309,6 @@ void ASTPlayerCharacter::EnemyInteract(
 
 void ASTPlayerCharacter::SwordAttack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::SwordAttack....."));
-
 	if (MovementState == EMovementStates::EPMS_PreAttacking) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
@@ -332,8 +330,6 @@ void ASTPlayerCharacter::SwordAttack()
 
 void ASTPlayerCharacter::SwordAttackCombo2()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::SwordAttackCombo2....."));
-
 	if (MovementState == EMovementStates::EPMS_PreAttacking) return;
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
@@ -398,9 +394,6 @@ void ASTPlayerCharacter::ParryOrBlock()
 void ASTPlayerCharacter::Evade()
 {
 	if (!bIsQTEMode) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("ASTPlayerCharacter::Evade....."));
-
 	if (MovementState == EMovementStates::EPMS_ComboEnding) return;
 	if (MovementState == EMovementStates::EPMS_Parrying) return;
 	if (MovementState == EMovementStates::EPMS_ParryAttacking) return;
@@ -669,6 +662,7 @@ ASTEnemyCharacter* ASTPlayerCharacter::GetTargetLockedEnemy() const
 
 float ASTPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	bIsQTEMode = false;
 	SetSlowMotion(false);
 	OnStaggerStarted.Broadcast();
 	PlayerAnimInstance->StopAllMontages(0.2f);
