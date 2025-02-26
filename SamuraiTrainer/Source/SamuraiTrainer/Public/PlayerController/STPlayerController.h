@@ -162,12 +162,14 @@ protected:
 	void HandleMusicAudioFinished();
 
 protected:
-	// Saving Game Data
+	// Persistent Data
 	UPROPERTY()
 	USFSaveGameData* SaveGameData;
 
 private:
 	void IncrementAndSaveShowdownCount();
+	void ReinitializeShowdownModeData();
+	void PerformSaveGameData();
 
 private:
 	TObjectPtr<ASTPlayerCharacter> PlayerCharacter;

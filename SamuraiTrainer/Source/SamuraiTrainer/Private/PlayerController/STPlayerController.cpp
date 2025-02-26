@@ -15,6 +15,7 @@
 #include "DataPersistence/SFSaveGameData.h"
 #include "Utility/RandomLevelLoader.h"
 #include "Components/AudioComponent.h"
+#include "SamuraiTrainer/SamuraiTrainerGameMode.h"
 
 #define MAIN_MENU_MAP FName("MainMenuMap")
 #define LEVEL1_MAP FName("SetupMap2_OneEnemy")
@@ -55,7 +56,9 @@ void ASTPlayerController::BeginPlay()
 			uint32 UserIndex = SaveGameData->UserIndex;
 			if ((SaveGameData = Cast<USFSaveGameData>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex))))
 			{
-				LevelIntro->SetShowdownCount(SaveGameData->ShowdownCounter);
+				LevelIntro->SetShowdownCount(SaveGameData->ShowdownModeData.ShowdownCounter);
+				ASamuraiTrainerGameMode* GameMode = Cast<ASamuraiTrainerGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+				GameMode->SetSlowMotionTime(SaveGameData->ShowdownModeData.SlowMotionTime);
 			}
 		}
 
@@ -244,21 +247,7 @@ void ASTPlayerController::ConfirmSelectedButton()
 {
 	if (LevelResultType != ELevelResultType::EDPT_Default && !bIsGameExiting)
 	{
-		switch (CurrentSelectedButtonType)
-		{
-		case EMainMenuButtonTypes::EMMBT_LevelContinue:
-			LevelResults->OnExitMenu();
-			break;
-		case EMainMenuButtonTypes::EMMBT_LevelRestart:
-			LevelResults->OnExitMenu();
-			break;
-		case EMainMenuButtonTypes::EMMBT_LevelExit:
-			LevelResults->OnExitMenu();
-			break;
-		default:
-			break;
-		}
-
+		LevelResults->OnExitMenu();
 		return;
 	}
 
@@ -358,6 +347,7 @@ void ASTPlayerController::HandleAllEnemiesKilled()
 void ASTPlayerController::HandlePlayerDied()
 {
 	LevelResultType = ELevelResultType::ELRT_PlayerDied;
+	ReinitializeShowdownModeData();
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASTPlayerController::LevelResultsEvent, 3.0f, false);
 }
@@ -370,11 +360,20 @@ void ASTPlayerController::HandleMusicAudioFinished()
 
 void ASTPlayerController::IncrementAndSaveShowdownCount()
 {
-	if (!SaveGameData) return;
-	
+	SaveGameData->IncrementShowdownValues();
+	PerformSaveGameData();
+}
+
+void ASTPlayerController::ReinitializeShowdownModeData()
+{
+	SaveGameData->ShowdownModeData.Initialize();
+	PerformSaveGameData();
+}
+
+void ASTPlayerController::PerformSaveGameData()
+{
 	FString SaveSlotName = SaveGameData->SaveSlotName;
 	uint32 UserIndex = SaveGameData->UserIndex;
-	SaveGameData->ShowdownCounter += 1;
 	UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
 }
 

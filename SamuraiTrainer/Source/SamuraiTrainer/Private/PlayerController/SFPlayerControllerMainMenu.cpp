@@ -31,7 +31,7 @@ void ASFPlayerControllerMainMenu::BeginPlay()
 	{
 		FString SaveSlotName = SaveGameData->SaveSlotName;
 		uint32 UserIndex = SaveGameData->UserIndex;
-		SaveGameData->ShowdownCounter = 1;
+		SaveGameData->ShowdownModeData.Initialize();
 		UGameplayStatics::SaveGameToSlot(SaveGameData, SaveSlotName, UserIndex);
 	}
 

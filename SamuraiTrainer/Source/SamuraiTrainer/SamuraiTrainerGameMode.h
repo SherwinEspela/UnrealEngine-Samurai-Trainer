@@ -14,6 +14,7 @@ class ASamuraiTrainerGameMode : public AGameModeBase
 public:
 	ASamuraiTrainerGameMode();
 
+	FORCEINLINE void SetSlowMotionTime(float Value) { SlowMotionTime = Value; }
 	FORCEINLINE float GetSlowMotionTime() const { return SlowMotionTime; }
 
 protected:
