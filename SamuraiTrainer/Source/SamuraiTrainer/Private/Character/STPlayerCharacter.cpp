@@ -512,11 +512,7 @@ void ASTPlayerCharacter::OnComboFrameBegan(bool IsLastBasicAttack)
 
 void ASTPlayerCharacter::OnComboFrameEnded()
 {
-	if (TargetLockActor)
-	{
-		TargetLockActor->SetEnabled();
-	}
-	
+	TargetLockActor->SetEnabled();
 	MovementState = EMovementStates::EPMS_Idle;
 	bCanPerformNextAttack = false;
 }
@@ -540,12 +536,8 @@ void ASTPlayerCharacter::OnParryAttackFrameEnded()
 
 void ASTPlayerCharacter::OnComboEnderStarted()
 {
+	TargetLockActor->SetEnabled(false);
 	OnAttackStarted.Broadcast();
-
-	if (TargetLockActor)
-	{
-		TargetLockActor->SetEnabled(false);
-	}
 }
 
 void ASTPlayerCharacter::OnComboEnderCompleted()

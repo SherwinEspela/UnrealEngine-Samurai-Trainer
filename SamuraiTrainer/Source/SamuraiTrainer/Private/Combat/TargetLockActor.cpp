@@ -39,6 +39,7 @@ void ATargetLockActor::SetLineEndVectors(FVector Forward, FVector Right)
 
 void ATargetLockActor::SetEnabled(bool Value)
 {
+	SetActorTickEnabled(Value);
 	bIsEnabled = Value;
 }
 
